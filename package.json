@@ -9,7 +9,7 @@
     "dev": "tsx src/index.ts",
     "build": "tsc",
     "lint": "eslint .",
-    "test": "glob -c \"tsx --test --test-reporter spec \" \"./tests/**/*.spec.ts\""
+    "test": "vitest"
   },
   "dependencies": {
     "@hono/node-server": "^1.11.2",
@@ -30,6 +30,7 @@
     "glob": "^10.4.1",
     "prettier": "^3.3.1",
     "tsx": "^4.12.0",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "vitest": "^2.0.5"
   }
 }

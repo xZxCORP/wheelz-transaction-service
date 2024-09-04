@@ -1,6 +1,6 @@
 import z from 'zod'
 
-import { Config } from '../../../../domain/entities/config.entity.js'
+import { Config, MAX_PORT_VALUE } from '../../../../domain/entities/config.entity.js'
 import { createZodSchema } from './zod.validator.js'
 const configZodSchema = z.object({
   logLevel: z.enum(['error', 'warn', 'info', 'debug']),
@@ -10,7 +10,7 @@ const configZodSchema = z.object({
   }),
   api: z.object({
     host: z.string(),
-    port: z.coerce.number(),
+    port: z.coerce.number().min(0).max(MAX_PORT_VALUE),
   }),
 })
 
