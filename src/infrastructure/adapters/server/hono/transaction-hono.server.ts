@@ -1,5 +1,3 @@
-import { HTTPException } from 'hono/http-exception'
-
 import { Config } from '../../../../domain/entities/config.entity.js'
 import { LoggerPort } from '../../../../domain/ports/logger.port.js'
 import { AbstractHonoServer } from './abstract-hono.server.js'
