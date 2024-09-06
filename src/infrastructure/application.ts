@@ -5,6 +5,7 @@ import { AppError } from '../domain/errors/app.error.js'
 import { LoggerPort } from '../domain/ports/logger.port.js'
 import { EnvironmentConfigLoader } from './adapters/config/environment.config-loader.js'
 import { PinoLogger } from './adapters/logger/pino.logger.js'
+import { TransactionHonoServer } from './adapters/server/hono/transaction-hono.server.js'
 import { ZodValidator } from './adapters/validation/zod/zod.validator.js'
 import { configSchema } from './adapters/validation/zod/zod-config.schema.js'
 import { ManagedResource } from './managed.resource.js'
@@ -15,7 +16,9 @@ export class Application {
   constructor(
     private readonly config: Config,
     private readonly logger: LoggerPort
-  ) {}
+  ) {
+    this.managedResources = [new TransactionHonoServer(config, logger)]
+  }
   static create(): Result<Application, AppError> {
     const configLoader = new EnvironmentConfigLoader(configSchema, new ZodValidator())
     return configLoader.load().map((config) => {
@@ -32,13 +35,9 @@ export class Application {
   }
   start(): ResultAsync<void, AppError> {
     this.logger.info('Starting application')
-    return (
-      this.initialize()
-        //   .andThen(() => this.notificationService.start())
-        .map(() => {
-          this.logger.info('Application started')
-        })
-    )
+    return this.initialize().map(() => {
+      this.logger.info('Application started')
+    })
   }
   stop(): ResultAsync<void, AppError> {
     this.logger.info('Stopping application')

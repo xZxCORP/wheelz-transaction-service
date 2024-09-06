@@ -6,13 +6,15 @@
     "node": ">= 20.11.0"
   },
   "scripts": {
-    "dev": "tsx src/index.ts",
+    "dev": "tsx --watch src/index.ts",
     "build": "tsc",
     "lint": "eslint .",
     "test": "vitest"
   },
   "dependencies": {
     "@hono/node-server": "^1.11.2",
+    "@hono/swagger-ui": "^0.4.1",
+    "@hono/zod-openapi": "^0.16.0",
     "dotenv": "^16.4.5",
     "hono": "^4.4.3",
     "neverthrow": "^7.1.0",
