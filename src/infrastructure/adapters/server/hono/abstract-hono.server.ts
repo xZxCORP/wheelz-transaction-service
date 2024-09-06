@@ -1,6 +1,7 @@
 import { serve } from '@hono/node-server'
 import { swaggerUI } from '@hono/swagger-ui'
 import { OpenAPIHono } from '@hono/zod-openapi'
+import { HTTPException } from 'hono/http-exception'
 import { logger } from 'hono/logger'
 import { trimTrailingSlash } from 'hono/trailing-slash'
 import { okAsync, ResultAsync } from 'neverthrow'
@@ -28,6 +29,12 @@ export abstract class AbstractHonoServer extends AbstractServer {
   protected setupMiddleware() {
     this.app.use(trimTrailingSlash())
     this.app.use(logger((message, ...rest) => this.logger.info(message, ...rest)))
+    this.app.onError((error, c) => {
+      this.logger.error('Error while processing request', error)
+      return error instanceof HTTPException
+        ? c.json({ message: error.message, data: error.cause }, error.status)
+        : c.json({ message: 'Server error' }, 500)
+    })
   }
   protected abstract setupUserRoutes(): void
   protected setupBaseRoutes() {
