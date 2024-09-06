@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// file: src/infrastructure/adapters/validation/zod/tests/zod-vehicle.schema.spec.ts
 
 import { describe, expect, it } from 'vitest'
 
