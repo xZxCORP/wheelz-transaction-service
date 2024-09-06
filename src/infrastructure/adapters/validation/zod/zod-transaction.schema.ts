@@ -17,14 +17,7 @@ const createVehicleTransactionDataZodSchema = z.object({
 const updateVehicleTransactionDataZodSchema = z.object({
   action: z.literal('update'),
   vin: vinZodSchema,
-  changes: vehicleZodSchema.partial().pick({
-    constructor: true,
-    model: true,
-    year: true,
-    risks: true,
-    sinisters: true,
-    issues: true,
-  }),
+  changes: vehicleZodSchema.omit({ vin: true }).partial(),
 })
 
 const deleteVehicleTransactionDataZodSchema = z.object({

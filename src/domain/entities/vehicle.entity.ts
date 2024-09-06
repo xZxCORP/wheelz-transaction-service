@@ -21,7 +21,7 @@ export interface Sinister {
 
 export interface Vehicle {
   vin: string
-  constructor: string
+  constructorName: string
   model: string
   year: number
   risks: {

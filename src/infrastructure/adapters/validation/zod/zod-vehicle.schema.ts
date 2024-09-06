@@ -32,8 +32,8 @@ const risksIssuesZodSchema = z.object({
 
 export const vehicleZodSchema = z.object({
   vin: vinZodSchema,
-  constructor: z.string(),
-  model: z.string(),
+  constructorName: z.string().min(1),
+  model: z.string().min(1),
   year: z
     .number()
     .int()
