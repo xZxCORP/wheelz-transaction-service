@@ -8,15 +8,15 @@ export class PerformHealthCheckUseCase {
   constructor(private healthChecks: HealthCheckPort[]) {}
 
   execute(): ResultAsync<OverallHealthStatus, HealthError> {
-    return ResultAsync.combine(this.healthChecks.map((check) => check.isHealthy()))
-      .map((results) => {
+    return ResultAsync.combine(this.healthChecks.map((check) => check.isHealthy())).map(
+      (results) => {
         const isOverallHealthy = results.every((result) => result.status === 'healthy')
         const status: HealthStatus = isOverallHealthy ? 'healthy' : 'unhealthy'
         return {
           status,
           services: results,
         }
-      })
-      .mapErr(() => new HealthError('Health check failed'))
+      }
+    )
   }
 }

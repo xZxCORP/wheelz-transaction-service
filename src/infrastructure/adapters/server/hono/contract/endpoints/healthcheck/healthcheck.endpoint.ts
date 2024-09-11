@@ -4,9 +4,9 @@ import type { OverallHealthStatus } from '../../../../../../../domain/entities/h
 
 @endpoint({
   method: 'GET',
-  path: '/healthcheck',
+  path: '/health',
 })
-export default class HealthCheck {
+export default class Health {
   @response({ status: 200 })
   successResponse(@body _body: OverallHealthStatus) {}
 }

@@ -7,12 +7,13 @@ import { BaseController } from './base.controller.js'
 export class HealthcheckController implements BaseController {
   constructor(protected readonly performHealthCheckUseCase: PerformHealthCheckUseCase) {}
   setupRoutes(app: Hono) {
-    app.get('/healthcheck', async (c) => {
+    app.get('/health', async (c) => {
       const result = await this.performHealthCheckUseCase.execute()
       if (result.isErr()) {
         throw new HTTPException(500, result.error)
       }
-      return c.json(result.value)
+      const status = result.value.status === 'healthy' ? 200 : 503
+      return c.json(result.value, status)
     })
   }
   getName() {
