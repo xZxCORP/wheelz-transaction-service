@@ -6,3 +6,8 @@ export class QueueError extends AppError {
     this.cause = cause
   }
 }
+export class HealthError extends AppError {
+  constructor(message: string) {
+    super(message, 'HEALTH_ERROR')
+  }
+}

@@ -1,11 +1,13 @@
 import { okAsync, Result, ResultAsync } from 'neverthrow'
 
 import { LoggerPort } from '../application/ports/logger.port.js'
+import { PerformHealthCheckUseCase } from '../application/use-cases/perform-health-check.use-case.js'
 import { Config } from '../domain/entities/config.entity.js'
 import { AppError } from '../domain/errors/app.error.js'
 import { EnvironmentConfigLoader } from './adapters/config/environment.config-loader.js'
+import { HonoServerHealthCheck } from './adapters/health-check/hono-server.health-check.js'
 import { PinoLogger } from './adapters/logger/pino.logger.js'
-import { HelloWorldController } from './adapters/server/hono/controllers/hello.controller.js'
+import { HealthcheckController } from './adapters/server/hono/controllers/healthcheck.controller.js'
 import { HonoServer } from './adapters/server/hono/hono.server.js'
 import { ZodValidator } from './adapters/validation/zod/zod.validator.js'
 import { configSchema } from './adapters/validation/zod/zod-config.schema.js'
@@ -18,7 +20,13 @@ export class Application {
     config: Config,
     private readonly logger: LoggerPort
   ) {
-    this.managedResources = [new HonoServer(config, logger, [new HelloWorldController()])]
+    const server = new HonoServer(config, logger)
+    const performHealthCheckUseCase = new PerformHealthCheckUseCase([
+      new HonoServerHealthCheck(server),
+    ])
+    server.registerController(new HealthcheckController(performHealthCheckUseCase))
+
+    this.managedResources = [server]
   }
   static create(): Result<Application, AppError> {
     const configLoader = new EnvironmentConfigLoader(configSchema, new ZodValidator())

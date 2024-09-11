@@ -1,4 +1,4 @@
-import './endpoints/hello/index.js'
+import './endpoints/healthcheck/index.js'
 
 import { api } from '@airtasker/spot'
 @api({ name: 'Transaction Wheelz Service' })

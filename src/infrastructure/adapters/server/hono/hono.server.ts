@@ -15,19 +15,17 @@ import { ManagedResource } from '../../../managed.resource.js'
 import { BaseController } from './controllers/base.controller.js'
 
 export class HonoServer implements ManagedResource {
-  private app: Hono
-  private server: ReturnType<typeof serve> | null = null
-  private controllers: BaseController[] = []
+  public app: Hono
+  public server: ReturnType<typeof serve> | null = null
+  public controllers: BaseController[] = []
 
   constructor(
     private config: Config,
-    private logger: LoggerPort,
-    controllers: BaseController[] = []
+    private logger: LoggerPort
   ) {
     this.app = new Hono()
     this.setupMiddleware()
     this.setupBaseRoutes()
-    for (const controller of controllers) this.registerController(controller)
   }
 
   private setupMiddleware() {
@@ -87,6 +85,9 @@ export class HonoServer implements ManagedResource {
       (error: unknown) =>
         new ServerError('Unexpected error while starting Hono server', { cause: error })
     )
+  }
+  isRunning(): boolean {
+    return this.server !== null && this.server.listening
   }
 
   initialize(): ResultAsync<void, AppError> {
