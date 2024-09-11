@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import pino from 'pino'
 
-import { LoggerPort } from '../../../domain/ports/logger.port.js'
+import { LoggerPort } from '../../../application/ports/logger.port.js'
 
 export class PinoLogger implements LoggerPort {
   private logger: pino.Logger

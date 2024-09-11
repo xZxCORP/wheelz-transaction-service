@@ -1,0 +1,1 @@
+import './hello.endpoint.js'

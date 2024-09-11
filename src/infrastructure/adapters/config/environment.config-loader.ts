@@ -1,9 +1,9 @@
 import { configDotenv } from 'dotenv'
 import { Result } from 'neverthrow'
 
+import { ConfigLoaderPort } from '../../../application/ports/config-loader.port.js'
 import { Config } from '../../../domain/entities/config.entity.js'
 import { ValidationError } from '../../../domain/errors/domain.error.js'
-import { ConfigLoaderPort } from '../../../domain/ports/config-loader.port.js'
 import { ConfigSchema } from '../../../domain/schemas/config.schema.js'
 import { Validator } from '../../../domain/validation/validator.js'
 

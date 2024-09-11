@@ -5,9 +5,3 @@ export class ValidationError extends AppError {
     this.cause = cause
   }
 }
-export class ServerError extends AppError {
-  constructor(message: string, cause: unknown) {
-    super(message, 'SERVER_ERROR')
-    this.cause = cause
-  }
-}

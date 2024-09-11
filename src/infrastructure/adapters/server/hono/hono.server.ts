@@ -1,32 +1,36 @@
+import { Spot } from '@airtasker/spot'
 import { serve } from '@hono/node-server'
 import { swaggerUI } from '@hono/swagger-ui'
-import { OpenAPIHono } from '@hono/zod-openapi'
+import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
 import { logger } from 'hono/logger'
 import { trimTrailingSlash } from 'hono/trailing-slash'
 import { okAsync, ResultAsync } from 'neverthrow'
 
+import { LoggerPort } from '../../../../application/ports/logger.port.js'
 import { Config } from '../../../../domain/entities/config.entity.js'
-import { ServerError } from '../../../../domain/errors/domain.error.js'
-import { LoggerPort } from '../../../../domain/ports/logger.port.js'
-import { AbstractServer } from '../abstract.server.js'
+import { AppError } from '../../../../domain/errors/app.error.js'
+import { ServerError } from '../../../errors/infrastructure.errors.js'
+import { ManagedResource } from '../../../managed.resource.js'
+import { BaseController } from './controllers/base.controller.js'
 
-export abstract class AbstractHonoServer extends AbstractServer {
-  protected app: OpenAPIHono
-  protected server: ReturnType<typeof serve> | null = null
+export class HonoServer implements ManagedResource {
+  private app: Hono
+  private server: ReturnType<typeof serve> | null = null
+  private controllers: BaseController[] = []
 
   constructor(
-    protected config: Config,
-    protected logger: LoggerPort
+    private config: Config,
+    private logger: LoggerPort,
+    controllers: BaseController[] = []
   ) {
-    super(config, logger)
-    this.app = new OpenAPIHono()
+    this.app = new Hono()
     this.setupMiddleware()
     this.setupBaseRoutes()
-    this.setupUserRoutes()
+    for (const controller of controllers) this.registerController(controller)
   }
 
-  protected setupMiddleware() {
+  private setupMiddleware() {
     this.app.use(trimTrailingSlash())
     this.app.use(logger((message, ...rest) => this.logger.info(message, ...rest)))
     this.app.onError((error, c) => {
@@ -36,16 +40,25 @@ export abstract class AbstractHonoServer extends AbstractServer {
         : c.json({ message: 'Server error' }, 500)
     })
   }
-  protected abstract setupUserRoutes(): void
-  protected setupBaseRoutes() {
-    this.app.doc31('/openapi.json', {
-      openapi: '3.1.0',
-      info: { title: 'Wheelz Transaction', version: '1' },
-    })
+
+  private async setupBaseRoutes() {
+    const contract = Spot.parseContract(
+      'src/infrastructure/adapters/server/hono/contract/api.contract.ts'
+    )
+
+    const spec = Spot.OpenApi3.generateOpenAPI3(contract)
+
+    this.app.get('/openapi.json', (c) => c.json(spec))
     this.app.get('/ui', swaggerUI({ url: '/openapi.json' }))
   }
 
-  protected createServer(): ResultAsync<ReturnType<typeof serve>, ServerError> {
+  public registerController(controller: BaseController) {
+    this.controllers.push(controller)
+    controller.setupRoutes(this.app)
+    this.logger.info(`Registered controller ${controller.getName()}`)
+  }
+
+  private createServer(): ResultAsync<ReturnType<typeof serve>, ServerError> {
     return ResultAsync.fromPromise(
       new Promise<ReturnType<typeof serve>>((resolve, reject) => {
         const server = serve({
@@ -76,14 +89,14 @@ export abstract class AbstractHonoServer extends AbstractServer {
     )
   }
 
-  start(): ResultAsync<void, ServerError> {
+  initialize(): ResultAsync<void, AppError> {
     return this.createServer().andThen((server) => {
       this.server = server
       return okAsync(undefined)
     })
   }
 
-  stop(): ResultAsync<void, ServerError> {
+  dispose(): ResultAsync<void, AppError> {
     if (!this.server) {
       return okAsync(undefined)
     }
