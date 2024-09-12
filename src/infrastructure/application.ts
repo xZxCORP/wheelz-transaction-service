@@ -6,7 +6,7 @@ import { Config } from '../domain/entities/config.entity.js'
 import { AppError } from '../domain/errors/app.error.js'
 import { EnvironmentConfigLoader } from './adapters/config/environment.config-loader.js'
 import { HonoServerHealthCheck } from './adapters/health-check/hono-server.health-check.js'
-import { RabbitMQHealthCheck } from './adapters/health-check/rabbit-mq.health-check.js'
+import { QueueHealthCheck } from './adapters/health-check/queue.health-check.js'
 import { PinoLogger } from './adapters/logger/pino.logger.js'
 import { RabbitMQQueue } from './adapters/queue/rabbit-mq.queue.js'
 import { HealthcheckController } from './adapters/server/hono/controllers/healthcheck.controller.js'
@@ -26,7 +26,7 @@ export class Application {
     const rabbitMqQueue = new RabbitMQQueue(config, logger)
     const performHealthCheckUseCase = new PerformHealthCheckUseCase([
       new HonoServerHealthCheck(server),
-      new RabbitMQHealthCheck(rabbitMqQueue),
+      new QueueHealthCheck(rabbitMqQueue),
     ])
     server.registerController(new HealthcheckController(performHealthCheckUseCase))
 

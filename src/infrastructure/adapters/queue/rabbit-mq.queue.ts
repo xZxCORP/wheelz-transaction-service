@@ -20,6 +20,18 @@ export class RabbitMQQueue implements QueuePort, ManagedResource {
   ) {
     this.client = new AMQPClient(this.config.transactionQueue.url)
   }
+  checkRunning(): ResultAsync<void, QueueError> {
+    if (!this.connection || !this.channel || !this.queue) {
+      return errAsync(new QueueError('Not initialized'))
+    }
+    if (this.connection.closed) {
+      return errAsync(new QueueError('Connection is closed'))
+    }
+    if (this.channel.closed) {
+      return errAsync(new QueueError('Channel is closed'))
+    }
+    return okAsync(undefined)
+  }
   initialize(): ResultAsync<void, AppError> {
     return ResultAsync.fromPromise(
       this.client.connect(),
