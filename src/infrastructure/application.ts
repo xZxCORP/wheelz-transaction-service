@@ -6,7 +6,9 @@ import { Config } from '../domain/entities/config.entity.js'
 import { AppError } from '../domain/errors/app.error.js'
 import { EnvironmentConfigLoader } from './adapters/config/environment.config-loader.js'
 import { HonoServerHealthCheck } from './adapters/health-check/hono-server.health-check.js'
+import { RabbitMQHealthCheck } from './adapters/health-check/rabbit-mq.health-check.js'
 import { PinoLogger } from './adapters/logger/pino.logger.js'
+import { RabbitMQQueue } from './adapters/queue/rabbit-mq.queue.js'
 import { HealthcheckController } from './adapters/server/hono/controllers/healthcheck.controller.js'
 import { HonoServer } from './adapters/server/hono/hono.server.js'
 import { ZodValidator } from './adapters/validation/zod/zod.validator.js'
@@ -21,12 +23,14 @@ export class Application {
     private readonly logger: LoggerPort
   ) {
     const server = new HonoServer(config, logger)
+    const rabbitMqQueue = new RabbitMQQueue(config, logger)
     const performHealthCheckUseCase = new PerformHealthCheckUseCase([
       new HonoServerHealthCheck(server),
+      new RabbitMQHealthCheck(rabbitMqQueue),
     ])
     server.registerController(new HealthcheckController(performHealthCheckUseCase))
 
-    this.managedResources = [server]
+    this.managedResources = [rabbitMqQueue, server]
   }
   static create(): Result<Application, AppError> {
     const configLoader = new EnvironmentConfigLoader(configSchema, new ZodValidator())
@@ -38,9 +42,12 @@ export class Application {
 
   initialize(): ResultAsync<void, AppError> {
     this.logger.info('Initializing application')
-    return ResultAsync.combine(this.managedResources.map((resource) => resource.initialize())).map(
-      () => undefined
-    )
+    return this.managedResources
+      .reduce(
+        (accumulator, current) => accumulator.andThen(() => current.initialize()),
+        okAsync<void, AppError>(undefined)
+      )
+      .andTee(() => this.logger.info('Application initialized'))
   }
   start(): ResultAsync<void, AppError> {
     this.logger.info('Starting application')
@@ -48,11 +55,10 @@ export class Application {
       this.logger.info('Application started')
     })
   }
-  stop(): ResultAsync<void, AppError> {
+  stop(): ResultAsync<void[], AppError[]> {
     this.logger.info('Stopping application')
-    for (const resource of this.managedResources.reverse()) {
-      resource.dispose()
-    }
-    return okAsync(undefined)
+    return ResultAsync.combineWithAllErrors(
+      this.managedResources.map((resource) => resource.dispose())
+    )
   }
 }

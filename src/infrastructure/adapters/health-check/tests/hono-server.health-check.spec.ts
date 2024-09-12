@@ -14,7 +14,7 @@ describe('HonoServerHealthCheck', () => {
 
     expect(result.isOk()).toBe(true)
     if (result.isOk()) {
-      expect(result.value.name).toBe('HonoServer')
+      expect(result.value.name).toBe(healthCheck.name)
       expect(result.value.status).toBe('healthy')
     }
   })
@@ -29,7 +29,7 @@ describe('HonoServerHealthCheck', () => {
 
     expect(result.isOk()).toBe(true)
     if (result.isOk()) {
-      expect(result.value.name).toBe('HonoServer')
+      expect(result.value.name).toBe(healthCheck.name)
       expect(result.value.status).toBe('unhealthy')
       expect(result.value.message).toBe('Hono server is not running')
     }

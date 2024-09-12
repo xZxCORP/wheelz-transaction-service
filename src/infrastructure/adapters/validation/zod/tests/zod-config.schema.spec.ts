@@ -8,9 +8,9 @@ describe('ConfigSchema', () => {
   it('should validate a correct configuration', () => {
     const validConfig = {
       logLevel: 'info',
-      notificationQueue: {
+      transactionQueue: {
         url: 'amqp://localhost',
-        queueName: 'notifications',
+        queueName: 'transactions',
       },
       api: {
         host: 'localhost',
@@ -28,9 +28,9 @@ describe('ConfigSchema', () => {
   it('should coerce port number from string', () => {
     const configWithStringPort = {
       logLevel: 'info',
-      notificationQueue: {
+      transactionQueue: {
         url: 'amqp://localhost',
-        queueName: 'notifications',
+        queueName: 'transactions',
       },
       api: {
         host: 'localhost',
@@ -49,9 +49,9 @@ describe('ConfigSchema', () => {
   it('should reject invalid log level', () => {
     const invalidConfig = {
       logLevel: 'invalid_level',
-      notificationQueue: {
+      transactionQueue: {
         url: 'amqp://localhost',
-        queueName: 'notifications',
+        queueName: 'transactions',
       },
       api: {
         host: 'localhost',
@@ -79,9 +79,9 @@ describe('ConfigSchema', () => {
   it('should reject negative port number', () => {
     const configWithNegativePort = {
       logLevel: 'info',
-      notificationQueue: {
+      transactionQueue: {
         url: 'amqp://localhost',
-        queueName: 'notifications',
+        queueName: 'transactions',
       },
       api: {
         host: 'localhost',

@@ -13,11 +13,11 @@ export class HonoServerHealthCheck implements HealthCheckPort {
   isHealthy(): ResultAsync<ServiceHealthStatus, HealthError> {
     return this.server.isRunning()
       ? okAsync({
-          name: 'HonoServer',
+          name: this.name,
           status: 'healthy',
         })
       : okAsync({
-          name: 'HonoServer',
+          name: this.name,
           status: 'unhealthy',
           message: 'Hono server is not running',
         })

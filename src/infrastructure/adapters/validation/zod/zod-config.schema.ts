@@ -4,7 +4,7 @@ import { Config, MAX_PORT_VALUE } from '../../../../domain/entities/config.entit
 import { createZodSchema } from './zod.validator.js'
 const configZodSchema = z.object({
   logLevel: z.enum(['error', 'warn', 'info', 'debug']),
-  notificationQueue: z.object({
+  transactionQueue: z.object({
     url: z.string(),
     queueName: z.string(),
   }),

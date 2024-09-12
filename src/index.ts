@@ -10,17 +10,16 @@ async function bootstrap() {
   process.on('SIGINT', async () => {
     console.log('Received SIGINT. Graceful shutdown start')
     await application.stop()
-    process.exit(0)
   })
 
   process.on('SIGTERM', async () => {
     console.log('Received SIGTERM. Graceful shutdown start')
     await application.stop()
-    process.exit(0)
   })
 
   const result = await application.start()
   if (result.isErr()) {
+    await application.stop()
     console.error(result.error)
     process.exit(1)
   }

@@ -37,15 +37,15 @@ describe('EnvironmentConfigLoader', () => {
   it('should load a valid configuration', () => {
     process.env.LOG_LEVEL = 'info'
     process.env.NOTIFICATION_QUEUE_URL = 'amqp://localhost'
-    process.env.NOTIFICATION_QUEUE_NAME = 'notifications'
+    process.env.NOTIFICATION_QUEUE_NAME = 'transactions'
     process.env.API_HOST = 'localhost'
     process.env.API_PORT = '3000'
 
     const expectedConfig: Config = {
       logLevel: 'info',
-      notificationQueue: {
+      transactionQueue: {
         url: 'amqp://localhost',
-        queueName: 'notifications',
+        queueName: 'transactions',
       },
       api: {
         host: 'localhost',
@@ -65,9 +65,9 @@ describe('EnvironmentConfigLoader', () => {
 
     expect(mockValidator.validate).toHaveBeenCalledWith(mockConfigSchema, {
       logLevel: 'info',
-      notificationQueue: {
+      transactionQueue: {
         url: 'amqp://localhost',
-        queueName: 'notifications',
+        queueName: 'transactions',
       },
       api: {
         host: 'localhost',
@@ -97,7 +97,7 @@ describe('EnvironmentConfigLoader', () => {
 
     expect(mockValidator.validate).toHaveBeenCalledWith(mockConfigSchema, {
       logLevel: undefined,
-      notificationQueue: {
+      transactionQueue: {
         url: undefined,
         queueName: undefined,
       },
