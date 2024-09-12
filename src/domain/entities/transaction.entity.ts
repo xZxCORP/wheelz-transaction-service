@@ -9,29 +9,27 @@ export interface TransactionSignature {
 
 export interface BaseTransaction<T> {
   timestamp: Date
+  action: TransactionAction
   data: T
   signature: TransactionSignature
 }
 
 export interface CreateVehicleTransactionData {
-  action: 'create'
   vehicle: Vehicle
 }
 
 export interface UpdateVehicleTransactionData {
-  action: 'update'
   vin: string
   changes: Partial<Omit<Vehicle, 'vin'>>
 }
 
 export interface DeleteVehicleTransactionData {
-  action: 'delete'
   vin: string
 }
 
 export type VehicleTransactionData =
-  | CreateVehicleTransactionData
-  | UpdateVehicleTransactionData
-  | DeleteVehicleTransactionData
+  | { action: 'create'; data: CreateVehicleTransactionData }
+  | { action: 'update'; data: UpdateVehicleTransactionData }
+  | { action: 'delete'; data: DeleteVehicleTransactionData }
 
-export type VehicleTransaction = BaseTransaction<VehicleTransactionData>
+export type VehicleTransaction = BaseTransaction<VehicleTransactionData['data']>

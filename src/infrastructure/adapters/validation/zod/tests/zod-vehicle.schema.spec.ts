@@ -2,7 +2,7 @@
 
 import { describe, expect, it } from 'vitest'
 
-import { sampleVehicle } from '../../fixtures/base-vehicle.fixture.js'
+import { sampleVehicle } from '../../../../../domain/fixtures/base-vehicle.fixture.js'
 import { ZodValidator } from '../zod.validator.js'
 import { vehicleSchema } from '../zod-vehicle.schema.js'
 

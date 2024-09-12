@@ -8,6 +8,9 @@ export class EnqueueTransactionUseCase {
   constructor(private queue: QueuePort) {}
 
   execute(transaction: VehicleTransaction): ResultAsync<VehicleTransaction, QueueError> {
-    return this.queue.enqueue(transaction).map(() => transaction)
+    return this.queue
+      .checkRunning()
+      .andThen(() => this.queue.enqueue(transaction))
+      .map(() => transaction)
   }
 }

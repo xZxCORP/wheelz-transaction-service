@@ -1,22 +1,29 @@
-import { errAsync, okAsync } from 'neverthrow'
-import { describe, expect, it, vi } from 'vitest'
+import { errAsync, okAsync, ResultAsync } from 'neverthrow'
+import { beforeEach, describe, expect, it } from 'vitest'
+import { mock, MockProxy } from 'vitest-mock-extended'
 
+import { ServiceHealthStatus } from '../../domain/entities/health-status.entity.js'
 import { HealthError } from '../../errors/application.error.js'
 import { HealthCheckPort } from '../../ports/health-check.port.js'
 import { PerformHealthCheckUseCase } from '../perform-health-check.use-case.js'
 
 describe('PerformHealthCheckUseCase', () => {
-  it('should return healthy status when all checks pass', async () => {
-    const mockHealthCheck1: HealthCheckPort = {
-      isHealthy: vi.fn().mockReturnValue(okAsync({ name: 'Service1', status: 'healthy' })),
-      name: 'Service1',
-    }
-    const mockHealthCheck2: HealthCheckPort = {
-      isHealthy: vi.fn().mockReturnValue(okAsync({ name: 'Service2', status: 'healthy' })),
-      name: 'Service2',
-    }
+  let mockHealthCheck1: MockProxy<HealthCheckPort>
+  let mockHealthCheck2: MockProxy<HealthCheckPort>
+  let useCase: PerformHealthCheckUseCase
 
-    const useCase = new PerformHealthCheckUseCase([mockHealthCheck1, mockHealthCheck2])
+  beforeEach(() => {
+    mockHealthCheck1 = mock<HealthCheckPort>()
+    mockHealthCheck2 = mock<HealthCheckPort>()
+    mockHealthCheck1.name = 'Service1'
+    mockHealthCheck2.name = 'Service2'
+  })
+
+  it('should return healthy status when all checks pass', async () => {
+    mockHealthCheck1.isHealthy.mockReturnValue(okAsync({ name: 'Service1', status: 'healthy' }))
+    mockHealthCheck2.isHealthy.mockReturnValue(okAsync({ name: 'Service2', status: 'healthy' }))
+
+    useCase = new PerformHealthCheckUseCase([mockHealthCheck1, mockHealthCheck2])
     const result = await useCase.execute()
 
     expect(result.isOk()).toBe(true)
@@ -29,18 +36,12 @@ describe('PerformHealthCheckUseCase', () => {
   })
 
   it('should return unhealthy status when any check fails', async () => {
-    const mockHealthCheck1: HealthCheckPort = {
-      isHealthy: vi.fn().mockReturnValue(okAsync({ name: 'Service1', status: 'healthy' })),
-      name: 'Service1',
-    }
-    const mockHealthCheck2: HealthCheckPort = {
-      isHealthy: vi
-        .fn()
-        .mockReturnValue(okAsync({ name: 'Service2', status: 'unhealthy', message: 'Error' })),
-      name: 'Service2',
-    }
+    mockHealthCheck1.isHealthy.mockReturnValue(okAsync({ name: 'Service1', status: 'healthy' }))
+    mockHealthCheck2.isHealthy.mockReturnValue(
+      okAsync({ name: 'Service2', status: 'unhealthy', message: 'Error' })
+    )
 
-    const useCase = new PerformHealthCheckUseCase([mockHealthCheck1, mockHealthCheck2])
+    useCase = new PerformHealthCheckUseCase([mockHealthCheck1, mockHealthCheck2])
     const result = await useCase.execute()
 
     expect(result.isOk()).toBe(true)
@@ -57,18 +58,29 @@ describe('PerformHealthCheckUseCase', () => {
   })
 
   it('should handle errors in health checks', async () => {
-    const mockHealthCheck: HealthCheckPort = {
-      isHealthy: vi.fn().mockReturnValue(errAsync(new HealthError('Check failed'))),
-      name: 'Service1',
-    }
+    mockHealthCheck1.isHealthy.mockReturnValue(errAsync(new HealthError('Check failed')))
 
-    const useCase = new PerformHealthCheckUseCase([mockHealthCheck])
+    useCase = new PerformHealthCheckUseCase([mockHealthCheck1])
     const result = await useCase.execute()
 
     expect(result.isErr()).toBe(true)
     if (result.isErr()) {
       expect(result.error).toBeInstanceOf(HealthError)
       expect(result.error.message).toContain('Check failed')
+    }
+  })
+
+  it('should handle mixed results from health checks', async () => {
+    mockHealthCheck1.isHealthy.mockReturnValue(okAsync({ name: 'Service1', status: 'healthy' }))
+    mockHealthCheck2.isHealthy.mockReturnValue(errAsync(new HealthError('Service2 check failed')))
+
+    useCase = new PerformHealthCheckUseCase([mockHealthCheck1, mockHealthCheck2])
+    const result = await useCase.execute()
+
+    expect(result.isErr()).toBe(true)
+    if (result.isErr()) {
+      expect(result.error).toBeInstanceOf(HealthError)
+      expect(result.error.message).toContain('Service2 check failed')
     }
   })
 })

@@ -10,32 +10,40 @@ const transactionSignatureZodSchema = z.object({
 })
 
 const createVehicleTransactionDataZodSchema = z.object({
-  action: z.literal('create'),
   vehicle: vehicleZodSchema,
 })
 
 const updateVehicleTransactionDataZodSchema = z.object({
-  action: z.literal('update'),
   vin: vinZodSchema,
   changes: vehicleZodSchema.omit({ vin: true }).partial(),
 })
 
 const deleteVehicleTransactionDataZodSchema = z.object({
-  action: z.literal('delete'),
   vin: vinZodSchema,
 })
 
 const vehicleTransactionDataZodSchema = z.discriminatedUnion('action', [
-  createVehicleTransactionDataZodSchema,
-  updateVehicleTransactionDataZodSchema,
-  deleteVehicleTransactionDataZodSchema,
+  z.object({
+    action: z.literal('create'),
+    data: createVehicleTransactionDataZodSchema,
+  }),
+  z.object({
+    action: z.literal('update'),
+    data: updateVehicleTransactionDataZodSchema,
+  }),
+  z.object({
+    action: z.literal('delete'),
+    data: deleteVehicleTransactionDataZodSchema,
+  }),
 ])
 
-const vehicleTransactionZodSchema = z.object({
-  timestamp: z.date(),
-  data: vehicleTransactionDataZodSchema,
-  signature: transactionSignatureZodSchema,
-})
+const vehicleTransactionZodSchema = z
+  .object({
+    timestamp: z.date(),
+    signature: transactionSignatureZodSchema,
+  })
+  .and(vehicleTransactionDataZodSchema)
+
 export const vehicleTransactionSchema = createZodSchema<VehicleTransaction>(
   vehicleTransactionZodSchema
 )

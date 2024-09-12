@@ -6,12 +6,12 @@ import {
   invalidSignatureFixture,
   invalidVinFixture,
   invalidYearFixture,
-} from '../../fixtures/invalid-transaction.fixture.js'
+} from '../../../../../domain/fixtures/invalid-transaction.fixture.js'
 import {
   createTransactionFixture,
   deleteTransactionFixture,
   updateTransactionFixture,
-} from '../../fixtures/valid-transaction.fixture.js'
+} from '../../../../../domain/fixtures/valid-transaction.fixture.js'
 import { ZodValidator } from '../zod.validator.js'
 import { vehicleTransactionSchema } from '../zod-transaction.schema.js'
 

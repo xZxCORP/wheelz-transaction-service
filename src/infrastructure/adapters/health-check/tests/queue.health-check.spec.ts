@@ -3,8 +3,6 @@ import { describe, expect, it, vi } from 'vitest'
 
 import { QueueError } from '../../../../application/errors/application.error.js'
 import { QueuePort } from '../../../../application/ports/queue.port.js'
-import { HonoServer } from '../../server/hono/hono.server.js'
-import { HonoServerHealthCheck } from '../hono-server.health-check.js'
 import { QueueHealthCheck } from '../queue.health-check.js'
 
 describe('QueueHealthCheck', () => {

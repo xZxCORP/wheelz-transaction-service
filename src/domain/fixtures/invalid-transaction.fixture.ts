@@ -3,9 +3,10 @@ import { createTransactionFixture, deleteTransactionFixture } from './valid-tran
 
 export const invalidActionFixture = {
   ...createTransactionFixture,
+  action: 'invalid',
+
   data: {
     ...createTransactionFixture.data,
-    action: 'invalid',
   },
 }
 
