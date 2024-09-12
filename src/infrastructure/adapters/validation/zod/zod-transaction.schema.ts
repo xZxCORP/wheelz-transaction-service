@@ -1,6 +1,9 @@
 import { z } from 'zod'
 
-import { VehicleTransaction } from '../../../../domain/entities/transaction.entity.js'
+import {
+  VehicleTransaction,
+  VehicleTransactionData,
+} from '../../../../domain/entities/transaction.entity.js'
 import { createZodSchema } from './zod.validator.js'
 import { vehicleZodSchema, vinZodSchema } from './zod-vehicle.schema.js'
 
@@ -44,6 +47,9 @@ const vehicleTransactionZodSchema = z
   })
   .and(vehicleTransactionDataZodSchema)
 
+export const vehicleTransactionDataSchema = createZodSchema<VehicleTransactionData>(
+  vehicleTransactionDataZodSchema
+)
 export const vehicleTransactionSchema = createZodSchema<VehicleTransaction>(
   vehicleTransactionZodSchema
 )

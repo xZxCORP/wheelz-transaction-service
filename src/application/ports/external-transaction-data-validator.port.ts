@@ -1,15 +1,15 @@
 import { ResultAsync } from 'neverthrow'
 
-import { VehicleTransaction } from '../../domain/entities/transaction.entity.js'
+import { VehicleTransactionData } from '../../domain/entities/transaction.entity.js'
 import { ValidationError } from '../../domain/errors/domain.error.js'
 
 export type TransactionValidationResult = {
   isValid: boolean
-  transaction: VehicleTransaction
+  transaction: VehicleTransactionData
   message: string
 }
 export interface ExternalTransactionValidatorPort {
   validate(
-    transaction: VehicleTransaction
+    transactionData: VehicleTransactionData
   ): ResultAsync<TransactionValidationResult, ValidationError>
 }

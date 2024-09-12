@@ -1,17 +1,13 @@
+import { DataSignature } from './data-signature.entity.js'
 import { Vehicle } from './vehicle.entity.js'
 
 export type TransactionAction = 'create' | 'update' | 'delete'
-
-export interface TransactionSignature {
-  signature: string
-  publicKey: string
-}
 
 export interface BaseTransaction<T> {
   timestamp: Date
   action: TransactionAction
   data: T
-  signature: TransactionSignature
+  dataSignature: DataSignature
 }
 
 export interface CreateVehicleTransactionData {

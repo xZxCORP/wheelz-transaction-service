@@ -7,7 +7,7 @@ export const createTransactionFixture: VehicleTransaction = {
   data: {
     vehicle: sampleVehicle,
   },
-  signature: sampleTransactionSignature,
+  dataSignature: sampleTransactionSignature,
 }
 
 export const updateTransactionFixture: VehicleTransaction = {
@@ -20,7 +20,7 @@ export const updateTransactionFixture: VehicleTransaction = {
       year: 2023,
     },
   },
-  signature: sampleTransactionSignature,
+  dataSignature: sampleTransactionSignature,
 }
 
 export const deleteTransactionFixture: VehicleTransaction = {
@@ -29,5 +29,5 @@ export const deleteTransactionFixture: VehicleTransaction = {
   data: {
     vin: 'ABCDEFGHIJKLMNOPQ',
   },
-  signature: sampleTransactionSignature,
+  dataSignature: sampleTransactionSignature,
 }

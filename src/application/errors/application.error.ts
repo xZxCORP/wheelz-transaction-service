@@ -11,3 +11,13 @@ export class HealthError extends AppError {
     super(message, 'HEALTH_ERROR')
   }
 }
+export class DataSignerError extends AppError {
+  constructor(message: string) {
+    super(message, 'DATA_SIGNER_ERROR')
+  }
+}
+export class DateProviderError extends AppError {
+  constructor(message: string) {
+    super(message, 'DATE_PROVIDER_ERROR')
+  }
+}
