@@ -1,8 +1,7 @@
-import { errAsync, okAsync, ResultAsync } from 'neverthrow'
+import { errAsync, okAsync } from 'neverthrow'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { mock, MockProxy } from 'vitest-mock-extended'
 
-import { ServiceHealthStatus } from '../../domain/entities/health-status.entity.js'
 import { HealthError } from '../../errors/application.error.js'
 import { HealthCheckPort } from '../../ports/health-check.port.js'
 import { PerformHealthCheckUseCase } from '../perform-health-check.use-case.js'

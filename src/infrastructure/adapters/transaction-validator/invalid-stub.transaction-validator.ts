@@ -1,15 +1,15 @@
 import { okAsync, ResultAsync } from 'neverthrow'
 
 import {
-  ExternalTransactionValidatorPort,
+  ExternalTransactionDataValidatorPort,
   TransactionValidationResult,
-} from '../../../application/ports/external-transaction-validator.port.js'
-import { VehicleTransaction } from '../../../domain/entities/transaction.entity.js'
+} from '../../../application/ports/external-transaction-data-validator.port.js'
+import { VehicleTransactionData } from '../../../domain/entities/transaction.entity.js'
 import { ValidationError } from '../../../domain/errors/domain.error.js'
 
-export class InvalidStubTransactionValidator implements ExternalTransactionValidatorPort {
+export class InvalidStubTransactionValidator implements ExternalTransactionDataValidatorPort {
   validate(
-    transaction: VehicleTransaction
+    transaction: VehicleTransactionData
   ): ResultAsync<TransactionValidationResult, ValidationError> {
     return okAsync({
       isValid: false,

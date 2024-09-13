@@ -3,14 +3,11 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { mock, MockProxy } from 'vitest-mock-extended'
 
 import {
-  CreateVehicleTransactionData,
-  DeleteVehicleTransactionData,
-  UpdateVehicleTransactionData,
-  VehicleTransactionData,
-} from '../../../domain/entities/transaction.entity.js'
-import {
+  createTransactionDataFixture,
   createTransactionFixture,
+  deleteTransactionDataFixture,
   deleteTransactionFixture,
+  updateTransactionDataFixture,
   updateTransactionFixture,
 } from '../../../domain/fixtures/valid-transaction.fixture.js'
 import { DataSignerError, DateProviderError } from '../../errors/application.error.js'
@@ -30,15 +27,12 @@ describe('CreateVehicleTransactionUseCase', () => {
   })
 
   it('should successfully create a vehicle transaction', async () => {
-    const { timestamp, dataSignature, ...transactionData } = createTransactionFixture
-    const inputData: VehicleTransactionData = {
-      action: 'create',
-      data: transactionData.data as CreateVehicleTransactionData,
-    }
+    const { timestamp, dataSignature } = createTransactionFixture
+
     dateProvider.now.mockReturnValue(okAsync(timestamp))
     dataSigner.sign.mockReturnValue(okAsync(dataSignature))
 
-    const result = await useCase.execute(inputData)
+    const result = await useCase.execute(createTransactionDataFixture)
 
     expect(result.isOk()).toBe(true)
     if (result.isOk()) {
@@ -46,19 +40,16 @@ describe('CreateVehicleTransactionUseCase', () => {
     }
 
     expect(dateProvider.now).toHaveBeenCalledOnce()
-    expect(dataSigner.sign).toHaveBeenCalledWith(JSON.stringify(inputData))
+    expect(dataSigner.sign).toHaveBeenCalledWith(JSON.stringify(createTransactionDataFixture))
   })
 
   it('should successfully create an update transaction', async () => {
-    const { timestamp, dataSignature, ...transactionData } = updateTransactionFixture
-    const inputData: VehicleTransactionData = {
-      action: 'update',
-      data: transactionData.data as UpdateVehicleTransactionData,
-    }
+    const { timestamp, dataSignature } = updateTransactionFixture
+
     dateProvider.now.mockReturnValue(okAsync(timestamp))
     dataSigner.sign.mockReturnValue(okAsync(dataSignature))
 
-    const result = await useCase.execute(inputData)
+    const result = await useCase.execute(updateTransactionDataFixture)
 
     expect(result.isOk()).toBe(true)
     if (result.isOk()) {
@@ -67,15 +58,12 @@ describe('CreateVehicleTransactionUseCase', () => {
   })
 
   it('should successfully create a delete transaction', async () => {
-    const { timestamp, dataSignature, ...transactionData } = deleteTransactionFixture
-    const inputData: VehicleTransactionData = {
-      action: 'delete',
-      data: transactionData.data as DeleteVehicleTransactionData,
-    }
+    const { timestamp, dataSignature } = deleteTransactionFixture
+
     dateProvider.now.mockReturnValue(okAsync(timestamp))
     dataSigner.sign.mockReturnValue(okAsync(dataSignature))
 
-    const result = await useCase.execute(inputData)
+    const result = await useCase.execute(deleteTransactionDataFixture)
 
     expect(result.isOk()).toBe(true)
     if (result.isOk()) {
@@ -84,16 +72,13 @@ describe('CreateVehicleTransactionUseCase', () => {
   })
 
   it('should return an error when data signing fails', async () => {
-    const { timestamp, dataSignature, ...transactionData } = createTransactionFixture
-    const inputData: VehicleTransactionData = {
-      action: 'create',
-      data: transactionData.data as CreateVehicleTransactionData,
-    }
+    const { timestamp } = createTransactionFixture
+
     const signingError = new DataSignerError('Failed to sign data')
     dateProvider.now.mockReturnValue(okAsync(timestamp))
     dataSigner.sign.mockReturnValue(errAsync(signingError))
 
-    const result = await useCase.execute(inputData)
+    const result = await useCase.execute(createTransactionDataFixture)
 
     expect(result.isErr()).toBe(true)
     if (result.isErr()) {
@@ -103,16 +88,13 @@ describe('CreateVehicleTransactionUseCase', () => {
   })
 
   it('should return an error when date provider fails', async () => {
-    const { timestamp, dataSignature, ...transactionData } = createTransactionFixture
-    const inputData: VehicleTransactionData = {
-      action: 'create',
-      data: transactionData.data as CreateVehicleTransactionData,
-    }
+    const { dataSignature } = createTransactionFixture
+
     const dateError = new DateProviderError('Failed to get current date')
     dateProvider.now.mockReturnValue(errAsync(dateError))
     dataSigner.sign.mockReturnValue(okAsync(dataSignature))
 
-    const result = await useCase.execute(inputData)
+    const result = await useCase.execute(createTransactionDataFixture)
 
     expect(result.isErr()).toBe(true)
     if (result.isErr()) {
