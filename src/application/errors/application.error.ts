@@ -11,6 +11,11 @@ export class HealthError extends AppError {
     super(message, 'HEALTH_ERROR')
   }
 }
+export class ExternalTransactionDataValidatorError extends AppError {
+  constructor(message: string) {
+    super(message, 'EXTERNAL_TRANSACTION_DATA_VALIDATOR_ERROR')
+  }
+}
 export class DataSignerError extends AppError {
   constructor(message: string) {
     super(message, 'DATA_SIGNER_ERROR')
