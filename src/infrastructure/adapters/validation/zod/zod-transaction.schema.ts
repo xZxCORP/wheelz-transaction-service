@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import {
+import type {
   VehicleTransaction,
   VehicleTransactionData,
 } from '../../../../domain/entities/transaction.entity.js'
@@ -43,7 +43,7 @@ const vehicleTransactionDataZodSchema = z.discriminatedUnion('action', [
 const vehicleTransactionZodSchema = z
   .object({
     timestamp: z.date(),
-    signature: transactionSignatureZodSchema,
+    dataSignature: transactionSignatureZodSchema,
   })
   .and(vehicleTransactionDataZodSchema)
 

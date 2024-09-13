@@ -44,5 +44,5 @@ export const invalidYearFixture = {
 
 export const invalidSignatureFixture = {
   ...deleteTransactionFixture,
-  signature: {},
+  dataSignature: {},
 }
