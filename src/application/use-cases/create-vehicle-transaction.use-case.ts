@@ -1,12 +1,12 @@
 import { ResultAsync } from 'neverthrow'
 
-import {
+import type {
   VehicleTransaction,
   VehicleTransactionData,
 } from '../../domain/entities/transaction.entity.js'
-import { DataSignerError } from '../errors/application.error.js'
-import { DataSignerPort } from '../ports/data-signer.port.js'
-import { DateProviderPort } from '../ports/date-provider.port.js'
+import type { DataSignerError, DateProviderError } from '../errors/application.error.js'
+import type { DataSignerPort } from '../ports/data-signer.port.js'
+import type { DateProviderPort } from '../ports/date-provider.port.js'
 
 export class CreateVehicleTransactionUseCase {
   constructor(
@@ -16,10 +16,14 @@ export class CreateVehicleTransactionUseCase {
 
   execute(
     transactionData: VehicleTransactionData
-  ): ResultAsync<VehicleTransaction, DataSignerError> {
-    return this.dataSigner.sign(JSON.stringify(transactionData)).map((signature) => ({
+  ): ResultAsync<VehicleTransaction, DataSignerError | DateProviderError> {
+    return ResultAsync.combine([
+      this.dateProvider.now(),
+      this.dataSigner.sign(JSON.stringify(transactionData)),
+    ]).map(([timestamp, signature]) => ({
+      ...transactionData,
       dataSignature: signature,
-      data: transactionData,
+      timestamp,
     }))
   }
 }

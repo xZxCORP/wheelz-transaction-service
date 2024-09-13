@@ -1,9 +1,9 @@
-import { VehicleTransaction } from '../entities/transaction.entity.js'
+import { TransactionAction, VehicleTransaction } from '../entities/transaction.entity.js'
 import { sampleTransactionSignature, sampleVehicle } from './base-vehicle.fixture.js'
 
 export const createTransactionFixture: VehicleTransaction = {
   timestamp: new Date('2023-01-01T12:00:00Z'),
-  action: 'create',
+  action: 'create' as TransactionAction,
   data: {
     vehicle: sampleVehicle,
   },
@@ -12,7 +12,7 @@ export const createTransactionFixture: VehicleTransaction = {
 
 export const updateTransactionFixture: VehicleTransaction = {
   timestamp: new Date('2023-01-02T12:00:00Z'),
-  action: 'update',
+  action: 'update' as TransactionAction,
   data: {
     vin: 'ABCDEFGHIJKLMNOPQ',
     changes: {
@@ -25,7 +25,7 @@ export const updateTransactionFixture: VehicleTransaction = {
 
 export const deleteTransactionFixture: VehicleTransaction = {
   timestamp: new Date('2023-01-03T12:00:00Z'),
-  action: 'delete',
+  action: 'delete' as TransactionAction,
   data: {
     vin: 'ABCDEFGHIJKLMNOPQ',
   },
