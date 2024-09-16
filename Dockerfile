@@ -24,8 +24,9 @@ EXPOSE 3000
 CMD ["node", "dist/src/index.js"]
 
 FROM base AS development
+RUN apk add --no-cache bash
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm install
 COPY . .
-CMD ["npm", "run", "dev"]
+CMD ["sh", "-c", "./wait-for-it.sh rabbitmq:5672 -- npm run dev"]
