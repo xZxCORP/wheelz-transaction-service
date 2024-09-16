@@ -1,4 +1,4 @@
-import { Application } from './infrastructure/application.js'
+import { Application } from './application.js'
 
 async function bootstrap() {
   const applicationResult = Application.create()

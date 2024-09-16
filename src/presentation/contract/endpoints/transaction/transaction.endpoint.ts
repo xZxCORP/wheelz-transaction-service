@@ -1,6 +1,7 @@
 import { body, endpoint, response } from '@airtasker/spot'
 
-import type { VehicleTransaction } from '../../../../../../../domain/entities/transaction.entity.js'
+import type { VehicleTransaction } from '../../../../domain/entities/transaction.entity.js'
+import type { ApiErrorBody } from '../../../errors/api.error.js'
 
 @endpoint({
   method: 'POST',
@@ -11,5 +12,5 @@ export default class CreateTransaction {
   successResponse(@body _body: VehicleTransaction) {}
 
   @response({ status: 400 })
-  badRequestResponse(@body body: ApiError) {}
+  badRequestResponse(@body _body: ApiErrorBody) {}
 }

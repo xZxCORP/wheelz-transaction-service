@@ -1,19 +1,19 @@
 import { okAsync, Result, ResultAsync } from 'neverthrow'
 
-import { LoggerPort } from '../application/ports/logger.port.js'
-import { PerformHealthCheckUseCase } from '../application/use-cases/perform-health-check.use-case.js'
-import { Config } from '../domain/entities/config.entity.js'
-import { AppError } from '../domain/errors/app.error.js'
-import { EnvironmentConfigLoader } from './adapters/config/environment.config-loader.js'
-import { HonoServerHealthCheck } from './adapters/health-check/hono-server.health-check.js'
-import { QueueHealthCheck } from './adapters/health-check/queue.health-check.js'
-import { PinoLogger } from './adapters/logger/pino.logger.js'
-import { RabbitMQQueue } from './adapters/queue/rabbit-mq.queue.js'
-import { HealthcheckController } from './adapters/server/hono/controllers/healthcheck.controller.js'
-import { HonoServer } from './adapters/server/hono/hono.server.js'
-import { ZodValidator } from './adapters/validation/zod/zod.validator.js'
-import { configSchema } from './adapters/validation/zod/zod-config.schema.js'
-import { ManagedResource } from './managed.resource.js'
+import { LoggerPort } from './application/ports/logger.port.js'
+import { PerformHealthCheckUseCase } from './application/use-cases/perform-health-check.use-case.js'
+import { Config } from './domain/entities/config.entity.js'
+import { AppError } from './domain/errors/app.error.js'
+import { EnvironmentConfigLoader } from './infrastructure/adapters/config/environment.config-loader.js'
+import { QueueHealthCheck } from './infrastructure/adapters/health-check/queue.health-check.js'
+import { ServerHealthCheck } from './infrastructure/adapters/health-check/server.health-check.js'
+import { PinoLogger } from './infrastructure/adapters/logger/pino.logger.js'
+import { RabbitMQQueue } from './infrastructure/adapters/queue/rabbit-mq.queue.js'
+import { HonoServer } from './infrastructure/adapters/server/hono.server.js'
+import { ZodValidator } from './infrastructure/adapters/validation/zod/zod.validator.js'
+import { configSchema } from './infrastructure/adapters/validation/zod/zod-config.schema.js'
+import { ManagedResource } from './infrastructure/managed.resource.js'
+import { HealthcheckController } from './presentation/controllers/healthcheck.controller.js'
 
 export class Application {
   private managedResources: ManagedResource[] = []
@@ -25,10 +25,11 @@ export class Application {
     const server = new HonoServer(config, logger)
     const rabbitMqQueue = new RabbitMQQueue(config, logger)
     const performHealthCheckUseCase = new PerformHealthCheckUseCase([
-      new HonoServerHealthCheck(server),
+      new ServerHealthCheck(server),
       new QueueHealthCheck(rabbitMqQueue),
     ])
-    server.registerController(new HealthcheckController(performHealthCheckUseCase))
+    const healthcheckController = new HealthcheckController(performHealthCheckUseCase)
+    for (const route of healthcheckController.getRoutes()) server.registerRoute(route)
 
     this.managedResources = [rabbitMqQueue, server]
   }

@@ -1,15 +1,16 @@
 import { describe, expect, it, vi } from 'vitest'
 
-import { HonoServer } from '../../server/hono/hono.server.js'
-import { HonoServerHealthCheck } from '../hono-server.health-check.js'
+import { ServerPort } from '../../../../presentation/ports/server.port.js'
+import { HonoServer } from '../../server/hono.server.js'
+import { ServerHealthCheck } from '../server.health-check.js'
 
-describe('HonoServerHealthCheck', () => {
+describe('ServerHealthCheck', () => {
   it('should return healthy status when server is running', async () => {
     const mockServer = {
       isRunning: vi.fn().mockReturnValue(true),
     } as unknown as HonoServer
 
-    const healthCheck = new HonoServerHealthCheck(mockServer)
+    const healthCheck = new ServerHealthCheck(mockServer)
     const result = await healthCheck.isHealthy()
 
     expect(result.isOk()).toBe(true)
@@ -22,16 +23,16 @@ describe('HonoServerHealthCheck', () => {
   it('should return unhealthy status when server is not running', async () => {
     const mockServer = {
       isRunning: vi.fn().mockReturnValue(false),
-    } as unknown as HonoServer
+    } as unknown as ServerPort
 
-    const healthCheck = new HonoServerHealthCheck(mockServer)
+    const healthCheck = new ServerHealthCheck(mockServer)
     const result = await healthCheck.isHealthy()
 
     expect(result.isOk()).toBe(true)
     if (result.isOk()) {
       expect(result.value.name).toBe(healthCheck.name)
       expect(result.value.status).toBe('unhealthy')
-      expect(result.value.message).toBe('Hono server is not running')
+      expect(result.value.message).toBe('Server is not running')
     }
   })
 })

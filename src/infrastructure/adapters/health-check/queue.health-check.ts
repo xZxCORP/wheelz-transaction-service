@@ -6,7 +6,7 @@ import { QueuePort } from '../../../application/ports/queue.port.js'
 import { HealthStatus, ServiceHealthStatus } from '../../../domain/entities/health-status.entity.js'
 
 export class QueueHealthCheck implements HealthCheckPort {
-  name = 'Queue'
+  name = 'queue'
 
   constructor(private queue: QueuePort) {}
 

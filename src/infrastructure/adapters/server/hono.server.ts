@@ -1,23 +1,26 @@
 import { Spot } from '@airtasker/spot'
 import { serve } from '@hono/node-server'
 import { swaggerUI } from '@hono/swagger-ui'
-import { Hono } from 'hono'
-import { HTTPException } from 'hono/http-exception'
+import { Context, Hono } from 'hono'
 import { logger } from 'hono/logger'
 import { trimTrailingSlash } from 'hono/trailing-slash'
+import { BlankEnv, BlankInput } from 'hono/types'
+import { StatusCode } from 'hono/utils/http-status'
+import { JSONValue } from 'hono/utils/types'
 import { okAsync, ResultAsync } from 'neverthrow'
 
-import { LoggerPort } from '../../../../application/ports/logger.port.js'
-import { Config } from '../../../../domain/entities/config.entity.js'
-import { AppError } from '../../../../domain/errors/app.error.js'
-import { ServerError } from '../../../errors/infrastructure.errors.js'
-import { ManagedResource } from '../../../managed.resource.js'
-import { BaseController } from './controllers/base.controller.js'
+import { LoggerPort } from '../../../application/ports/logger.port.js'
+import { Config } from '../../../domain/entities/config.entity.js'
+import { AppError } from '../../../domain/errors/app.error.js'
+import { ApiError } from '../../../presentation/errors/api.error.js'
+import { ServerPort } from '../../../presentation/ports/server.port.js'
+import { HttpMethod, HttpRequest, RouteDefinition } from '../../../presentation/types/http.js'
+import { ServerError } from '../../errors/infrastructure.errors.js'
+import { ManagedResource } from '../../managed.resource.js'
 
-export class HonoServer implements ManagedResource {
-  public app: Hono
-  public server: ReturnType<typeof serve> | null = null
-  public controllers: BaseController[] = []
+export class HonoServer implements ServerPort, ManagedResource {
+  private app: Hono
+  private server: ReturnType<typeof serve> | null = null
 
   constructor(
     private config: Config,
@@ -28,32 +31,49 @@ export class HonoServer implements ManagedResource {
     this.setupBaseRoutes()
   }
 
+  registerRoute(route: RouteDefinition): void {
+    const { method, path, handler } = route
+
+    this.app[method](path, async (c) => {
+      const request: HttpRequest = await this.createHttpRequest(c, method)
+
+      const result = await handler(request)
+      return result.match(
+        (response) =>
+          c.json(response.body as JSONValue, response.statusCode as StatusCode, response.headers),
+        (error: ApiError) =>
+          c.json({ code: error.code, message: error.message }, error.statusCode as StatusCode)
+      )
+    })
+    this.logger.info(`Registered route ${method.toUpperCase()} ${path}`)
+  }
+
+  private async createHttpRequest(
+    c: Context<BlankEnv, string, BlankInput>,
+    method: HttpMethod
+  ): Promise<HttpRequest> {
+    const body = ['get', 'delete'].includes(method) ? undefined : await c.req.json()
+    return {
+      body,
+      params: c.req.param(),
+      query: Object.fromEntries(new URL(c.req.url).searchParams),
+      headers: Object.fromEntries(c.req.raw.headers),
+      method,
+    }
+  }
+
   private setupMiddleware() {
     this.app.use(trimTrailingSlash())
     this.app.use(logger((message, ...rest) => this.logger.info(message, ...rest)))
-    this.app.onError((error, c) => {
-      this.logger.error('Error while processing request', error)
-      return error instanceof HTTPException
-        ? c.json({ message: error.message, data: error.cause }, error.status)
-        : c.json({ message: 'Server error' }, 500)
-    })
   }
 
-  private async setupBaseRoutes() {
-    const contract = Spot.parseContract(
-      'src/infrastructure/adapters/server/hono/contract/api.contract.ts'
-    )
+  private setupBaseRoutes() {
+    const contract = Spot.parseContract('src/presentation/contract/api.contract.ts')
 
     const spec = Spot.OpenApi3.generateOpenAPI3(contract)
 
     this.app.get('/openapi.json', (c) => c.json(spec))
     this.app.get('/ui', swaggerUI({ url: '/openapi.json' }))
-  }
-
-  public registerController(controller: BaseController) {
-    this.controllers.push(controller)
-    controller.setupRoutes(this.app)
-    this.logger.info(`Registered controller ${controller.getName()}`)
   }
 
   private createServer(): ResultAsync<ReturnType<typeof serve>, ServerError> {
@@ -86,6 +106,7 @@ export class HonoServer implements ManagedResource {
         new ServerError('Unexpected error while starting Hono server', { cause: error })
     )
   }
+
   isRunning(): boolean {
     return this.server !== null && this.server.listening
   }
