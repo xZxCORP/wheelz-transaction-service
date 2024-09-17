@@ -42,7 +42,10 @@ export class HonoServer implements ServerPort, ManagedResource {
         (response) =>
           c.json(response.body as JSONValue, response.statusCode as StatusCode, response.headers),
         (error: ApiError) =>
-          c.json({ code: error.code, message: error.message }, error.statusCode as StatusCode)
+          c.json(
+            { code: error.code, message: error.message, cause: error.cause },
+            error.statusCode as StatusCode
+          )
       )
     })
     this.logger.info(`Registered route ${method.toUpperCase()} ${path}`)
@@ -52,7 +55,7 @@ export class HonoServer implements ServerPort, ManagedResource {
     c: Context<BlankEnv, string, BlankInput>,
     method: HttpMethod
   ): Promise<HttpRequest> {
-    const body = ['get', 'delete'].includes(method) ? undefined : await c.req.json()
+    const body = ['get'].includes(method) ? undefined : await c.req.json()
     return {
       body,
       params: c.req.param(),

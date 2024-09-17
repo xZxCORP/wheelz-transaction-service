@@ -1,8 +1,15 @@
 import { AppError } from '../../domain/errors/app.error.js'
-export interface ApiErrorBody {
-  code: string
-  message: string
+
+export const errorToStatusCode: Record<string, number> = {
+  VALIDATION_ERROR: 400,
+  SERVER_ERROR: 500,
+  QUEUE_ERROR: 500,
+  HEALTH_ERROR: 500,
+  EXTERNAL_TRANSACTION_DATA_VALIDATOR_ERROR: 400,
+  DATA_SIGNER_ERROR: 500,
+  DATE_PROVIDER_ERROR: 500,
 }
+
 export class ApiError extends AppError {
   constructor(
     code: string,
@@ -13,8 +20,10 @@ export class ApiError extends AppError {
     super(message, code)
   }
 
-  static fromAppError(error: AppError, statusCode: number = 500): ApiError {
-    return new ApiError(error.code, error.message, statusCode)
+  static fromAppError(error: AppError): ApiError {
+    const statusCode = errorToStatusCode[error.code] || 500
+
+    return new ApiError(error.code, error.message, statusCode, error.cause)
   }
 
   static fromError(error: unknown): ApiError {

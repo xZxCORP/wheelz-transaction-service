@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ResultAsync } from 'neverthrow'
 
 import { ApiError } from '../errors/api.error.js'
@@ -5,7 +6,7 @@ import { ApiError } from '../errors/api.error.js'
 export type HttpMethod = 'get' | 'post' | 'put' | 'patch' | 'delete'
 
 export interface HttpRequest {
-  body: unknown
+  body: any
   params: Record<string, string>
   query: Record<string, string>
   headers: Record<string, string>
@@ -14,7 +15,7 @@ export interface HttpRequest {
 
 export interface HttpResponse {
   statusCode: number
-  body: unknown
+  body: any
   headers?: Record<string, string>
 }
 
