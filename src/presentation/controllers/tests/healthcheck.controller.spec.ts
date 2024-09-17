@@ -1,5 +1,5 @@
 import { errAsync, okAsync, ResultAsync } from 'neverthrow'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 import { mock, MockProxy } from 'vitest-mock-extended'
 
 import { HealthError } from '../../../application/errors/application.error.js'

@@ -1,7 +1,7 @@
 /* eslint-disable unicorn/consistent-function-scoping */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { errAsync, okAsync, ResultAsync } from 'neverthrow'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 import { mock, MockProxy } from 'vitest-mock-extended'
 
 import { TransactionService } from '../../../application/services/transaction.service.js'
