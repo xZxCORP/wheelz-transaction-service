@@ -17,6 +17,7 @@ export class EnvironmentConfigLoader implements ConfigLoaderPort {
   load(): Result<Config, ValidationError> {
     const config = {
       logLevel: process.env.LOG_LEVEL,
+      contractPath: process.env.CONTRACT_PATH,
       transactionQueue: {
         url: process.env.NOTIFICATION_QUEUE_URL,
         queueName: process.env.NOTIFICATION_QUEUE_NAME,

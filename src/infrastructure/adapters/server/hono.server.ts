@@ -71,7 +71,7 @@ export class HonoServer implements ServerPort, ManagedResource {
   }
 
   private setupBaseRoutes() {
-    const contract = Spot.parseContract('src/presentation/contract/api.contract.ts')
+    const contract = Spot.parseContract(this.config.contractPath)
 
     const spec = Spot.OpenApi3.generateOpenAPI3(contract)
 
