@@ -8,6 +8,7 @@ describe('ConfigSchema', () => {
   it('should validate a correct configuration', () => {
     const validConfig = {
       logLevel: 'info',
+      contractPath: 'contract',
       transactionQueue: {
         url: 'amqp://localhost',
         queueName: 'transactions',
@@ -32,6 +33,7 @@ describe('ConfigSchema', () => {
   it('should coerce port number from string', () => {
     const configWithStringPort = {
       logLevel: 'info',
+      contractPath: 'contract',
       transactionQueue: {
         url: 'amqp://localhost',
         queueName: 'transactions',

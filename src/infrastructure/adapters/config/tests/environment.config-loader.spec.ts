@@ -33,6 +33,7 @@ describe('EnvironmentConfigLoader', () => {
 
   it('should load all environment variables and return correct config', () => {
     process.env = {
+      CONTRACT_PATH: 'path',
       LOG_LEVEL: 'info',
       NOTIFICATION_QUEUE_URL: 'amqp://localhost',
       NOTIFICATION_QUEUE_NAME: 'transactions',
@@ -44,6 +45,7 @@ describe('EnvironmentConfigLoader', () => {
 
     const expectedConfig: Config = {
       logLevel: 'info',
+      contractPath: 'path',
       transactionQueue: {
         url: 'amqp://localhost',
         queueName: 'transactions',
@@ -66,6 +68,7 @@ describe('EnvironmentConfigLoader', () => {
       {},
       {
         logLevel: 'info',
+        contractPath: 'path',
         transactionQueue: {
           url: 'amqp://localhost',
           queueName: 'transactions',

@@ -5,6 +5,7 @@ import { supportedSignAlgorithms } from '../../../../domain/entities/data-signat
 import { createZodSchema } from './zod.validator.js'
 const configZodSchema = z.object({
   logLevel: z.enum(['error', 'warn', 'info', 'debug']),
+  contractPath: z.string(),
   transactionQueue: z.object({
     url: z.string(),
     queueName: z.string(),
