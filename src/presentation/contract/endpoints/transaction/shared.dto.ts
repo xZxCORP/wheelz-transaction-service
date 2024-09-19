@@ -124,15 +124,23 @@ export interface TransactionResponse {
 
 /** Data for updating an existing transaction */
 export interface UpdateTransactionData {
-  /** VIN of the vehicle to be updated */
+  /** VIN of the vehicle to be updated
+   * @default "ABCDEFGHIJKLMNOPQ"
+   */
   vin: String
   /** Changes to be applied to the vehicle */
   changes: {
-    /** Updated constructor name */
+    /** Updated constructor name
+     * @default "Toyota"
+     */
     constructorName?: String
-    /** Updated model */
+    /** Updated model
+     * @default "Corolla"
+     */
     model?: String
-    /** Updated year of manufacture */
+    /** Updated year of manufacture
+     * @default 2022
+     */
     year?: Int32
     /** Updated risks */
     risks?: RiskIssueStructure
@@ -145,6 +153,8 @@ export interface UpdateTransactionData {
 
 /** Data for deleting an existing transaction */
 export interface DeleteTransactionData {
-  /** VIN of the vehicle to be deleted */
+  /** VIN of the vehicle to be deleted
+   * @default "ABCDEFGHIJKLMNOPQ"
+   */
   vin: String
 }
