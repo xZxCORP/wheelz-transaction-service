@@ -2,7 +2,7 @@ name: Build and Deploy Docker Image
 
 on:
   workflow_run:
-    workflows: ["Lint and Test"]
+    workflows: ['Lint and Test']
     types:
       - completed
 
@@ -35,6 +35,7 @@ jobs:
       - name: Build and push Docker image to Docker Hub
         uses: docker/build-push-action@v3
         with:
+          target: runner
           context: .
           push: true
           tags: |
@@ -42,8 +43,8 @@ jobs:
       - name: Trigger webhook
         uses: fjogeleit/http-request-action@v1
         with:
-          url: "https://webhook.zcorp.ovh/webhook/docker-service"
-          method: "PUT"
+          url: 'https://webhook.zcorp.ovh/webhook/docker-service'
+          method: 'PUT'
           customHeaders: '{"Content-Type": "application/json"}'
           preventFailureOnNoResponse: true
           timeout: 60000

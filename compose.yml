@@ -1,0 +1,40 @@
+services:
+  app:
+    build:
+      context: .
+      target: development
+    ports:
+      - '3000:3000'
+    networks:
+      - transaction-service-network
+    develop:
+      watch:
+        - path: ./src
+          target: /app/src
+          action: sync+restart
+        - path: .env
+          target: /app/.env
+          action: sync+restart
+        - path: package.json
+          action: rebuild
+        - path: package-lock.json
+          action: rebuild
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    networks:
+      - transaction-service-network
+    environment:
+      - RABBITMQ_DEFAULT_USER=user
+      - RABBITMQ_DEFAULT_PASS=password
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+volumes:
+  rabbitmq_data:
+
+networks:
+  transaction-service-network:
+    driver: bridge
