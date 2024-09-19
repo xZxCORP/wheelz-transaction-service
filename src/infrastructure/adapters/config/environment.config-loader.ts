@@ -25,6 +25,10 @@ export class EnvironmentConfigLoader implements ConfigLoaderPort {
         host: process.env.API_HOST,
         port: process.env.API_PORT,
       },
+      dataSigner: {
+        signAlgorithm: process.env.DATA_SIGNER_ALGORITHM,
+        privateKey: process.env.DATA_SIGNER_PRIVATE,
+      },
     }
     return this.validator.validate<Config>(this.configSchema, config)
   }

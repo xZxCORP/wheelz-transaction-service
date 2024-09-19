@@ -17,8 +17,9 @@ export class ExternalTransactionDataValidatorError extends AppError {
   }
 }
 export class DataSignerError extends AppError {
-  constructor(message: string) {
+  constructor(message: string, cause?: unknown) {
     super(message, 'DATA_SIGNER_ERROR')
+    this.cause = cause
   }
 }
 export class DateProviderError extends AppError {

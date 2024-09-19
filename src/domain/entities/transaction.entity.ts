@@ -10,9 +10,7 @@ export interface BaseTransaction<T> {
   dataSignature: DataSignature
 }
 
-export interface CreateVehicleTransactionData {
-  vehicle: Vehicle
-}
+export type CreateVehicleTransactionData = Vehicle
 
 export interface UpdateVehicleTransactionData {
   vin: string

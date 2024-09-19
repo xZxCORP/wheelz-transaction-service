@@ -11,9 +11,7 @@ import { sampleTransactionSignature, sampleVehicle } from './base-vehicle.fixtur
 export const createTransactionFixture: VehicleTransaction = {
   timestamp: new Date('2023-01-01T12:00:00Z'),
   action: 'create' as TransactionAction,
-  data: {
-    vehicle: sampleVehicle,
-  } as CreateVehicleTransactionData,
+  data: sampleVehicle as CreateVehicleTransactionData,
   dataSignature: sampleTransactionSignature,
 }
 

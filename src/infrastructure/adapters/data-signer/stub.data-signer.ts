@@ -7,8 +7,8 @@ import { DataSignature } from '../../../domain/entities/data-signature.entity.js
 export class StubDataSigner implements DataSignerPort {
   sign(_data: string): ResultAsync<DataSignature, DataSignerError> {
     return okAsync({
-      publicKey: 'stub-public',
-      signature: 'stub-signature',
+      signAlgorithm: 'ECDSA-SHA256',
+      signature: 'signature',
     })
   }
 }

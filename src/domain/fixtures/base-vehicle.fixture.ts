@@ -1,4 +1,7 @@
-export const sampleVehicle = {
+import { DataSignature } from '../entities/data-signature.entity.js'
+import { Vehicle } from '../entities/vehicle.entity.js'
+
+export const sampleVehicle: Vehicle = {
   vin: 'ABCDEFGHIJKLMNOPQ',
   constructorName: 'Toyota',
   model: 'Corolla',
@@ -33,7 +36,7 @@ export const sampleVehicle = {
   },
 }
 
-export const sampleTransactionSignature = {
+export const sampleTransactionSignature: DataSignature = {
   signature: 'validSignature123',
-  publicKey: 'validPublicKey456',
+  signAlgorithm: 'ECDSA-SHA256',
 }

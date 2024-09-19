@@ -1,3 +1,4 @@
+import * as dotenv from 'dotenv'
 import { err, ok } from 'neverthrow'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -7,39 +8,39 @@ import { ConfigSchema } from '../../../../domain/schemas/config.schema.js'
 import { Validator } from '../../../../domain/validation/validator.js'
 import { EnvironmentConfigLoader } from '../environment.config-loader.js'
 
-vi.mock('dotenv', () => ({
-  configDotenv: vi.fn(),
-}))
+vi.mock('dotenv', () => ({ configDotenv: vi.fn() }))
 
 describe('EnvironmentConfigLoader', () => {
-  let mockConfigSchema: ConfigSchema
   let mockValidator: Validator
+  let loader: EnvironmentConfigLoader
   let originalEnvironment: NodeJS.ProcessEnv
 
   beforeEach(() => {
-    originalEnvironment = { ...process.env }
-
+    originalEnvironment = process.env
     process.env = {}
-
-    mockConfigSchema = {} as ConfigSchema
-    mockValidator = {
-      validate: vi.fn(),
-    } as unknown as Validator
-
-    vi.mocked(mockValidator.validate).mockImplementation(() => ok({} as Config))
+    mockValidator = { validate: vi.fn() }
+    loader = new EnvironmentConfigLoader({} as ConfigSchema, mockValidator)
   })
 
   afterEach(() => {
     process.env = originalEnvironment
-    vi.resetAllMocks()
+    vi.clearAllMocks()
   })
 
-  it('should load a valid configuration', () => {
-    process.env.LOG_LEVEL = 'info'
-    process.env.NOTIFICATION_QUEUE_URL = 'amqp://localhost'
-    process.env.NOTIFICATION_QUEUE_NAME = 'transactions'
-    process.env.API_HOST = 'localhost'
-    process.env.API_PORT = '3000'
+  it('should call configDotenv on instantiation', () => {
+    expect(vi.mocked(dotenv.configDotenv)).toHaveBeenCalled()
+  })
+
+  it('should load all environment variables and return correct config', () => {
+    process.env = {
+      LOG_LEVEL: 'info',
+      NOTIFICATION_QUEUE_URL: 'amqp://localhost',
+      NOTIFICATION_QUEUE_NAME: 'transactions',
+      API_HOST: 'localhost',
+      API_PORT: '3000',
+      DATA_SIGNER_ALGORITHM: 'RSA-SHA256',
+      DATA_SIGNER_PRIVATE: 'privateKey',
+    }
 
     const expectedConfig: Config = {
       logLevel: 'info',
@@ -51,38 +52,82 @@ describe('EnvironmentConfigLoader', () => {
         host: 'localhost',
         port: 3000,
       },
+      dataSigner: {
+        signAlgorithm: 'RSA-SHA256',
+        privateKey: 'privateKey',
+      },
     }
 
     vi.mocked(mockValidator.validate).mockReturnValue(ok(expectedConfig))
 
-    const loader = new EnvironmentConfigLoader(mockConfigSchema, mockValidator)
     const result = loader.load()
+
+    expect(mockValidator.validate).toHaveBeenCalledWith(
+      {},
+      {
+        logLevel: 'info',
+        transactionQueue: {
+          url: 'amqp://localhost',
+          queueName: 'transactions',
+        },
+        api: {
+          host: 'localhost',
+          port: '3000',
+        },
+        dataSigner: {
+          signAlgorithm: 'RSA-SHA256',
+          privateKey: 'privateKey',
+        },
+      }
+    )
 
     expect(result.isOk()).toBe(true)
     if (result.isOk()) {
       expect(result.value).toEqual(expectedConfig)
     }
+  })
 
-    expect(mockValidator.validate).toHaveBeenCalledWith(mockConfigSchema, {
+  it('should handle missing environment variables', () => {
+    const expectedConfig = {
       logLevel: 'info',
       transactionQueue: {
-        url: 'amqp://localhost',
-        queueName: 'transactions',
+        url: '',
+        queueName: '',
       },
       api: {
         host: 'localhost',
-        port: '3000',
+        port: 3000,
       },
-    })
+      dataSigner: {
+        signAlgorithm: '',
+        privateKey: '',
+      },
+    }
+
+    vi.mocked(mockValidator.validate).mockReturnValue(ok(expectedConfig))
+
+    const result = loader.load()
+
+    expect(mockValidator.validate).toHaveBeenCalledWith(
+      {},
+      {
+        logLevel: undefined,
+        transactionQueue: { url: undefined, queueName: undefined },
+        api: { host: undefined, port: undefined },
+        dataSigner: { signAlgorithm: undefined, privateKey: undefined },
+      }
+    )
+
+    expect(result.isOk()).toBe(true)
+    if (result.isOk()) {
+      expect(result.value).toEqual(expectedConfig)
+    }
   })
 
-  it('should return an error for invalid configuration', () => {
-    process.env.LOG_LEVEL = 'debug'
-    const validationError = new ValidationError('Invalid configuration', {})
-
+  it('should return error on validation failure', () => {
+    const validationError = new ValidationError('Invalid config', { field: 'error' })
     vi.mocked(mockValidator.validate).mockReturnValue(err(validationError))
 
-    const loader = new EnvironmentConfigLoader(mockConfigSchema, mockValidator)
     const result = loader.load()
 
     expect(result.isErr()).toBe(true)
@@ -91,20 +136,50 @@ describe('EnvironmentConfigLoader', () => {
     }
   })
 
-  it('should handle missing environment variables', () => {
-    const loader = new EnvironmentConfigLoader(mockConfigSchema, mockValidator)
-    loader.load()
+  it('should handle empty string values', () => {
+    process.env = {
+      LOG_LEVEL: '',
+      NOTIFICATION_QUEUE_URL: '',
+      NOTIFICATION_QUEUE_NAME: '',
+      API_HOST: '',
+      API_PORT: '',
+      DATA_SIGNER_ALGORITHM: '',
+      DATA_SIGNER_PRIVATE: '',
+    }
 
-    expect(mockValidator.validate).toHaveBeenCalledWith(mockConfigSchema, {
-      logLevel: undefined,
+    const expectedConfig = {
+      logLevel: 'info',
       transactionQueue: {
-        url: undefined,
-        queueName: undefined,
+        url: '',
+        queueName: '',
       },
       api: {
-        host: undefined,
-        port: undefined,
+        host: 'localhost',
+        port: 3000,
       },
-    })
+      dataSigner: {
+        signAlgorithm: '',
+        privateKey: '',
+      },
+    }
+
+    vi.mocked(mockValidator.validate).mockReturnValue(ok(expectedConfig))
+
+    const result = loader.load()
+
+    expect(mockValidator.validate).toHaveBeenCalledWith(
+      {},
+      {
+        logLevel: '',
+        transactionQueue: { url: '', queueName: '' },
+        api: { host: '', port: '' },
+        dataSigner: { signAlgorithm: '', privateKey: '' },
+      }
+    )
+
+    expect(result.isOk()).toBe(true)
+    if (result.isOk()) {
+      expect(result.value).toEqual(expectedConfig)
+    }
   })
 })

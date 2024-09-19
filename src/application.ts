@@ -10,6 +10,7 @@ import { Config } from './domain/entities/config.entity.js'
 import { AppError } from './domain/errors/app.error.js'
 import { TransactionValidationService } from './domain/services/transaction-validation.service.js'
 import { EnvironmentConfigLoader } from './infrastructure/adapters/config/environment.config-loader.js'
+import { CryptoDataSigner } from './infrastructure/adapters/data-signer/crypto.data-signer.js'
 import { StubDataSigner } from './infrastructure/adapters/data-signer/stub.data-signer.js'
 import { RealDateProvider } from './infrastructure/adapters/date-provider/real.date-provider.port.js'
 import { QueueHealthCheck } from './infrastructure/adapters/health-check/queue.health-check.js'
@@ -52,7 +53,7 @@ export class Application {
       transactionValidationService,
       stubExternalTransactionDataValidator
     )
-    const dataSigner = new StubDataSigner()
+    const dataSigner = new CryptoDataSigner(config)
     const dateProvider = new RealDateProvider()
     const createVehicleTransactionUseCase = new CreateVehicleTransactionUseCase(
       dataSigner,
@@ -66,8 +67,13 @@ export class Application {
     )
     const healthcheckController = new HealthcheckController(performHealthCheckUseCase)
     const transactionController = new TransactionController(transactionService)
-    for (const route of healthcheckController.getRoutes()) server.registerRoute(route)
-    for (const route of transactionController.getRoutes()) server.registerRoute(route)
+    const controllers = [healthcheckController, transactionController]
+
+    for (const controller of controllers) {
+      for (const route of controller.getRoutes()) {
+        server.registerRoute(route)
+      }
+    }
 
     this.managedResources = [queue, server]
   }

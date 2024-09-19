@@ -16,6 +16,10 @@ describe('ConfigSchema', () => {
         host: 'localhost',
         port: 3000,
       },
+      dataSigner: {
+        signAlgorithm: 'RSA-SHA256',
+        privateKey: 'privateKey',
+      },
     }
 
     const result = validator.validate(configSchema, validConfig)
@@ -35,6 +39,10 @@ describe('ConfigSchema', () => {
       api: {
         host: 'localhost',
         port: '3000',
+      },
+      dataSigner: {
+        signAlgorithm: 'RSA-SHA256',
+        privateKey: 'privateKey',
       },
     }
 
@@ -56,6 +64,10 @@ describe('ConfigSchema', () => {
       api: {
         host: 'localhost',
         port: 3000,
+      },
+      dataSigner: {
+        name: 'RSA_SHA256',
+        privateKey: 'privateKey',
       },
     }
 
@@ -87,9 +99,33 @@ describe('ConfigSchema', () => {
         host: 'localhost',
         port: -3000,
       },
+      dataSigner: {
+        name: 'RSA_SHA256',
+        privateKey: 'privateKey',
+      },
     }
 
     const result = validator.validate(configSchema, configWithNegativePort)
+    expect(result.isErr()).toBe(true)
+  })
+  it('should reject invalid data signer hash algorithm', () => {
+    const configWithInvalidDataSignerAlgorithm = {
+      logLevel: 'info',
+      transactionQueue: {
+        url: 'amqp://localhost',
+        queueName: 'transactions',
+      },
+      api: {
+        host: 'localhost',
+        port: -3000,
+      },
+      dataSigner: {
+        signAlgorithm: 'dazdazdaz',
+        privateKey: 'privateKey',
+      },
+    }
+
+    const result = validator.validate(configSchema, configWithInvalidDataSignerAlgorithm)
     expect(result.isErr()).toBe(true)
   })
 })

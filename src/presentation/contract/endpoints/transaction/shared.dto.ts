@@ -2,15 +2,21 @@ import { Float, Int32, String } from '@airtasker/spot'
 
 /** Coordinates of a location */
 export interface Coordinates {
-  /** Latitude of the location */
+  /** Latitude of the location
+   * @default 40.7128
+   */
   latitude: Float
-  /** Longitude of the location */
+  /** Longitude of the location
+   * @default -74.006
+   */
   longitude: Float
 }
 
 /** Location details */
 export interface Location {
-  /** Description of the location */
+  /** Description of the location
+   * @default "Main St and 1st Ave"
+   */
   description: String
   /** Coordinates of the location */
   coordinates: Coordinates
@@ -18,19 +24,33 @@ export interface Location {
 
 /** Details of a sinister event */
 export interface Sinister {
-  /** Date of the sinister event */
+  /** Date of the sinister event
+   * @default "2023-01-01"
+   */
   date: String
-  /** Type of the sinister event */
+  /** Type of the sinister event
+   * @default "collision"
+   */
   type: String
-  /** Severity of the sinister event */
+  /** Severity of the sinister event
+   * @default "minor"
+   */
   severity: String
-  /** Primary factor of the sinister event */
+  /** Primary factor of the sinister event
+   * @default "distraction"
+   */
   primaryFactor: String
-  /** Type of injury in the sinister event */
+  /** Type of injury in the sinister event
+   * @default "none"
+   */
   injuryType: String
-  /** Type of collision in the sinister event */
+  /** Type of collision in the sinister event
+   * @default "rear_end"
+   */
   collisionType: String
-  /** Whether the sinister event occurred on a weekend */
+  /** Whether the sinister event occurred on a weekend
+   * @default false
+   */
   isWeekend: boolean
   /** Location of the sinister event */
   location: Location
@@ -38,23 +58,37 @@ export interface Sinister {
 
 /** Structure for risks and issues */
 export interface RiskIssueStructure {
-  /** Exterior risks or issues */
+  /** Exterior risks or issues
+   * @default ["minor_scratch"]
+   */
   exterior: String[]
-  /** Mechanical risks or issues */
+  /** Mechanical risks or issues
+   * @default []
+   */
   mechanical: String[]
-  /** Generic risks or issues */
+  /** Generic risks or issues
+   * @default ["high_mileage"]
+   */
   generic: String[]
 }
 
 /** Vehicle details */
 export interface Vehicle {
-  /** Vehicle Identification Number */
+  /** Vehicle Identification Number
+   * @default "ABCDEFGHIJKLMNOPQ"
+   */
   vin: String
-  /** Name of the vehicle constructor */
+  /** Name of the vehicle constructor
+   * @default "Toyota"
+   */
   constructorName: String
-  /** Model of the vehicle */
+  /** Model of the vehicle
+   * @default "Corolla"
+   */
   model: String
-  /** Year of manufacture of the vehicle */
+  /** Year of manufacture of the vehicle
+   * @default 2022
+   */
   year: Int32
   /** Risks associated with the vehicle */
   risks: RiskIssueStructure
@@ -66,10 +100,14 @@ export interface Vehicle {
 
 /** Data signature structure */
 export interface DataSignature {
-  /** Signature of the data */
+  /** Signature of the data
+   * @default "validSignature123"
+   */
   signature: String
-  /** Algorithm used for signing */
-  algorithm: String
+  /** Algorithm used for signing
+   * @default "ECDSA-SHA256"
+   */
+  signAlgorithm: String
 }
 
 /** Transaction response structure */

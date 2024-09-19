@@ -1,5 +1,6 @@
 import { z } from 'zod'
 
+import { supportedSignAlgorithms } from '../../../../domain/entities/data-signature.entity.js'
 import type {
   VehicleTransaction,
   VehicleTransactionData,
@@ -9,12 +10,10 @@ import { vehicleZodSchema, vinZodSchema } from './zod-vehicle.schema.js'
 
 const transactionSignatureZodSchema = z.object({
   signature: z.string(),
-  publicKey: z.string(),
+  signAlgorithm: z.enum(supportedSignAlgorithms),
 })
 
-const createVehicleTransactionDataZodSchema = z.object({
-  vehicle: vehicleZodSchema,
-})
+const createVehicleTransactionDataZodSchema = vehicleZodSchema
 
 const updateVehicleTransactionDataZodSchema = z.object({
   vin: vinZodSchema,
