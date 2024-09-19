@@ -14,31 +14,22 @@ export const invalidVinFixture = {
   ...createTransactionFixture,
   data: {
     ...createTransactionFixture.data,
-    vehicle: {
-      ...sampleVehicle,
-      vin: 'INVALID',
-    },
+    ...sampleVehicle,
+    vin: 'INVALID',
   },
 }
 
 export const incompleteVehicleFixture = {
-  ...createTransactionFixture,
-  data: {
-    ...createTransactionFixture.data,
-    vehicle: {
-      vin: 'ABCDEFGHIJKLMNOPQ',
-    },
-  },
+  vin: 'ABCDEFGHIJKLMNOPQ',
 }
 
 export const invalidYearFixture = {
   ...createTransactionFixture,
   data: {
     ...createTransactionFixture.data,
-    vehicle: {
-      ...sampleVehicle,
-      year: 1800,
-    },
+
+    ...sampleVehicle,
+    year: 1800,
   },
 }
 

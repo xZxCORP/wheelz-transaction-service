@@ -1,14 +1,16 @@
 name: Build and Deploy Docker Image
 
 on:
-  workflow_run:
-    workflows: ['Lint and Test']
-    types:
-      - completed
+  push:
+    branches:
+      - main
 
 jobs:
+  lint-and-test:
+    uses: ./.github/workflows/lint-test.yml
+
   build-and-push:
-    if: ${{ github.event.workflow_run.conclusion == 'success' && github.ref == 'refs/heads/main' }}
+    needs: lint-and-test
     runs-on: [self-hosted]
 
     steps:
@@ -35,16 +37,23 @@ jobs:
       - name: Build and push Docker image to Docker Hub
         uses: docker/build-push-action@v3
         with:
-          target: runner
           context: .
           push: true
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/${{ vars.IMAGE_NAME }}:latest
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new
+
+      - name: Move cache
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+
       - name: Trigger webhook
         uses: fjogeleit/http-request-action@v1
         with:
-          url: 'https://webhook.zcorp.ovh/webhook/docker-service'
-          method: 'PUT'
+          url: "https://webhook.zcorp.ovh/webhook/docker-service"
+          method: "PUT"
           customHeaders: '{"Content-Type": "application/json"}'
           preventFailureOnNoResponse: true
           timeout: 60000
