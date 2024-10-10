@@ -1,6 +1,6 @@
-import { CreateVehicleTransactionUseCase } from '../use-cases/create-vehicle-transaction.use-case.js'
-import { EnqueueTransactionUseCase } from '../use-cases/enqueue-transaction.use-case.js'
-import { ValidateTransactionDataUseCase } from '../use-cases/validate-transaction-data.use-case.js'
+import { CreateVehicleTransactionUseCase } from '../use-cases/create-vehicle-transaction.use-case.js';
+import { EnqueueTransactionUseCase } from '../use-cases/enqueue-transaction.use-case.js';
+import { ValidateTransactionDataUseCase } from '../use-cases/validate-transaction-data.use-case.js';
 
 export class TransactionService {
   constructor(
@@ -13,6 +13,6 @@ export class TransactionService {
     return this.validateTransactionDataUseCase
       .execute(data)
       .andThen((transactionData) => this.createVehicleTransactionUseCase.execute(transactionData))
-      .andThen((transaction) => this.enqueueTransactionUseCase.execute(transaction))
+      .andThen((transaction) => this.enqueueTransactionUseCase.execute(transaction));
   }
 }

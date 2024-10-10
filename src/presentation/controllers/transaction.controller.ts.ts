@@ -1,14 +1,14 @@
-import { ResultAsync } from 'neverthrow'
+import { ResultAsync } from 'neverthrow';
 
-import { TransactionService } from '../../application/services/transaction.service.js'
-import { TransactionAction } from '../../domain/entities/transaction.entity.js'
-import { ApiError } from '../errors/api.error.js'
-import { HttpRequest, HttpResponse, RouteDefinition } from '../types/http.js'
-import { AbstractController } from './abstract.controller.js'
+import { TransactionService } from '../../application/services/transaction.service.js';
+import { TransactionAction } from '../../domain/entities/transaction.entity.js';
+import { ApiError } from '../errors/api.error.js';
+import { HttpRequest, HttpResponse, RouteDefinition } from '../types/http.js';
+import { AbstractController } from './abstract.controller.js';
 
 export class TransactionController extends AbstractController {
   constructor(private readonly transactionService: TransactionService) {
-    super()
+    super();
   }
 
   getRoutes(): RouteDefinition[] {
@@ -28,19 +28,19 @@ export class TransactionController extends AbstractController {
         path: '/transactions',
         handler: this.handleDeleteTransaction.bind(this),
       },
-    ]
+    ];
   }
 
   private handleCreateTransaction(request: HttpRequest): ResultAsync<HttpResponse, ApiError> {
-    return this.processTransaction(request, 'create')
+    return this.processTransaction(request, 'create');
   }
 
   private handleUpdateTransaction(request: HttpRequest): ResultAsync<HttpResponse, ApiError> {
-    return this.processTransaction(request, 'update')
+    return this.processTransaction(request, 'update');
   }
 
   private handleDeleteTransaction(request: HttpRequest): ResultAsync<HttpResponse, ApiError> {
-    return this.processTransaction(request, 'delete')
+    return this.processTransaction(request, 'delete');
   }
 
   private processTransaction(
@@ -53,6 +53,6 @@ export class TransactionController extends AbstractController {
         statusCode: 200,
         body: transaction,
       }))
-      .mapErr((error) => ApiError.fromError(error))
+      .mapErr((error) => ApiError.fromError(error));
   }
 }

@@ -1,35 +1,35 @@
-import * as dotenv from 'dotenv'
-import { err, ok } from 'neverthrow'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import * as dotenv from 'dotenv';
+import { err, ok } from 'neverthrow';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { Config } from '../../../../domain/entities/config.entity.js'
-import { ValidationError } from '../../../../domain/errors/domain.error.js'
-import { ConfigSchema } from '../../../../domain/schemas/config.schema.js'
-import { Validator } from '../../../../domain/validation/validator.js'
-import { EnvironmentConfigLoader } from '../environment.config-loader.js'
+import { Config } from '../../../../domain/entities/config.entity.js';
+import { ValidationError } from '../../../../domain/errors/domain.error.js';
+import { ConfigSchema } from '../../../../domain/schemas/config.schema.js';
+import { Validator } from '../../../../domain/validation/validator.js';
+import { EnvironmentConfigLoader } from '../environment.config-loader.js';
 
-vi.mock('dotenv', () => ({ configDotenv: vi.fn() }))
+vi.mock('dotenv', () => ({ configDotenv: vi.fn() }));
 
 describe('EnvironmentConfigLoader', () => {
-  let mockValidator: Validator
-  let loader: EnvironmentConfigLoader
-  let originalEnvironment: NodeJS.ProcessEnv
+  let mockValidator: Validator;
+  let loader: EnvironmentConfigLoader;
+  let originalEnvironment: NodeJS.ProcessEnv;
 
   beforeEach(() => {
-    originalEnvironment = process.env
-    process.env = {}
-    mockValidator = { validate: vi.fn() }
-    loader = new EnvironmentConfigLoader({} as ConfigSchema, mockValidator)
-  })
+    originalEnvironment = process.env;
+    process.env = {};
+    mockValidator = { validate: vi.fn() };
+    loader = new EnvironmentConfigLoader({} as ConfigSchema, mockValidator);
+  });
 
   afterEach(() => {
-    process.env = originalEnvironment
-    vi.clearAllMocks()
-  })
+    process.env = originalEnvironment;
+    vi.clearAllMocks();
+  });
 
   it('should call configDotenv on instantiation', () => {
-    expect(vi.mocked(dotenv.configDotenv)).toHaveBeenCalled()
-  })
+    expect(vi.mocked(dotenv.configDotenv)).toHaveBeenCalled();
+  });
 
   it('should load all environment variables and return correct config', () => {
     process.env = {
@@ -41,7 +41,7 @@ describe('EnvironmentConfigLoader', () => {
       API_PORT: '3000',
       DATA_SIGNER_ALGORITHM: 'RSA-SHA256',
       DATA_SIGNER_PRIVATE: 'privateKey',
-    }
+    };
 
     const expectedConfig: Config = {
       logLevel: 'info',
@@ -58,11 +58,11 @@ describe('EnvironmentConfigLoader', () => {
         signAlgorithm: 'RSA-SHA256',
         privateKey: 'privateKey',
       },
-    }
+    };
 
-    vi.mocked(mockValidator.validate).mockReturnValue(ok(expectedConfig))
+    vi.mocked(mockValidator.validate).mockReturnValue(ok(expectedConfig));
 
-    const result = loader.load()
+    const result = loader.load();
 
     expect(mockValidator.validate).toHaveBeenCalledWith(
       {},
@@ -82,13 +82,13 @@ describe('EnvironmentConfigLoader', () => {
           privateKey: 'privateKey',
         },
       }
-    )
+    );
 
-    expect(result.isOk()).toBe(true)
+    expect(result.isOk()).toBe(true);
     if (result.isOk()) {
-      expect(result.value).toEqual(expectedConfig)
+      expect(result.value).toEqual(expectedConfig);
     }
-  })
+  });
 
   it('should handle missing environment variables', () => {
     const expectedConfig = {
@@ -105,11 +105,11 @@ describe('EnvironmentConfigLoader', () => {
         signAlgorithm: '',
         privateKey: '',
       },
-    }
+    };
 
-    vi.mocked(mockValidator.validate).mockReturnValue(ok(expectedConfig))
+    vi.mocked(mockValidator.validate).mockReturnValue(ok(expectedConfig));
 
-    const result = loader.load()
+    const result = loader.load();
 
     expect(mockValidator.validate).toHaveBeenCalledWith(
       {},
@@ -119,25 +119,25 @@ describe('EnvironmentConfigLoader', () => {
         api: { host: undefined, port: undefined },
         dataSigner: { signAlgorithm: undefined, privateKey: undefined },
       }
-    )
+    );
 
-    expect(result.isOk()).toBe(true)
+    expect(result.isOk()).toBe(true);
     if (result.isOk()) {
-      expect(result.value).toEqual(expectedConfig)
+      expect(result.value).toEqual(expectedConfig);
     }
-  })
+  });
 
   it('should return error on validation failure', () => {
-    const validationError = new ValidationError('Invalid config', { field: 'error' })
-    vi.mocked(mockValidator.validate).mockReturnValue(err(validationError))
+    const validationError = new ValidationError('Invalid config', { field: 'error' });
+    vi.mocked(mockValidator.validate).mockReturnValue(err(validationError));
 
-    const result = loader.load()
+    const result = loader.load();
 
-    expect(result.isErr()).toBe(true)
+    expect(result.isErr()).toBe(true);
     if (result.isErr()) {
-      expect(result.error).toEqual(validationError)
+      expect(result.error).toEqual(validationError);
     }
-  })
+  });
 
   it('should handle empty string values', () => {
     process.env = {
@@ -148,7 +148,7 @@ describe('EnvironmentConfigLoader', () => {
       API_PORT: '',
       DATA_SIGNER_ALGORITHM: '',
       DATA_SIGNER_PRIVATE: '',
-    }
+    };
 
     const expectedConfig = {
       logLevel: 'info',
@@ -164,11 +164,11 @@ describe('EnvironmentConfigLoader', () => {
         signAlgorithm: '',
         privateKey: '',
       },
-    }
+    };
 
-    vi.mocked(mockValidator.validate).mockReturnValue(ok(expectedConfig))
+    vi.mocked(mockValidator.validate).mockReturnValue(ok(expectedConfig));
 
-    const result = loader.load()
+    const result = loader.load();
 
     expect(mockValidator.validate).toHaveBeenCalledWith(
       {},
@@ -178,11 +178,11 @@ describe('EnvironmentConfigLoader', () => {
         api: { host: '', port: '' },
         dataSigner: { signAlgorithm: '', privateKey: '' },
       }
-    )
+    );
 
-    expect(result.isOk()).toBe(true)
+    expect(result.isOk()).toBe(true);
     if (result.isOk()) {
-      expect(result.value).toEqual(expectedConfig)
+      expect(result.value).toEqual(expectedConfig);
     }
-  })
-})
+  });
+});

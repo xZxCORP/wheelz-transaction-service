@@ -1,13 +1,13 @@
-import { ResultAsync } from 'neverthrow'
+import { ResultAsync } from 'neverthrow';
 
-import { PerformHealthCheckUseCase } from '../../application/use-cases/perform-health-check.use-case.js'
-import { ApiError } from '../errors/api.error.js'
-import { HttpRequest, HttpResponse, RouteDefinition } from '../types/http.js'
-import { AbstractController } from './abstract.controller.js'
+import { PerformHealthCheckUseCase } from '../../application/use-cases/perform-health-check.use-case.js';
+import { ApiError } from '../errors/api.error.js';
+import { type HttpRequest, type HttpResponse, type RouteDefinition } from '../types/http.js';
+import { AbstractController } from './abstract.controller.js';
 
 export class HealthcheckController extends AbstractController {
   constructor(private readonly performHealthCheckUseCase: PerformHealthCheckUseCase) {
-    super()
+    super();
   }
 
   getRoutes(): RouteDefinition[] {
@@ -17,7 +17,7 @@ export class HealthcheckController extends AbstractController {
         path: '/health',
         handler: this.handleHealthCheck.bind(this),
       },
-    ]
+    ];
   }
 
   private handleHealthCheck(_request: HttpRequest): ResultAsync<HttpResponse, ApiError> {
@@ -27,6 +27,6 @@ export class HealthcheckController extends AbstractController {
         statusCode: healthStatus.status === 'healthy' ? 200 : 503,
         body: healthStatus,
       }))
-      .mapErr((error) => ApiError.fromError(error))
+      .mapErr((error) => ApiError.fromError(error));
   }
 }

@@ -5,11 +5,11 @@ export const supportedSignAlgorithms = [
   'ECDSA-SHA256',
   'ECDSA-SHA384',
   'ECDSA-SHA512',
-] as const
+] as const;
 
-export type SignAlgorithm = (typeof supportedSignAlgorithms)[number]
+export type SignAlgorithm = (typeof supportedSignAlgorithms)[number];
 
 export interface DataSignature {
-  signature: string
-  signAlgorithm: SignAlgorithm
+  signature: string;
+  signAlgorithm: SignAlgorithm;
 }

@@ -1,8 +1,8 @@
-import { errAsync, okAsync } from 'neverthrow'
+import { errAsync, okAsync } from 'neverthrow';
 
-import { ValidationError } from '../../domain/errors/domain.error.js'
-import { TransactionValidationService } from '../../domain/services/transaction-validation.service.js'
-import { ExternalTransactionDataValidatorPort } from '../ports/external-transaction-data-validator.port.js'
+import { ValidationError } from '../../domain/errors/domain.error.js';
+import { TransactionValidationService } from '../../domain/services/transaction-validation.service.js';
+import { ExternalTransactionDataValidatorPort } from '../ports/external-transaction-data-validator.port.js';
 
 export class ValidateTransactionDataUseCase {
   constructor(
@@ -20,6 +20,6 @@ export class ValidateTransactionDataUseCase {
         result.isValid
           ? okAsync(result.transaction)
           : errAsync(new ValidationError(result.message, {}))
-      )
+      );
   }
 }

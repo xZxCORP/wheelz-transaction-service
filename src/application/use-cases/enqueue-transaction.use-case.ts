@@ -1,5 +1,5 @@
-import { VehicleTransaction } from '../../domain/entities/transaction.entity.js'
-import { QueuePort } from '../ports/queue.port.js'
+import { VehicleTransaction } from '../../domain/entities/transaction.entity.js';
+import { QueuePort } from '../ports/queue.port.js';
 
 export class EnqueueTransactionUseCase {
   constructor(private queue: QueuePort) {}
@@ -8,6 +8,6 @@ export class EnqueueTransactionUseCase {
     return this.queue
       .checkRunning()
       .andThen(() => this.queue.enqueue(transaction))
-      .map(() => transaction)
+      .map(() => transaction);
   }
 }

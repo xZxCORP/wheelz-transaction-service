@@ -3,7 +3,7 @@ export class AppError extends Error {
     message: string,
     public readonly code: string
   ) {
-    super(message)
-    this.name = this.constructor.name
+    super(message);
+    this.name = this.constructor.name;
   }
 }

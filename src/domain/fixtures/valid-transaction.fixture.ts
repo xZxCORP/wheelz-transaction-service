@@ -5,15 +5,15 @@ import {
   UpdateVehicleTransactionData,
   VehicleTransaction,
   VehicleTransactionData,
-} from '../entities/transaction.entity.js'
-import { sampleTransactionSignature, sampleVehicle } from './base-vehicle.fixture.js'
+} from '../entities/transaction.entity.js';
+import { sampleTransactionSignature, sampleVehicle } from './base-vehicle.fixture.js';
 
 export const createTransactionFixture: VehicleTransaction = {
   timestamp: new Date('2023-01-01T12:00:00Z'),
   action: 'create' as TransactionAction,
   data: sampleVehicle as CreateVehicleTransactionData,
   dataSignature: sampleTransactionSignature,
-}
+};
 
 export const updateTransactionFixture: VehicleTransaction = {
   timestamp: new Date('2023-01-02T12:00:00Z'),
@@ -26,7 +26,7 @@ export const updateTransactionFixture: VehicleTransaction = {
     },
   } as UpdateVehicleTransactionData,
   dataSignature: sampleTransactionSignature,
-}
+};
 
 export const deleteTransactionFixture: VehicleTransaction = {
   timestamp: new Date('2023-01-03T12:00:00Z'),
@@ -35,19 +35,19 @@ export const deleteTransactionFixture: VehicleTransaction = {
     vin: 'ABCDEFGHIJKLMNOPQ',
   } as DeleteVehicleTransactionData,
   dataSignature: sampleTransactionSignature,
-}
+};
 
 export const createTransactionDataFixture: VehicleTransactionData = {
   action: 'create',
   data: createTransactionFixture.data as CreateVehicleTransactionData,
-}
+};
 
 export const updateTransactionDataFixture: VehicleTransactionData = {
   action: 'update',
   data: updateTransactionFixture.data as UpdateVehicleTransactionData,
-}
+};
 
 export const deleteTransactionDataFixture: VehicleTransactionData = {
   action: 'delete',
   data: deleteTransactionFixture.data as UpdateVehicleTransactionData,
-}
+};

@@ -1,12 +1,15 @@
-import { okAsync, ResultAsync } from 'neverthrow'
+import { okAsync, ResultAsync } from 'neverthrow';
 
-import { HealthError } from '../../../application/errors/application.error.js'
-import { HealthCheckPort } from '../../../application/ports/health-check.port.js'
-import { QueuePort } from '../../../application/ports/queue.port.js'
-import { HealthStatus, ServiceHealthStatus } from '../../../domain/entities/health-status.entity.js'
+import { HealthError } from '../../../application/errors/application.error.js';
+import { HealthCheckPort } from '../../../application/ports/health-check.port.js';
+import { QueuePort } from '../../../application/ports/queue.port.js';
+import {
+  HealthStatus,
+  ServiceHealthStatus,
+} from '../../../domain/entities/health-status.entity.js';
 
 export class QueueHealthCheck implements HealthCheckPort {
-  name = 'queue'
+  name = 'queue';
 
   constructor(private queue: QueuePort) {}
 
@@ -23,6 +26,6 @@ export class QueueHealthCheck implements HealthCheckPort {
           status: 'unhealthy' as HealthStatus,
           message: error.message,
         })
-      )
+      );
   }
 }

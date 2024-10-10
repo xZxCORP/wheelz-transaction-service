@@ -1,11 +1,11 @@
-import { ResultAsync } from 'neverthrow'
+import { ResultAsync } from 'neverthrow';
 
 import type {
   VehicleTransaction,
   VehicleTransactionData,
-} from '../../domain/entities/transaction.entity.js'
-import type { DataSignerPort } from '../ports/data-signer.port.js'
-import type { DateProviderPort } from '../ports/date-provider.port.js'
+} from '../../domain/entities/transaction.entity.js';
+import type { DataSignerPort } from '../ports/data-signer.port.js';
+import type { DateProviderPort } from '../ports/date-provider.port.js';
 
 export class CreateVehicleTransactionUseCase {
   constructor(
@@ -24,6 +24,6 @@ export class CreateVehicleTransactionUseCase {
           dataSignature: signature,
           timestamp,
         }) as VehicleTransaction
-    )
+    );
   }
 }

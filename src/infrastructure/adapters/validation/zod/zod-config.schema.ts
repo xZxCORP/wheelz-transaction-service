@@ -1,8 +1,8 @@
-import z from 'zod'
+import z from 'zod';
 
-import { Config, MAX_PORT_VALUE } from '../../../../domain/entities/config.entity.js'
-import { supportedSignAlgorithms } from '../../../../domain/entities/data-signature.entity.js'
-import { createZodSchema } from './zod.validator.js'
+import { Config, MAX_PORT_VALUE } from '../../../../domain/entities/config.entity.js';
+import { supportedSignAlgorithms } from '../../../../domain/entities/data-signature.entity.js';
+import { createZodSchema } from './zod.validator.js';
 const configZodSchema = z.object({
   logLevel: z.enum(['error', 'warn', 'info', 'debug']),
   contractPath: z.string(),
@@ -18,6 +18,6 @@ const configZodSchema = z.object({
     signAlgorithm: z.enum(supportedSignAlgorithms),
     privateKey: z.string(),
   }),
-})
+});
 
-export const configSchema = createZodSchema<Config>(configZodSchema)
+export const configSchema = createZodSchema<Config>(configZodSchema);

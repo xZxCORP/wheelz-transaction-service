@@ -1,18 +1,18 @@
-import { configDotenv } from 'dotenv'
-import { Result } from 'neverthrow'
+import { configDotenv } from 'dotenv';
+import { Result } from 'neverthrow';
 
-import { ConfigLoaderPort } from '../../../application/ports/config-loader.port.js'
-import { Config } from '../../../domain/entities/config.entity.js'
-import { ValidationError } from '../../../domain/errors/domain.error.js'
-import { ConfigSchema } from '../../../domain/schemas/config.schema.js'
-import { Validator } from '../../../domain/validation/validator.js'
+import { ConfigLoaderPort } from '../../../application/ports/config-loader.port.js';
+import { Config } from '../../../domain/entities/config.entity.js';
+import { ValidationError } from '../../../domain/errors/domain.error.js';
+import { ConfigSchema } from '../../../domain/schemas/config.schema.js';
+import { Validator } from '../../../domain/validation/validator.js';
 
 export class EnvironmentConfigLoader implements ConfigLoaderPort {
   constructor(
     private readonly configSchema: ConfigSchema,
     private validator: Validator
   ) {
-    configDotenv()
+    configDotenv();
   }
   load(): Result<Config, ValidationError> {
     const config = {
@@ -30,7 +30,7 @@ export class EnvironmentConfigLoader implements ConfigLoaderPort {
         signAlgorithm: process.env.DATA_SIGNER_ALGORITHM,
         privateKey: process.env.DATA_SIGNER_PRIVATE,
       },
-    }
-    return this.validator.validate<Config>(this.configSchema, config)
+    };
+    return this.validator.validate<Config>(this.configSchema, config);
   }
 }
