@@ -1,95 +1,64 @@
-import { AMQPChannel, AMQPClient, AMQPQueue } from '@cloudamqp/amqp-client'
-import { AMQPBaseClient } from '@cloudamqp/amqp-client/amqp-base-client'
-import { errAsync, okAsync, ResultAsync } from 'neverthrow'
+import { AMQPChannel, AMQPClient, AMQPError, AMQPQueue } from '@cloudamqp/amqp-client';
+import { AMQPBaseClient } from '@cloudamqp/amqp-client/amqp-base-client';
+import { errAsync, okAsync, ResultAsync } from 'neverthrow';
 
-import { QueueError } from '../../../application/errors/application.error.js'
-import { LoggerPort } from '../../../application/ports/logger.port.js'
-import { QueuePort } from '../../../application/ports/queue.port.js'
-import { Config } from '../../../domain/entities/config.entity.js'
-import { AppError } from '../../../domain/errors/app.error.js'
-import { ManagedResource } from '../../managed.resource.js'
+import type { LoggerPort } from '../../../application/ports/logger.port.js';
+import type { QueuePort } from '../../../application/ports/queue.port.js';
+import type { ManagedResource } from '../../managed.resource.js';
 
 export class RabbitMQQueue implements QueuePort, ManagedResource {
-  public client: AMQPClient
-  public connection: AMQPBaseClient | null = null
-  public channel: AMQPChannel | null = null
-  public queue: AMQPQueue | null = null
+  public client: AMQPClient;
+  public connection: AMQPBaseClient | null = null;
+  public channel: AMQPChannel | null = null;
+  public queue: AMQPQueue | null = null;
   constructor(
-    public readonly config: Config,
+    private readonly url: string,
+    private readonly queueName: string,
     private readonly logger: LoggerPort
   ) {
-    this.client = new AMQPClient(this.config.transactionQueue.url)
+    this.client = new AMQPClient(this.url);
   }
-  checkRunning(): ResultAsync<void, QueueError> {
+  async isRunning(): Promise<boolean> {
     if (!this.connection || !this.channel || !this.queue) {
-      return errAsync(new QueueError('Not initialized'))
+      return true;
     }
-    if (this.connection.closed) {
-      return errAsync(new QueueError('Connection is closed'))
+    if (this.connection.closed || this.channel.closed) {
+      return false;
     }
-    if (this.channel.closed) {
-      return errAsync(new QueueError('Channel is closed'))
-    }
-    return okAsync(undefined)
-  }
-  initialize(): ResultAsync<void, AppError> {
-    return ResultAsync.fromPromise(
-      this.client.connect(),
-      (error) => new QueueError('Failed to connect to RabbitMQ', { cause: error })
-    )
-      .andThen((connection) => {
-        this.connection = connection
 
-        return ResultAsync.fromPromise(
-          connection.channel(),
-          (error) => new QueueError('Failed to create channel', { cause: error })
-        )
-      })
-      .andThen((channel) => {
-        this.channel = channel
-        return ResultAsync.fromPromise(
-          channel.queue(this.config.transactionQueue.queueName, { durable: true }),
-          (error) => new QueueError('Failed to assert queue', { cause: error })
-        )
-      })
-      .andThen((queue) => {
-        this.queue = queue
-        return okAsync(undefined)
-      })
-      .map(() => undefined)
+    return true;
+  }
+  async initialize() {
+    const connection = await this.client.connect();
+    this.connection = connection;
+    const channel = await this.client.channel();
+    this.channel = channel;
+    const queue = await channel.queue(this.queueName, { durable: true });
+    this.queue = queue;
   }
 
-  dispose(): ResultAsync<void, AppError> {
-    const closeChannel = this.channel
-      ? ResultAsync.fromPromise(
-          this.channel.close(),
-          (error) => new QueueError('Failed to close channel', { cause: error })
-        )
-      : okAsync(undefined)
-
-    const closeConnection = this.connection
-      ? ResultAsync.fromPromise(
-          this.connection.close(),
-          (error) => new QueueError('Failed to close connection', { cause: error })
-        )
-      : okAsync(undefined)
-
-    return closeChannel
-      .andThen(() => closeConnection)
-      .map(() => {
-        this.channel = null
-        this.connection = null
-        this.logger.info('Rabbit mq cleaned')
-      })
+  async dispose() {
+    if (this.channel) {
+      await this.channel.close();
+    }
+    if (this.connection) {
+      await this.connection.close();
+    }
+    this.channel = null;
+    this.connection = null;
+    this.queue = null;
+    this.logger.info('RabbitMQ disposed');
   }
 
-  enqueue(data: unknown): ResultAsync<void, QueueError> {
+  async enqueue(data: unknown): Promise<boolean> {
     if (!this.queue) {
-      return errAsync(new QueueError('Queue is not initialized'))
+      return false;
     }
-    return ResultAsync.fromPromise(
-      this.queue.publish(Buffer.from(JSON.stringify(data)), { deliveryMode: 2 }),
-      (error) => new QueueError('Failed to enqueue message', { cause: error })
-    ).map(() => undefined)
+    try {
+      await this.queue.publish(Buffer.from(JSON.stringify(data)), { deliveryMode: 2 });
+      return true;
+    } catch {
+      throw new Error('Error while enqueuing data');
+    }
   }
 }

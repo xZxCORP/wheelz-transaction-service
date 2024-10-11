@@ -1,10 +1,9 @@
-import { ResultAsync } from 'neverthrow'
+import { ResultAsync } from 'neverthrow';
 
-import { ServiceHealthStatus } from '../../domain/entities/health-status.entity.js'
-import { HealthError } from '../errors/application.error.js'
+import { type ServiceHealthStatus } from '../../domain/entities/health-status.entity.js';
 
 export interface HealthCheckPort {
-  name: string
+  name: string;
 
-  isHealthy(): ResultAsync<ServiceHealthStatus, HealthError>
+  isHealthy(): Promise<ServiceHealthStatus>;
 }

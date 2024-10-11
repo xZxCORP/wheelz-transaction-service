@@ -1,32 +1,31 @@
-import { createSign } from 'node:crypto'
+import { createSign } from 'node:crypto';
 
-import { ResultAsync } from 'neverthrow'
-
-import { DataSignerError } from '../../../application/errors/application.error.js'
-import { DataSignerPort } from '../../../application/ports/data-signer.port.js'
-import { Config } from '../../../domain/entities/config.entity.js'
-import { DataSignature } from '../../../domain/entities/data-signature.entity.js'
+import type { DataSignerPort } from '../../../application/ports/data-signer.port.js';
+import type {
+  DataSignature,
+  SignAlgorithm,
+} from '../../../domain/entities/data-signature.entity.js';
 
 export class CryptoDataSigner implements DataSignerPort {
-  constructor(private readonly config: Config) {}
+  constructor(
+    private readonly signAlgorithm: SignAlgorithm,
+    private readonly privateKey: string
+  ) {}
 
-  sign(data: string): ResultAsync<DataSignature, DataSignerError> {
-    return ResultAsync.fromPromise(
-      this.signData(data),
-      (error) => new DataSignerError('Unexpected error during signing', error)
-    )
-  }
+  sign(data: string): Promise<DataSignature> {
+    try {
+      const signer = createSign(this.signAlgorithm);
+      signer.update(data);
+      signer.end();
 
-  private async signData(data: string): Promise<DataSignature> {
-    const signer = createSign(this.config.dataSigner.signAlgorithm)
-    signer.update(data)
-    signer.end()
+      const signature = signer.sign(this.privateKey, 'base64');
 
-    const signature = signer.sign(this.config.dataSigner.privateKey, 'base64')
-
-    return {
-      signAlgorithm: this.config.dataSigner.signAlgorithm,
-      signature,
+      return Promise.resolve({
+        signAlgorithm: this.signAlgorithm,
+        signature,
+      });
+    } catch {
+      throw new Error('Error while signing data');
     }
   }
 }

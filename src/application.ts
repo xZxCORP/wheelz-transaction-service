@@ -1,108 +1,79 @@
-import { okAsync, Result, ResultAsync } from 'neverthrow'
+import { okAsync, Result, ResultAsync } from 'neverthrow';
 
-import { LoggerPort } from './application/ports/logger.port.js'
-import { TransactionService } from './application/services/transaction.service.js'
-import { CreateVehicleTransactionUseCase } from './application/use-cases/create-vehicle-transaction.use-case.js'
-import { EnqueueTransactionUseCase } from './application/use-cases/enqueue-transaction.use-case.js'
-import { PerformHealthCheckUseCase } from './application/use-cases/perform-health-check.use-case.js'
-import { ValidateTransactionDataUseCase } from './application/use-cases/validate-transaction-data.use-case.js'
-import { Config } from './domain/entities/config.entity.js'
-import { AppError } from './domain/errors/app.error.js'
-import { TransactionValidationService } from './domain/services/transaction-validation.service.js'
-import { EnvironmentConfigLoader } from './infrastructure/adapters/config/environment.config-loader.js'
-import { CryptoDataSigner } from './infrastructure/adapters/data-signer/crypto.data-signer.js'
-import { RealDateProvider } from './infrastructure/adapters/date-provider/real.date-provider.port.js'
-import { QueueHealthCheck } from './infrastructure/adapters/health-check/queue.health-check.js'
-import { ServerHealthCheck } from './infrastructure/adapters/health-check/server.health-check.js'
-import { PinoLogger } from './infrastructure/adapters/logger/pino.logger.js'
-import { RabbitMQQueue } from './infrastructure/adapters/queue/rabbit-mq.queue.js'
-import { HonoServer } from './infrastructure/adapters/server/hono.server.js'
-import { ValidStubTransactionValidator } from './infrastructure/adapters/transaction-validator/valid-stub.transaction-validator.js'
-import { ZodValidator } from './infrastructure/adapters/validation/zod/zod.validator.js'
-import { configSchema } from './infrastructure/adapters/validation/zod/zod-config.schema.js'
-import {
-  vehicleTransactionDataSchema,
-  vehicleTransactionSchema,
-} from './infrastructure/adapters/validation/zod/zod-transaction.schema.js'
-import { ManagedResource } from './infrastructure/managed.resource.js'
-import { HealthcheckController } from './presentation/controllers/healthcheck.controller.js'
-import { TransactionController } from './presentation/controllers/transaction.controller.ts.js'
+import type { LoggerPort } from './application/ports/logger.port.js';
+import { TransactionService } from './application/services/transaction.service.js';
+import { CreateVehicleTransactionUseCase } from './application/use-cases/create-vehicle-transaction.use-case.js';
+import { PerformHealthCheckUseCase } from './application/use-cases/perform-health-check.use-case.js';
+import { EnvironmentConfigLoader } from './infrastructure/adapters/config/environment.config-loader.js';
+import { CryptoDataSigner } from './infrastructure/adapters/data-signer/crypto.data-signer.js';
+import { RealDateProvider } from './infrastructure/adapters/date-provider/real.date-provider.port.js';
+import { QueueHealthCheck } from './infrastructure/adapters/health-check/queue.health-check.js';
+import { PinoLogger } from './infrastructure/adapters/logger/pino.logger.js';
+import { RabbitMQQueue } from './infrastructure/adapters/queue/rabbit-mq.queue.js';
+import { InvalidStubTransactionValidator } from './infrastructure/adapters/transaction-validator/invalid-stub.transaction-validator.js';
+import { ValidStubTransactionValidator } from './infrastructure/adapters/transaction-validator/valid-stub.transaction-validator.js';
+import type { ManagedResource } from './infrastructure/managed.resource.js';
+import { type Config, configSchema } from './infrastructure/ports/config-loader.port.js';
+import { FastifyApiServer } from './presentation/api/servers/fastify-api-server.js';
+import { HealthcheckController } from './presentation/controllers/healthcheck.controller.js';
+import { TransactionController } from './presentation/controllers/transaction.controller.ts.js';
 
 export class Application {
-  private managedResources: ManagedResource[] = []
+  private managedResources: ManagedResource[] = [];
 
   constructor(
     config: Config,
     private readonly logger: LoggerPort
   ) {
-    const server = new HonoServer(config, logger)
-    const queue = new RabbitMQQueue(config, logger)
-    const performHealthCheckUseCase = new PerformHealthCheckUseCase([
-      new ServerHealthCheck(server),
-      new QueueHealthCheck(queue),
-    ])
-    const zodValidator = new ZodValidator()
-    const transactionValidationService = new TransactionValidationService(
-      zodValidator,
-      vehicleTransactionSchema,
-      vehicleTransactionDataSchema
-    )
-    const stubExternalTransactionDataValidator = new ValidStubTransactionValidator()
-    const validateTransactionDataUseCase = new ValidateTransactionDataUseCase(
-      transactionValidationService,
-      stubExternalTransactionDataValidator
-    )
-    const dataSigner = new CryptoDataSigner(config)
-    const dateProvider = new RealDateProvider()
+    const queue = new RabbitMQQueue(
+      config.transactionQueue.url,
+      config.transactionQueue.queueName,
+      logger
+    );
+    const performHealthCheckUseCase = new PerformHealthCheckUseCase([new QueueHealthCheck(queue)]);
+
+    const stubExternalTransactionDataValidator = new InvalidStubTransactionValidator();
+
+    const dataSigner = new CryptoDataSigner(
+      config.dataSigner.signAlgorithm,
+      config.dataSigner.privateKey
+    );
+    const dateProvider = new RealDateProvider();
     const createVehicleTransactionUseCase = new CreateVehicleTransactionUseCase(
       dataSigner,
       dateProvider
-    )
-    const enqueueTransactionUseCase = new EnqueueTransactionUseCase(queue)
+    );
     const transactionService = new TransactionService(
-      validateTransactionDataUseCase,
+      stubExternalTransactionDataValidator,
       createVehicleTransactionUseCase,
-      enqueueTransactionUseCase
-    )
-    const healthcheckController = new HealthcheckController(performHealthCheckUseCase)
-    const transactionController = new TransactionController(transactionService)
-    const controllers = [healthcheckController, transactionController]
+      queue
+    );
+    const healthcheckController = new HealthcheckController(performHealthCheckUseCase);
+    const transactionController = new TransactionController(transactionService);
+    const api = new FastifyApiServer(config, transactionController, healthcheckController);
 
-    for (const controller of controllers) {
-      for (const route of controller.getRoutes()) {
-        server.registerRoute(route)
-      }
+    this.managedResources = [queue, api];
+  }
+  static async create(): Promise<Application> {
+    const configLoader = new EnvironmentConfigLoader();
+    const config = await configLoader.load();
+    return new Application(config, new PinoLogger(config.logLevel));
+  }
+
+  async initialize(): Promise<void> {
+    this.logger.info('Initializing application');
+    for (const resource of this.managedResources) {
+      await resource.initialize();
     }
-
-    this.managedResources = [queue, server]
   }
-  static create(): Result<Application, AppError> {
-    const configLoader = new EnvironmentConfigLoader(configSchema, new ZodValidator())
-    return configLoader.load().map((config) => {
-      const logger = new PinoLogger(config.logLevel)
-      return new Application(config, logger)
-    })
+  async start(): Promise<void> {
+    this.logger.info('Starting application');
+    await this.initialize();
   }
-
-  initialize(): ResultAsync<void, AppError> {
-    this.logger.info('Initializing application')
-    return this.managedResources
-      .reduce(
-        (accumulator, current) => accumulator.andThen(() => current.initialize()),
-        okAsync<void, AppError>(undefined)
-      )
-      .andTee(() => this.logger.info('Application initialized'))
-  }
-  start(): ResultAsync<void, AppError> {
-    this.logger.info('Starting application')
-    return this.initialize().map(() => {
-      this.logger.info('Application started')
-    })
-  }
-  stop(): ResultAsync<void[], AppError[]> {
-    this.logger.info('Stopping application')
-    return ResultAsync.combineWithAllErrors(
-      this.managedResources.map((resource) => resource.dispose())
-    )
+  async stop(): Promise<void> {
+    this.logger.info('Stopping application');
+    for (const resource of this.managedResources) {
+      await resource.dispose();
+    }
   }
 }

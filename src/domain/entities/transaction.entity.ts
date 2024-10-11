@@ -1,29 +1,35 @@
-import { DataSignature } from './data-signature.entity.js'
-import { Vehicle } from './vehicle.entity.js'
+import type { DataSignature } from './data-signature.entity.js';
+import type { Vehicle } from './vehicle.entity.js';
 
-export type TransactionAction = 'create' | 'update' | 'delete'
+export type TransactionAction = 'create' | 'update' | 'delete';
 
-export interface BaseTransaction<T> {
-  timestamp: Date
-  action: TransactionAction
-  data: T
-  dataSignature: DataSignature
-}
-
-export type CreateVehicleTransactionData = Vehicle
+export type CreateVehicleTransactionData = Vehicle;
 
 export interface UpdateVehicleTransactionData {
-  vin: string
-  changes: Partial<Omit<Vehicle, 'vin'>>
+  vin: string;
+  changes: Partial<Omit<Vehicle, 'vin'>>;
 }
 
 export interface DeleteVehicleTransactionData {
-  vin: string
+  vin: string;
 }
 
-export type VehicleTransactionData =
-  | { action: 'create'; data: CreateVehicleTransactionData }
-  | { action: 'update'; data: UpdateVehicleTransactionData }
-  | { action: 'delete'; data: DeleteVehicleTransactionData }
+export type VehicleTransactionData<A extends TransactionAction> = A extends 'create'
+  ? CreateVehicleTransactionData
+  : A extends 'update'
+    ? UpdateVehicleTransactionData
+    : A extends 'delete'
+      ? DeleteVehicleTransactionData
+      : never;
 
-export type VehicleTransaction = BaseTransaction<VehicleTransactionData['data']>
+export interface VehicleTransaction<A extends TransactionAction> {
+  timestamp: Date;
+  action: A;
+  data: VehicleTransactionData<A>;
+  dataSignature: DataSignature;
+}
+
+export type CreateTransactionInput<A extends TransactionAction> = {
+  action: A;
+  data: VehicleTransactionData<A>;
+};

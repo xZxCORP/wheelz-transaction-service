@@ -1,14 +1,13 @@
-import { okAsync, ResultAsync } from 'neverthrow'
+import { okAsync, ResultAsync } from 'neverthrow';
 
-import { DataSignerError } from '../../../application/errors/application.error.js'
-import { DataSignerPort } from '../../../application/ports/data-signer.port.js'
-import { DataSignature } from '../../../domain/entities/data-signature.entity.js'
+import type { DataSignerPort } from '../../../application/ports/data-signer.port.js';
+import type { DataSignature } from '../../../domain/entities/data-signature.entity.js';
 
 export class StubDataSigner implements DataSignerPort {
-  sign(_data: string): ResultAsync<DataSignature, DataSignerError> {
-    return okAsync({
-      signAlgorithm: 'ECDSA-SHA256',
-      signature: 'signature',
-    })
+  async sign(data: string): Promise<DataSignature> {
+    return {
+      signature: data + '-signature',
+      signAlgorithm: 'RSA-SHA256',
+    };
   }
 }
