@@ -22,7 +22,7 @@ COPY --from=builder /app/src ./src
 COPY package.json ./
 USER hono
 EXPOSE 3000
-CMD ["node", "dist/src/index.js"]
+CMD ["node", "dist/index.js"]
 
 FROM base AS development
 RUN apk add --no-cache bash
