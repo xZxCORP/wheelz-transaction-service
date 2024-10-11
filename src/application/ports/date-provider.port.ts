@@ -1,7 +1,5 @@
-import { ResultAsync } from 'neverthrow'
-
-import { DateProviderError } from '../errors/application.error.js'
+import { ResultAsync } from 'neverthrow';
 
 export interface DateProviderPort {
-  now(): ResultAsync<Date, DateProviderError>
+  now(): Date;
 }
