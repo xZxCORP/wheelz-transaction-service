@@ -1,5 +1,5 @@
-import { DataSignature } from '../entities/data-signature.entity.js';
-import { Vehicle } from '../entities/vehicle.entity.js';
+import type { DataSignature } from '../entities/data-signature.entity.js';
+import type { Vehicle } from '../entities/vehicle.entity.js';
 
 export const sampleVehicle: Vehicle = {
   vin: 'ABCDEFGHIJKLMNOPQ',

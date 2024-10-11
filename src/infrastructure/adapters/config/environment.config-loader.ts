@@ -1,21 +1,18 @@
 import { configDotenv } from 'dotenv';
 import { Result } from 'neverthrow';
 
-import { ConfigLoaderPort } from '../../../application/ports/config-loader.port.js';
-import { Config } from '../../../domain/entities/config.entity.js';
-import { ValidationError } from '../../../domain/errors/domain.error.js';
-import { ConfigSchema } from '../../../domain/schemas/config.schema.js';
-import { Validator } from '../../../domain/validation/validator.js';
+import {
+  type Config,
+  type ConfigLoaderPort,
+  configSchema,
+} from '../../ports/config-loader.port.js';
 
 export class EnvironmentConfigLoader implements ConfigLoaderPort {
-  constructor(
-    private readonly configSchema: ConfigSchema,
-    private validator: Validator
-  ) {
+  constructor() {
     configDotenv();
   }
-  load(): Result<Config, ValidationError> {
-    const config = {
+  async load(): Promise<Config> {
+    const data = {
       logLevel: process.env.LOG_LEVEL,
       contractPath: process.env.CONTRACT_PATH,
       transactionQueue: {
@@ -31,6 +28,12 @@ export class EnvironmentConfigLoader implements ConfigLoaderPort {
         privateKey: process.env.DATA_SIGNER_PRIVATE,
       },
     };
-    return this.validator.validate<Config>(this.configSchema, config);
+    const config = await configSchema.safeParseAsync(data);
+    if (!config.success) {
+      throw new Error(config.error.name, {
+        cause: config.error.flatten().fieldErrors,
+      });
+    }
+    return config.data;
   }
 }

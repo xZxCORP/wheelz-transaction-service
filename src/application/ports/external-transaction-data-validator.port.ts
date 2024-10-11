@@ -1,15 +1,15 @@
-import { ResultAsync } from 'neverthrow';
+import {
+  type TransactionAction,
+  type VehicleTransactionData,
+} from '../../domain/entities/transaction.entity.js';
 
-import { VehicleTransactionData } from '../../domain/entities/transaction.entity.js';
-import { ExternalTransactionDataValidatorError } from '../errors/application.error.js';
-
-export type TransactionValidationResult = {
+export type TransactionValidationResult<A extends TransactionAction> = {
   isValid: boolean;
-  transaction: VehicleTransactionData;
+  transaction: VehicleTransactionData<A>;
   message: string;
 };
 export interface ExternalTransactionDataValidatorPort {
-  validate(
-    transactionData: VehicleTransactionData
-  ): ResultAsync<TransactionValidationResult, ExternalTransactionDataValidatorError>;
+  validate<A extends TransactionAction>(
+    transactionData: VehicleTransactionData<A>
+  ): Promise<TransactionValidationResult<A>>;
 }

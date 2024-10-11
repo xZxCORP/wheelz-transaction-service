@@ -7,6 +7,7 @@
     "unicorn/no-process-exit": "off",
     "unicorn/prefer-top-level-await": "off",
     "unicorn/no-array-reduce": "off",
+    "unicorn/prefer-ternary":"off",
     "@typescript-eslint/no-unused-vars": "off",
     "@typescript-eslint/ban-types": "off"
   }

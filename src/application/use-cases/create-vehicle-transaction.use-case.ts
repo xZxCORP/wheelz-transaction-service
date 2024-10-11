@@ -1,8 +1,9 @@
 import { ResultAsync } from 'neverthrow';
 
 import type {
+  CreateTransactionInput,
+  TransactionAction,
   VehicleTransaction,
-  VehicleTransactionData,
 } from '../../domain/entities/transaction.entity.js';
 import type { DataSignerPort } from '../ports/data-signer.port.js';
 import type { DateProviderPort } from '../ports/date-provider.port.js';
@@ -13,17 +14,15 @@ export class CreateVehicleTransactionUseCase {
     private readonly dateProvider: DateProviderPort
   ) {}
 
-  execute(transactionData: VehicleTransactionData) {
-    return ResultAsync.combine([
-      this.dateProvider.now(),
-      this.dataSigner.sign(JSON.stringify(transactionData)),
-    ]).map(
-      ([timestamp, signature]) =>
-        ({
-          ...transactionData,
-          dataSignature: signature,
-          timestamp,
-        }) as VehicleTransaction
-    );
+  async execute<A extends TransactionAction>(
+    transactionData: CreateTransactionInput<A>
+  ): Promise<VehicleTransaction<A>> {
+    const currentDate = this.dateProvider.now();
+    const signature = await this.dataSigner.sign(JSON.stringify(transactionData));
+    return {
+      ...transactionData,
+      dataSignature: signature,
+      timestamp: currentDate,
+    };
   }
 }
