@@ -5,7 +5,6 @@ import { transactionContract } from '@zcorp/wheelz-contracts';
 import type { FastifyInstance } from 'fastify';
 import Fastify from 'fastify';
 
-import type { LoggerPort } from '../../../application/ports/logger.port.js';
 import type { ManagedResource } from '../../../infrastructure/managed.resource.js';
 import type { Config } from '../../../infrastructure/ports/config-loader.port.js';
 import type { HealthcheckController } from '../../controllers/healthcheck.controller.js';

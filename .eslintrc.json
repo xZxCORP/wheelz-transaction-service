@@ -1,6 +1,8 @@
 {
   "extends": ["@zcorp/eslint-config/app"],
+  "plugins": ["unused-imports"],
   "rules": {
+    "unused-imports/no-unused-imports": "error",
     "unicorn/throw-new-error": "off",
     "unicorn/no-null": "off",
     "unicorn/no-useless-undefined": "off",

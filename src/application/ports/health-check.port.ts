@@ -1,6 +1,4 @@
-import { ResultAsync } from 'neverthrow';
-
-import { type ServiceHealthStatus } from '../../domain/entities/health-status.entity.js';
+import type { ServiceHealthStatus } from '@zcorp/shared-typing-wheelz';
 
 export interface HealthCheckPort {
   name: string;

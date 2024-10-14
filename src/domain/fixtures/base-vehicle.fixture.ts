@@ -1,5 +1,4 @@
-import type { DataSignature } from '../entities/data-signature.entity.js';
-import type { Vehicle } from '../entities/vehicle.entity.js';
+import type { Signature, Vehicle } from '@zcorp/shared-typing-wheelz';
 
 export const sampleVehicle: Vehicle = {
   vin: 'ABCDEFGHIJKLMNOPQ',
@@ -36,7 +35,7 @@ export const sampleVehicle: Vehicle = {
   },
 };
 
-export const sampleTransactionSignature: DataSignature = {
+export const sampleTransactionSignature: Signature = {
   signature: 'validSignature123',
   signAlgorithm: 'ECDSA-SHA256',
 };

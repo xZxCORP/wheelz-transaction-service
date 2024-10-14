@@ -1,15 +1,10 @@
-import {
-  type TransactionAction,
-  type VehicleTransactionData,
-} from '../../domain/entities/transaction.entity.js';
+import type { VehicleTransactionData } from '@zcorp/shared-typing-wheelz';
 
-export type TransactionValidationResult<A extends TransactionAction> = {
+export type TransactionValidationResult = {
   isValid: boolean;
-  transaction: VehicleTransactionData<A>;
+  transaction: VehicleTransactionData;
   message: string;
 };
 export interface ExternalTransactionDataValidatorPort {
-  validate<A extends TransactionAction>(
-    transactionData: VehicleTransactionData<A>
-  ): Promise<TransactionValidationResult<A>>;
+  validate(transactionData: VehicleTransactionData): Promise<TransactionValidationResult>;
 }

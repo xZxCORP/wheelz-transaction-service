@@ -1,5 +1,4 @@
 import { configDotenv } from 'dotenv';
-import { Result } from 'neverthrow';
 
 import {
   type Config,

@@ -1,6 +1,7 @@
+import type { ServiceHealthStatus } from '@zcorp/shared-typing-wheelz';
+
 import type { HealthCheckPort } from '../../../application/ports/health-check.port.js';
 import type { QueuePort } from '../../../application/ports/queue.port.js';
-import type { ServiceHealthStatus } from '../../../domain/entities/health-status.entity.js';
 
 export class QueueHealthCheck implements HealthCheckPort {
   name = 'queue';

@@ -1,21 +1,15 @@
-import type {
-  CreateVehicleTransactionData,
-  DeleteVehicleTransactionData,
-  TransactionAction,
-  UpdateVehicleTransactionData,
-  VehicleTransaction,
-  VehicleTransactionData,
-} from '../entities/transaction.entity.js';
+import type { VehicleTransaction } from '@zcorp/shared-typing-wheelz';
+
 import { sampleTransactionSignature, sampleVehicle } from './base-vehicle.fixture.js';
 
-export const createTransactionFixture: VehicleTransaction<'create'> = {
+export const createTransactionFixture: VehicleTransaction = {
   timestamp: new Date('2023-01-01T12:00:00Z'),
   action: 'create',
   data: sampleVehicle,
   dataSignature: sampleTransactionSignature,
 };
 
-export const updateTransactionFixture: VehicleTransaction<'update'> = {
+export const updateTransactionFixture: VehicleTransaction = {
   timestamp: new Date('2023-01-02T12:00:00Z'),
   action: 'update',
   data: {
@@ -28,11 +22,11 @@ export const updateTransactionFixture: VehicleTransaction<'update'> = {
   dataSignature: sampleTransactionSignature,
 };
 
-export const deleteTransactionFixture: VehicleTransaction<'delete'> = {
+export const deleteTransactionFixture: VehicleTransaction = {
   timestamp: new Date('2023-01-03T12:00:00Z'),
   action: 'delete',
   data: {
     vin: 'ABCDEFGHIJKLMNOPQ',
-  } as DeleteVehicleTransactionData,
+  },
   dataSignature: sampleTransactionSignature,
 };

@@ -1,9 +1,5 @@
-import { ResultAsync } from 'neverthrow';
+import type { HealthStatus, OverallHealthStatus } from '@zcorp/shared-typing-wheelz';
 
-import type {
-  HealthStatus,
-  OverallHealthStatus,
-} from '../../domain/entities/health-status.entity.js';
 import type { HealthCheckPort } from '../ports/health-check.port.js';
 
 export class PerformHealthCheckUseCase {

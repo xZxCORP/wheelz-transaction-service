@@ -1,5 +1,3 @@
-import { okAsync, Result, ResultAsync } from 'neverthrow';
-
 import type { LoggerPort } from './application/ports/logger.port.js';
 import { TransactionService } from './application/services/transaction.service.js';
 import { CreateVehicleTransactionUseCase } from './application/use-cases/create-vehicle-transaction.use-case.js';
@@ -12,7 +10,7 @@ import { PinoLogger } from './infrastructure/adapters/logger/pino.logger.js';
 import { RabbitMQQueue } from './infrastructure/adapters/queue/rabbit-mq.queue.js';
 import { ValidStubTransactionValidator } from './infrastructure/adapters/transaction-validator/valid-stub.transaction-validator.js';
 import type { ManagedResource } from './infrastructure/managed.resource.js';
-import { type Config, configSchema } from './infrastructure/ports/config-loader.port.js';
+import { type Config } from './infrastructure/ports/config-loader.port.js';
 import { FastifyApiServer } from './presentation/api/servers/fastify-api-server.js';
 import { HealthcheckController } from './presentation/controllers/healthcheck.controller.js';
 import { TransactionController } from './presentation/controllers/transaction.controller.ts.js';

@@ -1,4 +1,4 @@
-import type { AppRouter, ServerInferRequest, ServerInferResponses } from '@ts-rest/core';
+import type { ServerInferRequest, ServerInferResponses } from '@ts-rest/core';
 import type { transactionContract } from '@zcorp/wheelz-contracts';
 
 import type { HealthcheckController } from '../../controllers/healthcheck.controller.js';
