@@ -10,7 +10,6 @@ import { RealDateProvider } from './infrastructure/adapters/date-provider/real.d
 import { QueueHealthCheck } from './infrastructure/adapters/health-check/queue.health-check.js';
 import { PinoLogger } from './infrastructure/adapters/logger/pino.logger.js';
 import { RabbitMQQueue } from './infrastructure/adapters/queue/rabbit-mq.queue.js';
-import { InvalidStubTransactionValidator } from './infrastructure/adapters/transaction-validator/invalid-stub.transaction-validator.js';
 import { ValidStubTransactionValidator } from './infrastructure/adapters/transaction-validator/valid-stub.transaction-validator.js';
 import type { ManagedResource } from './infrastructure/managed.resource.js';
 import { type Config, configSchema } from './infrastructure/ports/config-loader.port.js';
@@ -32,7 +31,7 @@ export class Application {
     );
     const performHealthCheckUseCase = new PerformHealthCheckUseCase([new QueueHealthCheck(queue)]);
 
-    const stubExternalTransactionDataValidator = new InvalidStubTransactionValidator();
+    const stubExternalTransactionDataValidator = new ValidStubTransactionValidator();
 
     const dataSigner = new CryptoDataSigner(
       config.dataSigner.signAlgorithm,
