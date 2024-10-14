@@ -6,7 +6,8 @@ services:
     ports:
       - '3000:3000'
     networks:
-      - transaction-service-network
+      - transaction-services
+      - wheelz-app
     develop:
       watch:
         - path: ./src
@@ -19,22 +20,8 @@ services:
           action: rebuild
         - path: package-lock.json
           action: rebuild
-  rabbitmq:
-    image: rabbitmq:3-management
-    ports:
-      - '5672:5672'
-      - '15672:15672'
-    networks:
-      - transaction-service-network
-    environment:
-      - RABBITMQ_DEFAULT_USER=user
-      - RABBITMQ_DEFAULT_PASS=password
-    volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
-
-volumes:
-  rabbitmq_data:
 
 networks:
-  transaction-service-network:
-    driver: bridge
+  transaction-services:
+  wheelz-app:
+    external: true
