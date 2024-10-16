@@ -1,0 +1,124 @@
+[
+  {
+    "constructor": "audi",
+    "model": "Q5",
+    "year": 2008,
+    "risks": { "exterior": [], "mechanical": ["STARTER_PROBLEM", "STARTER_PROBLEM"], "generic": [] },
+    "sinisters": [
+      {
+        "Year": 2013,
+        "Month": 9,
+        "Day": 4,
+        "Weekend?": "Weekday",
+        "Hour": 2000.0,
+        "Collision Type": "1-Car",
+        "Injury Type": "No injury/unknown",
+        "Primary Factor": "OTHER (DRIVER) - EXPLAIN IN NARRATIVE",
+        "Reported_Location": "E 10TH ST",
+        "Latitude": 39.171504,
+        "Longitude": -86.512288
+      }
+    ],
+    "vin": "9VCXVZFUZCWZADWTC",
+    "issues": { "exterior": [], "mechanical": [], "generic": ["DENTED_BODY"] }
+  },
+  {
+    "constructor": "audi",
+    "model": "Q2",
+    "year": 2016,
+    "risks": { "exterior": ["RIGHT_DOOR_REAR"], "mechanical": ["STARTER_PROBLEM"], "generic": [] },
+    "sinisters": [
+      {
+        "Year": 2016,
+        "Month": 5,
+        "Day": 6,
+        "Weekend?": "Weekday",
+        "Hour": 1800.0,
+        "Collision Type": "2-Car",
+        "Injury Type": "Non-incapacitating",
+        "Primary Factor": "OTHER (DRIVER) - EXPLAIN IN NARRATIVE",
+        "Reported_Location": "HIGH & MAXWELL",
+        "Latitude": 39.1592,
+        "Longitude": -86.508399
+      },
+      {
+        "Year": 2019,
+        "Month": 10,
+        "Day": 4,
+        "Weekend?": "Weekday",
+        "Hour": 1500.0,
+        "Collision Type": "2-Car",
+        "Injury Type": "No injury/unknown",
+        "Primary Factor": "FAILURE TO YIELD RIGHT OF WAY",
+        "Reported_Location": "8TH ST & GRANT",
+        "Latitude": 39.16947976,
+        "Longitude": -86.5297801
+      }
+    ],
+    "vin": "3PWGK6BHY707U9R5K",
+    "issues": { "exterior": ["REAR_BUMPER"], "mechanical": ["ENGINE_FAILURE"], "generic": [] }
+  },
+  {
+    "constructor": "audi",
+    "model": "A5",
+    "year": 2018,
+    "risks": { "exterior": ["RIGHT_DOOR_REAR"], "mechanical": ["STARTER_PROBLEM", "STARTER_PROBLEM"], "generic": [] },
+    "sinisters": [],
+    "vin": "76S9WU6Y4VXN63BMT",
+    "issues": { "exterior": [], "mechanical": [], "generic": [] }
+  },
+  {
+    "constructor": "audi",
+    "model": "RS5",
+    "year": 2014,
+    "risks": { "exterior": ["RIGHT_DOOR_REAR"], "mechanical": ["STARTER_PROBLEM"], "generic": [] },
+    "sinisters": [],
+    "vin": "S7VLKC8JE5VAJDDRA",
+    "issues": { "exterior": [], "mechanical": [], "generic": [] }
+  },
+  {
+    "constructor": "audi",
+    "model": "A7",
+    "year": 2020,
+    "risks": { "exterior": ["RIGHT_DOOR_REAR"], "mechanical": ["STARTER_PROBLEM"], "generic": [] },
+    "sinisters": [],
+    "vin": "ML2SWBXAJP8WB7TKL",
+    "issues": { "exterior": [], "mechanical": [], "generic": ["UNKNOWN_DAMAGE"] }
+  },
+  {
+    "constructor": "audi",
+    "model": "A5",
+    "year": 2012,
+    "risks": { "exterior": ["RIGHT_DOOR_REAR"], "mechanical": ["STARTER_PROBLEM"], "generic": [] },
+    "sinisters": [],
+    "vin": "PM2JMUJ54NBHDY29Z",
+    "issues": { "exterior": [], "mechanical": ["STARTER_PROBLEM"], "generic": [] }
+  },
+  {
+    "constructor": "audi",
+    "model": "A3",
+    "year": 2020,
+    "risks": { "exterior": ["RIGHT_DOOR_REAR"], "mechanical": ["STARTER_PROBLEM", "STARTER_PROBLEM"], "generic": [] },
+    "sinisters": [],
+    "vin": "ZVXVBVHWE77DCW0B8",
+    "issues": { "exterior": [], "mechanical": [], "generic": [] }
+  },
+  {
+    "constructor": "audi",
+    "model": "TT",
+    "year": 2014,
+    "risks": { "exterior": [], "mechanical": ["STARTER_PROBLEM", "STARTER_PROBLEM"], "generic": [] },
+    "sinisters": [],
+    "vin": "C6U1AN2VUJGZ0EMLB",
+    "issues": { "exterior": [], "mechanical": [], "generic": [] }
+  },
+  {
+    "constructor": "audi",
+    "model": "RS4",
+    "year": 2013,
+    "risks": { "exterior": ["RIGHT_DOOR_REAR"], "mechanical": ["STARTER_PROBLEM"], "generic": [] },
+    "sinisters": [],
+    "vin": "TKERZP3SEHGRCY68P",
+    "issues": { "exterior": [], "mechanical": ["STARTER_PROBLEM"], "generic": [] }
+  }
+]

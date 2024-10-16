@@ -1,7 +1,6 @@
-import { Application } from './application.js';
+import type { AbstractApplication } from './presentation/applications/base.application.js';
 
-async function bootstrap() {
-  const application = await Application.create();
+export async function bootstrap(application: AbstractApplication) {
   process.on('SIGINT', async () => {
     console.log('Received SIGINT. Graceful shutdown start');
     await application.stop();
@@ -14,8 +13,3 @@ async function bootstrap() {
 
   await application.start();
 }
-
-bootstrap().catch((error) => {
-  console.error(error);
-  process.exit(1);
-});
