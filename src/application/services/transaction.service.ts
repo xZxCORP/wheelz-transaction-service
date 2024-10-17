@@ -1,6 +1,7 @@
 import { type VehicleTransaction, type VehicleTransactionData } from '@zcorp/shared-typing-wheelz';
 
 import type { LoggerPort } from '../ports/logger.port.js';
+import type { ConsumeCompletedVehicleTransactionsUseCase } from '../use-cases/consume-completed-vehicle-transactions.use-case.js';
 import { CreateVehicleTransactionUseCase } from '../use-cases/create-vehicle-transaction.use-case.js';
 import type { GetVehicleTransactionsUseCase as GetVehicleTransactionsUseCase } from '../use-cases/get-vehicle-transactions.use-case.js';
 import type { MapRawVehicleToVehicleUseCase } from '../use-cases/map-raw-vehicle-to-vehicle.use-case.js';
@@ -15,6 +16,7 @@ export class TransactionService {
     private readonly validateVehicleTransactionDataUseCase: ValidateVehicleTransactionDataUseCase,
     private readonly resetVehicleTransactionsUseCase: ResetVehicleTransactionsUseCase,
     private readonly getVehicleTransactionsUseCase: GetVehicleTransactionsUseCase,
+    private readonly consumeCompletedVehicleTransactionsUseCase: ConsumeCompletedVehicleTransactionsUseCase,
     private logger: LoggerPort
   ) {}
 
@@ -26,6 +28,10 @@ export class TransactionService {
     }
     const transaction = await this.createVehicleTransactionUseCase.execute(vehicleTransactionData);
     return transaction;
+  }
+  async consumeCompletedTransactions() {
+    this.logger.info('Start consuming completed transactions');
+    await this.consumeCompletedVehicleTransactionsUseCase.execute();
   }
   async getTransactions(): Promise<VehicleTransaction[]> {
     return this.getVehicleTransactionsUseCase.execute();

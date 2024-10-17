@@ -1,4 +1,5 @@
 import { TransactionService } from '../../application/services/transaction.service.js';
+import { ConsumeCompletedVehicleTransactionsUseCase } from '../../application/use-cases/consume-completed-vehicle-transactions.use-case.js';
 import { CreateVehicleTransactionUseCase } from '../../application/use-cases/create-vehicle-transaction.use-case.js';
 import { GetVehicleTransactionsUseCase } from '../../application/use-cases/get-vehicle-transactions.use-case.js';
 import { MapRawVehicleToVehicleUseCase } from '../../application/use-cases/map-raw-vehicle-to-vehicle.use-case.js';
@@ -23,6 +24,7 @@ import { TransactionController } from '../controllers/transaction.controller.ts.
 import { AbstractApplication } from './base.application.js';
 
 export class MainApplication extends AbstractApplication {
+  private transactionService!: TransactionService;
   async initializeResources(): Promise<void> {
     const completedQueue = new RabbitMQQueue(
       this.config.transactionQueue.url,
@@ -73,19 +75,26 @@ export class MainApplication extends AbstractApplication {
       stubExternalTransactionDataValidator
     );
     const getVehicleTransactionsUseCase = new GetVehicleTransactionsUseCase(transactionRepository);
+    const comsumeCompletedVehicleTransactionsUseCase =
+      new ConsumeCompletedVehicleTransactionsUseCase(
+        transactionRepository,
+        completedQueue,
+        this.logger
+      );
 
-    const transactionService = new TransactionService(
+    this.transactionService = new TransactionService(
       createVehicleTransactionUseCase,
       readRawVehicleFileUseCase,
       mapRawVehicleToVehicleUseCase,
       validateVehicleTransactionDataUseCase,
       resetVehicleTransactionsUseCase,
       getVehicleTransactionsUseCase,
+      comsumeCompletedVehicleTransactionsUseCase,
       this.logger
     );
 
     const healthcheckController = new HealthcheckController(performHealthCheckUseCase);
-    const transactionController = new TransactionController(transactionService);
+    const transactionController = new TransactionController(this.transactionService);
     const api = new FastifyApiServer(this.config, transactionController, healthcheckController);
 
     this.managedResources = [newQueue, completedQueue, transactionRepository, api];
@@ -101,5 +110,9 @@ export class MainApplication extends AbstractApplication {
         pretty: true,
       })
     );
+  }
+  override async initialize(): Promise<void> {
+    await super.initialize();
+    await this.transactionService.consumeCompletedTransactions();
   }
 }
