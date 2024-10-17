@@ -24,6 +24,7 @@
     "commander": "^12.1.0",
     "dotenv": "^16.4.5",
     "fastify": "^4.28.1",
+    "mongodb": "^6.9.0",
     "pino": "^9.4.0",
     "pino-pretty": "^11.2.2",
     "winston": "^3.15.0",

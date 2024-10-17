@@ -8,6 +8,11 @@ export const configSchema = z.object({
     completedQueueName: z.string(),
     newQueueName: z.string(),
   }),
+  transactionRepository: z.object({
+    url: z.string(),
+    database: z.string(),
+    collection: z.string(),
+  }),
   api: z.object({
     host: z.string(),
     port: z.coerce.number(),

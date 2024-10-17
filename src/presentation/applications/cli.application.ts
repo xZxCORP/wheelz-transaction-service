@@ -2,6 +2,7 @@ import path from 'node:path';
 
 import { TransactionService } from '../../application/services/transaction.service.js';
 import { CreateVehicleTransactionUseCase } from '../../application/use-cases/create-vehicle-transaction.use-case.js';
+import { GetVehicleTransactionsUseCase } from '../../application/use-cases/get-vehicle-transactions.use-case.js';
 import { MapRawVehicleToVehicleUseCase } from '../../application/use-cases/map-raw-vehicle-to-vehicle.use-case.js';
 import { ReadRawVehicleFileUseCase } from '../../application/use-cases/read-raw-vehicle-file.use-case.js';
 import { ResetVehicleTransactionsUseCase } from '../../application/use-cases/reset-vehicle-transactions.use-case.js';
@@ -40,7 +41,12 @@ export class CliApplication extends AbstractApplication {
     const dateProvider = new RealDateProvider();
     const fileReader = new RealFileReader();
     const idGenerator = new UuidIdGenerator();
-    const transactionRepository = new MongoTransactionRepository();
+    const transactionRepository = new MongoTransactionRepository(
+      this.config.transactionRepository.url,
+      this.config.transactionRepository.database,
+      this.config.transactionRepository.collection,
+      this.logger
+    );
     const createVehicleTransactionUseCase = new CreateVehicleTransactionUseCase(
       dataSigner,
       dateProvider,
@@ -57,16 +63,18 @@ export class CliApplication extends AbstractApplication {
     const validateVehicleTransactionDataUseCase = new ValidateVehicleTransactionDataUseCase(
       stubExternalTransactionDataValidator
     );
+    const getVehicleTransactionsUseCase = new GetVehicleTransactionsUseCase(transactionRepository);
     this.transactionService = new TransactionService(
       createVehicleTransactionUseCase,
       readRawVehicleFileUseCase,
       mapRawVehicleToVehicleUseCase,
       validateVehicleTransactionDataUseCase,
       resetVehicleTransactionsUseCase,
+      getVehicleTransactionsUseCase,
       this.logger
     );
 
-    this.managedResources = [newQueue, completedQueue];
+    this.managedResources = [newQueue, completedQueue, transactionRepository];
   }
 
   async importVehicles(filePath: string): Promise<void> {

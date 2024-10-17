@@ -2,6 +2,7 @@ import { type VehicleTransaction, type VehicleTransactionData } from '@zcorp/sha
 
 import type { LoggerPort } from '../ports/logger.port.js';
 import { CreateVehicleTransactionUseCase } from '../use-cases/create-vehicle-transaction.use-case.js';
+import type { GetVehicleTransactionsUseCase as GetVehicleTransactionsUseCase } from '../use-cases/get-vehicle-transactions.use-case.js';
 import type { MapRawVehicleToVehicleUseCase } from '../use-cases/map-raw-vehicle-to-vehicle.use-case.js';
 import type { ReadRawVehicleFileUseCase } from '../use-cases/read-raw-vehicle-file.use-case.js';
 import type { ResetVehicleTransactionsUseCase } from '../use-cases/reset-vehicle-transactions.use-case.js';
@@ -13,6 +14,7 @@ export class TransactionService {
     private readonly mapRawVehicleToVehicleUseCase: MapRawVehicleToVehicleUseCase,
     private readonly validateVehicleTransactionDataUseCase: ValidateVehicleTransactionDataUseCase,
     private readonly resetVehicleTransactionsUseCase: ResetVehicleTransactionsUseCase,
+    private readonly getVehicleTransactionsUseCase: GetVehicleTransactionsUseCase,
     private logger: LoggerPort
   ) {}
 
@@ -26,7 +28,7 @@ export class TransactionService {
     return transaction;
   }
   async getTransactions(): Promise<VehicleTransaction[]> {
-    return [];
+    return this.getVehicleTransactionsUseCase.execute();
   }
   async processVehicleDataFromFile(filePath: string) {
     await this.resetVehicleTransactionsUseCase.execute();
