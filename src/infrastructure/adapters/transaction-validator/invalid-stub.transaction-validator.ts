@@ -1,18 +1,12 @@
-import { okAsync, ResultAsync } from 'neverthrow';
+import type { VehicleTransactionData } from '@zcorp/shared-typing-wheelz';
 
 import type {
   ExternalTransactionDataValidatorPort,
   TransactionValidationResult,
 } from '../../../application/ports/external-transaction-data-validator.port.js';
-import type {
-  TransactionAction,
-  VehicleTransactionData,
-} from '../../../domain/entities/transaction.entity.js';
 
 export class InvalidStubTransactionValidator implements ExternalTransactionDataValidatorPort {
-  async validate<A extends TransactionAction>(
-    transaction: VehicleTransactionData<A>
-  ): Promise<TransactionValidationResult<A>> {
+  async validate(transaction: VehicleTransactionData): Promise<TransactionValidationResult> {
     return {
       isValid: false,
       message: 'Transaction is invalid',

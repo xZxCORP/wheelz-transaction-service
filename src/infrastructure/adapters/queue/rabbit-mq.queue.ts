@@ -1,6 +1,5 @@
-import { AMQPChannel, AMQPClient, AMQPError, AMQPQueue } from '@cloudamqp/amqp-client';
+import { AMQPChannel, AMQPClient, AMQPQueue } from '@cloudamqp/amqp-client';
 import { AMQPBaseClient } from '@cloudamqp/amqp-client/amqp-base-client';
-import { errAsync, okAsync, ResultAsync } from 'neverthrow';
 
 import type { LoggerPort } from '../../../application/ports/logger.port.js';
 import type { QueuePort } from '../../../application/ports/queue.port.js';
@@ -59,6 +58,17 @@ export class RabbitMQQueue implements QueuePort, ManagedResource {
       return true;
     } catch {
       throw new Error('Error while enqueuing data');
+    }
+  }
+  async clear(): Promise<boolean> {
+    if (!this.queue) {
+      return false;
+    }
+    try {
+      await this.queue.purge();
+      return true;
+    } catch {
+      throw new Error('Error while clear queue');
     }
   }
 }

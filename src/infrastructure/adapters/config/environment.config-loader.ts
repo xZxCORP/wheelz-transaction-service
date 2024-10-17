@@ -1,5 +1,4 @@
 import { configDotenv } from 'dotenv';
-import { Result } from 'neverthrow';
 
 import {
   type Config,
@@ -8,8 +7,10 @@ import {
 } from '../../ports/config-loader.port.js';
 
 export class EnvironmentConfigLoader implements ConfigLoaderPort {
-  constructor() {
-    configDotenv();
+  constructor(path: string = '.env') {
+    configDotenv({
+      path,
+    });
   }
   async load(): Promise<Config> {
     const data = {

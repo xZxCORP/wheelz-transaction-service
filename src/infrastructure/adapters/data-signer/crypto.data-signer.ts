@@ -1,10 +1,8 @@
 import { createSign } from 'node:crypto';
 
+import type { SignAlgorithm, Signature } from '@zcorp/shared-typing-wheelz';
+
 import type { DataSignerPort } from '../../../application/ports/data-signer.port.js';
-import type {
-  DataSignature,
-  SignAlgorithm,
-} from '../../../domain/entities/data-signature.entity.js';
 
 export class CryptoDataSigner implements DataSignerPort {
   constructor(
@@ -12,7 +10,7 @@ export class CryptoDataSigner implements DataSignerPort {
     private readonly privateKey: string
   ) {}
 
-  sign(data: string): Promise<DataSignature> {
+  sign(data: string): Promise<Signature> {
     try {
       const signer = createSign(this.signAlgorithm);
       signer.update(data);

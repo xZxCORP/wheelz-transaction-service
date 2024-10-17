@@ -1,9 +1,10 @@
-import type { TransactionService } from '../../application/services/transaction.service.js';
 import type {
   CreateVehicleTransactionData,
   DeleteVehicleTransactionData,
   UpdateVehicleTransactionData,
-} from '../../domain/entities/transaction.entity.js';
+} from '@zcorp/shared-typing-wheelz';
+
+import type { TransactionService } from '../../application/services/transaction.service.js';
 
 export class TransactionController {
   constructor(private readonly transactionService: TransactionService) {}

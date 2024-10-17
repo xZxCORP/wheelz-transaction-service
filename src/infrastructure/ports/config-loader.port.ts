@@ -1,9 +1,6 @@
+import { supportedSignAlgorithms } from '@zcorp/shared-typing-wheelz';
 import { z } from 'zod';
 
-import {
-  type SignAlgorithm,
-  supportedSignAlgorithms,
-} from '../../domain/entities/data-signature.entity.js';
 export const configSchema = z.object({
   logLevel: z.string(),
   transactionQueue: z.object({
