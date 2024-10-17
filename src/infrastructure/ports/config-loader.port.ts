@@ -5,7 +5,13 @@ export const configSchema = z.object({
   logLevel: z.string(),
   transactionQueue: z.object({
     url: z.string(),
-    queueName: z.string(),
+    completedQueueName: z.string(),
+    newQueueName: z.string(),
+  }),
+  transactionRepository: z.object({
+    url: z.string(),
+    database: z.string(),
+    collection: z.string(),
   }),
   api: z.object({
     host: z.string(),

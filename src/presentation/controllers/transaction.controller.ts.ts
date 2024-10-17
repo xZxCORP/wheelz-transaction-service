@@ -27,4 +27,7 @@ export class TransactionController {
       data,
     });
   }
+  getTransactions() {
+    return this.transactionService.getTransactions();
+  }
 }

@@ -18,7 +18,13 @@ export class EnvironmentConfigLoader implements ConfigLoaderPort {
       contractPath: process.env.CONTRACT_PATH,
       transactionQueue: {
         url: process.env.NOTIFICATION_QUEUE_URL,
-        queueName: process.env.NOTIFICATION_QUEUE_NAME,
+        completedQueueName: process.env.NOTIFICATION_QUEUE_COMPLETED_NAME,
+        newQueueName: process.env.NOTIFICATION_QUEUE_NEW_NAME,
+      },
+      transactionRepository: {
+        url: process.env.TRANSACTION_REPOSITORY_URL,
+        database: process.env.TRANSACTION_REPOSITORY_DATABASE,
+        collection: process.env.TRANSACTION_REPOSITORY_COLLECTION,
       },
       api: {
         host: process.env.API_HOST,

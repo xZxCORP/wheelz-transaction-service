@@ -5,7 +5,15 @@ import type { TransactionController } from '../../controllers/transaction.contro
 
 export class TransactionRouter {
   constructor(private readonly transactionController: TransactionController) {}
-
+  getTransactions = async (): Promise<
+    ServerInferResponses<typeof transactionContract.transactions.getTransactions>
+  > => {
+    const result = await this.transactionController.getTransactions();
+    return {
+      status: 200,
+      body: result,
+    };
+  };
   submitTransaction = async (
     input: ServerInferRequest<typeof transactionContract.transactions.submitTransaction>
   ): Promise<ServerInferResponses<typeof transactionContract.transactions.submitTransaction>> => {
