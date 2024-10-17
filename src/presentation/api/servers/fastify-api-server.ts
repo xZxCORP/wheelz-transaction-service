@@ -52,6 +52,7 @@ export class FastifyApiServer implements ManagedResource {
     server.registerRouter(
       transactionContract.transactions,
       {
+        getTransactions: this.transactionRouter.getTransactions,
         submitTransaction: this.transactionRouter.submitTransaction,
         updateTransaction: this.transactionRouter.updateTransaction,
         deleteTransaction: this.transactionRouter.deleteTransaction,

@@ -17,6 +17,7 @@ export class RabbitMQQueue implements QueuePort, ManagedResource {
   ) {
     this.client = new AMQPClient(this.url);
   }
+
   async isRunning(): Promise<boolean> {
     if (!this.connection || !this.channel || !this.queue) {
       return true;
@@ -32,6 +33,7 @@ export class RabbitMQQueue implements QueuePort, ManagedResource {
     this.connection = connection;
     const channel = await this.client.channel();
     this.channel = channel;
+
     const queue = await channel.queue(this.queueName, { durable: true });
     this.queue = queue;
   }
@@ -50,22 +52,50 @@ export class RabbitMQQueue implements QueuePort, ManagedResource {
   }
 
   async enqueue(data: unknown): Promise<boolean> {
-    if (!this.queue) {
+    const isRunning = await this.isRunning();
+    if (!isRunning) {
       return false;
     }
     try {
-      await this.queue.publish(Buffer.from(JSON.stringify(data)), { deliveryMode: 2 });
+      await this.queue!.publish(Buffer.from(JSON.stringify(data)), { deliveryMode: 2 });
       return true;
     } catch {
       throw new Error('Error while enqueuing data');
     }
   }
-  async clear(): Promise<boolean> {
-    if (!this.queue) {
+  async consume(onReceived: (message: unknown) => Promise<void>): Promise<boolean> {
+    const isRunning = await this.isRunning();
+    if (!isRunning) {
       return false;
     }
     try {
-      await this.queue.purge();
+      await this.channel!.prefetch(1);
+      await this.channel!.basicConsume(this.queueName, { noAck: false }, async (message) => {
+        const content = message.bodyToString();
+        if (content) {
+          try {
+            const parsed = JSON.parse(content);
+            await onReceived(parsed);
+            await message.ack();
+          } catch {
+            await message.nack(true);
+          }
+        }
+      });
+      this.logger.info(`Started consuming messages from queue: ${this.queueName}`);
+      return true;
+    } catch {
+      throw new Error('Failed to set up message consumer');
+    }
+  }
+
+  async clear(): Promise<boolean> {
+    const isRunning = await this.isRunning();
+    if (!isRunning) {
+      return false;
+    }
+    try {
+      await this.queue!.purge();
       return true;
     } catch {
       throw new Error('Error while clear queue');

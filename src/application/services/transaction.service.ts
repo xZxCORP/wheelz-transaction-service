@@ -1,33 +1,35 @@
-import { type VehicleTransactionData } from '@zcorp/shared-typing-wheelz';
+import { type VehicleTransaction, type VehicleTransactionData } from '@zcorp/shared-typing-wheelz';
 
-import { ApplicationError } from '../error.js';
-import type { ExternalTransactionDataValidatorPort } from '../ports/external-transaction-data-validator.port.js';
 import type { LoggerPort } from '../ports/logger.port.js';
-import type { QueuePort } from '../ports/queue.port.js';
 import { CreateVehicleTransactionUseCase } from '../use-cases/create-vehicle-transaction.use-case.js';
 import type { MapRawVehicleToVehicleUseCase } from '../use-cases/map-raw-vehicle-to-vehicle.use-case.js';
 import type { ReadRawVehicleFileUseCase } from '../use-cases/read-raw-vehicle-file.use-case.js';
+import type { ResetVehicleTransactionsUseCase } from '../use-cases/reset-vehicle-transactions.use-case.js';
+import type { ValidateVehicleTransactionDataUseCase } from '../use-cases/validate-vehicle-transaction-data.use-case.js';
 export class TransactionService {
   constructor(
-    private readonly externalTransactionDataValidator: ExternalTransactionDataValidatorPort,
     private readonly createVehicleTransactionUseCase: CreateVehicleTransactionUseCase,
     private readonly readRawVehicleFileUseCase: ReadRawVehicleFileUseCase,
     private readonly mapRawVehicleToVehicleUseCase: MapRawVehicleToVehicleUseCase,
-    private readonly queue: QueuePort,
+    private readonly validateVehicleTransactionDataUseCase: ValidateVehicleTransactionDataUseCase,
+    private readonly resetVehicleTransactionsUseCase: ResetVehicleTransactionsUseCase,
     private logger: LoggerPort
   ) {}
 
   async processTransactionData(vehicleTransactionData: VehicleTransactionData) {
-    const result = await this.externalTransactionDataValidator.validate(vehicleTransactionData);
-    if (!result.isValid) {
-      throw new ApplicationError(result.message);
+    const isValid =
+      await this.validateVehicleTransactionDataUseCase.execute(vehicleTransactionData);
+    if (!isValid) {
+      throw new Error('Invalid vehicle transaction data');
     }
     const transaction = await this.createVehicleTransactionUseCase.execute(vehicleTransactionData);
-    await this.queue.enqueue(transaction);
     return transaction;
   }
+  async getTransactions(): Promise<VehicleTransaction[]> {
+    return [];
+  }
   async processVehicleDataFromFile(filePath: string) {
-    await this.queue.clear();
+    await this.resetVehicleTransactionsUseCase.execute();
     const rawVehicles = await this.readRawVehicleFileUseCase.execute(filePath);
     for (const rawVehicle of rawVehicles) {
       const vehicle = await this.mapRawVehicleToVehicleUseCase.execute(rawVehicle);

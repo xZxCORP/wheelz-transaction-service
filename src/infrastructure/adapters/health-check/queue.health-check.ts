@@ -4,9 +4,12 @@ import type { HealthCheckPort } from '../../../application/ports/health-check.po
 import type { QueuePort } from '../../../application/ports/queue.port.js';
 
 export class QueueHealthCheck implements HealthCheckPort {
-  name = 'queue';
-
-  constructor(private queue: QueuePort) {}
+  constructor(
+    private queue: QueuePort,
+    public name: string = 'queue'
+  ) {
+    this.name = name;
+  }
 
   async isHealthy(): Promise<ServiceHealthStatus> {
     const isRunning = await this.queue.isRunning();
