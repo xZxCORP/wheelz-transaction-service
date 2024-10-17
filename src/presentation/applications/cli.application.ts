@@ -1,20 +1,21 @@
-import { readFile } from 'node:fs/promises';
 import path from 'node:path';
-
-import type { Vehicle } from '@zcorp/shared-typing-wheelz';
 
 import { TransactionService } from '../../application/services/transaction.service.js';
 import { CreateVehicleTransactionUseCase } from '../../application/use-cases/create-vehicle-transaction.use-case.js';
+import { MapRawVehicleToVehicleUseCase } from '../../application/use-cases/map-raw-vehicle-to-vehicle.use-case.js';
+import { ReadRawVehicleFileUseCase } from '../../application/use-cases/read-raw-vehicle-file.use-case.js';
 import { EnvironmentConfigLoader } from '../../infrastructure/adapters/config/environment.config-loader.js';
 import { CryptoDataSigner } from '../../infrastructure/adapters/data-signer/crypto.data-signer.js';
 import { RealDateProvider } from '../../infrastructure/adapters/date-provider/real.date-provider.port.js';
-import { PinoLogger } from '../../infrastructure/adapters/logger/pino.logger.js';
+import { RealFileReader } from '../../infrastructure/adapters/file-reader/real.file-reader.js';
+import { UuidIdGenerator } from '../../infrastructure/adapters/id-generator/uuid.id-generator.js';
+import { WinstonLogger } from '../../infrastructure/adapters/logger/winston.logger.js';
 import { RabbitMQQueue } from '../../infrastructure/adapters/queue/rabbit-mq.queue.js';
 import { ValidStubTransactionValidator } from '../../infrastructure/adapters/transaction-validator/valid-stub.transaction-validator.js';
 import { AbstractApplication } from './base.application.js';
 
 export class CliApplication extends AbstractApplication {
-  private transactionService: TransactionService;
+  private transactionService!: TransactionService;
 
   async initializeResources(): Promise<void> {
     const queue = new RabbitMQQueue(
@@ -29,15 +30,23 @@ export class CliApplication extends AbstractApplication {
       this.config.dataSigner.privateKey
     );
     const dateProvider = new RealDateProvider();
+    const fileReader = new RealFileReader();
+    const idGenerator = new UuidIdGenerator();
+
     const createVehicleTransactionUseCase = new CreateVehicleTransactionUseCase(
       dataSigner,
-      dateProvider
+      dateProvider,
+      idGenerator
     );
-
+    const readRawVehicleFileUseCase = new ReadRawVehicleFileUseCase(fileReader);
+    const mapRawVehicleToVehicleUseCase = new MapRawVehicleToVehicleUseCase();
     this.transactionService = new TransactionService(
       stubExternalTransactionDataValidator,
       createVehicleTransactionUseCase,
-      queue
+      readRawVehicleFileUseCase,
+      mapRawVehicleToVehicleUseCase,
+      queue,
+      this.logger
     );
 
     this.managedResources = [queue];
@@ -45,18 +54,7 @@ export class CliApplication extends AbstractApplication {
 
   async importVehicles(filePath: string): Promise<void> {
     this.logger.info(`Importing transactions from ${filePath}`);
-    const fileContent = await readFile(filePath, 'utf8');
-    const vehicles: Vehicle[] = JSON.parse(fileContent);
-
-    for (const vehicle of transactions) {
-      try {
-        await this.transactionService.createTransaction(transaction);
-        this.logger.info(`Imported transaction ${transaction.id}`);
-      } catch (error) {
-        this.logger.error(`Failed to import transaction ${transaction.id}:`, error);
-      }
-    }
-
+    await this.transactionService.processVehicleDataFromFile(filePath);
     this.logger.info('Transaction import completed');
   }
 
@@ -64,6 +62,12 @@ export class CliApplication extends AbstractApplication {
     const configLoader = new EnvironmentConfigLoader(path.resolve(process.cwd(), '.env.cli'));
     const config = await configLoader.load();
 
-    return new CliApplication(config, new PinoLogger(config.logLevel));
+    return new CliApplication(
+      config,
+      new WinstonLogger({
+        logLevel: config.logLevel,
+        pretty: true,
+      })
+    );
   }
 }

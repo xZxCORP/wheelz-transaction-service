@@ -13,8 +13,8 @@ async function main() {
       try {
         const app = await CliApplication.create();
         thisCommand.setOptionValue('app', app);
-      } catch (error) {
-        console.error('Failed to create application:', error);
+      } catch {
+        console.error('Error initializing application');
         process.exit(1);
       }
     });
@@ -25,14 +25,21 @@ async function main() {
     .requiredOption('-f, --file <path>', 'Path to JSON file containing vehicles data')
     .action(async (options, command) => {
       const app: CliApplication = command.parent.getOptionValue('app');
-      const filePath = options.file;
 
-      await bootstrap(app);
+      try {
+        const filePath = options.file;
 
-      await app.importVehicles(filePath);
-      await app.stop();
+        await bootstrap(app);
+
+        await app.importVehicles(filePath);
+        await app.stop();
+      } catch (error) {
+        app.logger.error('Error importing vehicles', error);
+        await app.stop();
+        process.exit(1);
+      }
     });
 
   await program.parseAsync(process.argv);
 }
-main().catch(console.error);
+main();

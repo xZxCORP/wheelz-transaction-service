@@ -26,6 +26,7 @@
     "fastify": "^4.28.1",
     "pino": "^9.4.0",
     "pino-pretty": "^11.2.2",
+    "winston": "^3.15.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {

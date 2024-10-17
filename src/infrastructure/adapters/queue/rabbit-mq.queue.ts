@@ -60,4 +60,15 @@ export class RabbitMQQueue implements QueuePort, ManagedResource {
       throw new Error('Error while enqueuing data');
     }
   }
+  async clear(): Promise<boolean> {
+    if (!this.queue) {
+      return false;
+    }
+    try {
+      await this.queue.purge();
+      return true;
+    } catch {
+      throw new Error('Error while clear queue');
+    }
+  }
 }

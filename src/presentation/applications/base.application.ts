@@ -6,8 +6,8 @@ export abstract class AbstractApplication {
   protected managedResources: ManagedResource[] = [];
 
   constructor(
-    protected readonly config: Config,
-    protected readonly logger: LoggerPort
+    public readonly config: Config,
+    public readonly logger: LoggerPort
   ) {}
 
   abstract initializeResources(): Promise<void>;
