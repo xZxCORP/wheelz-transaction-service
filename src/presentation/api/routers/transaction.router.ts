@@ -1,7 +1,7 @@
 import type { ServerInferRequest, ServerInferResponses } from '@ts-rest/core';
 import type { transactionContract } from '@zcorp/wheelz-contracts';
 
-import type { TransactionController } from '../../controllers/transaction.controller.ts.js';
+import type { TransactionController } from '../../controllers/transaction.controller.js';
 
 export class TransactionRouter {
   constructor(private readonly transactionController: TransactionController) {}

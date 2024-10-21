@@ -1,3 +1,4 @@
+import cors from '@fastify/cors';
 import fastifySwagger from '@fastify/swagger';
 import fastifySwaggerUI from '@fastify/swagger-ui';
 import { initServer } from '@ts-rest/fastify';
@@ -8,7 +9,7 @@ import Fastify from 'fastify';
 import type { ManagedResource } from '../../../infrastructure/managed.resource.js';
 import type { Config } from '../../../infrastructure/ports/config-loader.port.js';
 import type { HealthcheckController } from '../../controllers/healthcheck.controller.js';
-import type { TransactionController } from '../../controllers/transaction.controller.ts.js';
+import type { TransactionController } from '../../controllers/transaction.controller.js';
 import { openApiDocument } from '../open-api.js';
 import { HealthcheckRouter } from '../routers/healthcheck.router.js';
 import { TransactionRouter } from '../routers/transaction.router.js';
@@ -34,6 +35,9 @@ export class FastifyApiServer implements ManagedResource {
           },
         },
       },
+    });
+    this.fastifyInstance.register(cors, {
+      origin: '*',
     });
     this.healthcheckRouter = new HealthcheckRouter(this.healthcheckController);
     this.transactionRouter = new TransactionRouter(this.transactionController);

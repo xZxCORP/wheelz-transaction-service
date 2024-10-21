@@ -20,7 +20,7 @@ import { ValidStubTransactionValidator } from '../../infrastructure/adapters/tra
 import { MongoTransactionRepository } from '../../infrastructure/repositories/mongo.transaction-repository.js';
 import { FastifyApiServer } from '../api/servers/fastify-api-server.js';
 import { HealthcheckController } from '../controllers/healthcheck.controller.js';
-import { TransactionController } from '../controllers/transaction.controller.ts.js';
+import { TransactionController } from '../controllers/transaction.controller.js';
 import { AbstractApplication } from './base.application.js';
 
 export class MainApplication extends AbstractApplication {
