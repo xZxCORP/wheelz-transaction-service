@@ -1,7 +1,8 @@
 import type { VehicleTransaction } from '@zcorp/shared-typing-wheelz';
+import type { PaginatedTransactions, PaginationParameters } from '@zcorp/wheelz-contracts';
 
 export interface TransactionRepository {
-  getAll(): Promise<VehicleTransaction[]>;
+  getAll(paginationParameters: PaginationParameters): Promise<PaginatedTransactions>;
   save(transaction: VehicleTransaction): Promise<void>;
   removeAll(): Promise<void>;
   isRunning(): Promise<boolean>;

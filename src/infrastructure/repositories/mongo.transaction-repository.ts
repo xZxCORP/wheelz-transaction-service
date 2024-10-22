@@ -1,4 +1,9 @@
 import type { VehicleTransaction } from '@zcorp/shared-typing-wheelz';
+import type {
+  PaginatedTransactions,
+  Pagination,
+  PaginationParameters,
+} from '@zcorp/wheelz-contracts';
 import { type Collection, type Db, MongoClient, type WithId } from 'mongodb';
 
 import type { LoggerPort } from '../../application/ports/logger.port.js';
@@ -69,9 +74,22 @@ export class MongoTransactionRepository implements TransactionRepository, Manage
     await this.collection!.updateOne({ id: transactionId }, { $set: { status } });
   }
 
-  async getAll(): Promise<any[]> {
-    const transactions = await this.collection!.find().toArray();
-    return transactions.map((element) => this.mapToTransaction(element));
+  async getAll(paginationParameters: PaginationParameters): Promise<PaginatedTransactions> {
+    const total = await this.collection!.countDocuments();
+    const transactions = await this.collection!.find()
+      .limit(paginationParameters.perPage)
+      .skip((paginationParameters.page - 1) * paginationParameters.perPage)
+      .toArray();
+    const mapped = transactions.map((element) => this.mapToTransaction(element));
+    const meta: Pagination = {
+      page: paginationParameters.page,
+      perPage: paginationParameters.perPage,
+      total,
+    };
+    return {
+      items: mapped,
+      meta,
+    };
   }
 
   async removeAll(): Promise<void> {

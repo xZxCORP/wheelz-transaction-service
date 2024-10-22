@@ -5,6 +5,7 @@ import { initServer } from '@ts-rest/fastify';
 import { transactionContract } from '@zcorp/wheelz-contracts';
 import type { FastifyInstance } from 'fastify';
 import Fastify from 'fastify';
+import type { ZodIssue } from 'zod';
 
 import type { ManagedResource } from '../../../infrastructure/managed.resource.js';
 import type { Config } from '../../../infrastructure/ports/config-loader.port.js';
@@ -57,6 +58,7 @@ export class FastifyApiServer implements ManagedResource {
       transactionContract.transactions,
       {
         getTransactions: this.transactionRouter.getTransactions,
+        getTransactionById: this.transactionRouter.getTransactionById,
         submitTransaction: this.transactionRouter.submitTransaction,
         updateTransaction: this.transactionRouter.updateTransaction,
         deleteTransaction: this.transactionRouter.deleteTransaction,
@@ -64,7 +66,14 @@ export class FastifyApiServer implements ManagedResource {
       this.fastifyInstance,
       {
         requestValidationErrorHandler: (error, request, reply) => {
-          return reply.status(400).send({ message: 'Validation failed', data: error.body?.issues });
+          let mergedData: ZodIssue[] = [];
+          if (error.body?.issues && error.body.issues.length > 0) {
+            mergedData = [...mergedData, ...error.body.issues];
+          }
+          if (error.query?.issues && error.query.issues.length > 0) {
+            mergedData = [...mergedData, ...error.query.issues];
+          }
+          return reply.status(400).send({ message: 'Validation failed', data: mergedData });
         },
       }
     );

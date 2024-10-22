@@ -5,13 +5,24 @@ import type { TransactionController } from '../../controllers/transaction.contro
 
 export class TransactionRouter {
   constructor(private readonly transactionController: TransactionController) {}
-  getTransactions = async (): Promise<
-    ServerInferResponses<typeof transactionContract.transactions.getTransactions>
-  > => {
-    const result = await this.transactionController.getTransactions();
+  getTransactions = async (
+    input: ServerInferRequest<typeof transactionContract.transactions.getTransactions>
+  ): Promise<ServerInferResponses<typeof transactionContract.transactions.getTransactions>> => {
+    const result = await this.transactionController.getTransactions(input.query);
     return {
       status: 200,
       body: result,
+    };
+  };
+  getTransactionById = async (
+    input: ServerInferRequest<typeof transactionContract.transactions.getTransactionById>
+  ): Promise<ServerInferResponses<typeof transactionContract.transactions.getTransactionById>> => {
+    return {
+      status: 404,
+      body: {
+        message: 'Not Found',
+        data: null,
+      },
     };
   };
   submitTransaction = async (

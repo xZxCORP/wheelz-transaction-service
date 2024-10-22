@@ -1,4 +1,5 @@
-import { type VehicleTransaction, type VehicleTransactionData } from '@zcorp/shared-typing-wheelz';
+import { type VehicleTransactionData } from '@zcorp/shared-typing-wheelz';
+import type { PaginationParameters } from '@zcorp/wheelz-contracts';
 
 import type { LoggerPort } from '../ports/logger.port.js';
 import type { ConsumeCompletedVehicleTransactionsUseCase } from '../use-cases/consume-completed-vehicle-transactions.use-case.js';
@@ -33,8 +34,8 @@ export class TransactionService {
     this.logger.info('Start consuming completed transactions');
     await this.consumeCompletedVehicleTransactionsUseCase.execute();
   }
-  async getTransactions(): Promise<VehicleTransaction[]> {
-    return this.getVehicleTransactionsUseCase.execute();
+  async getTransactions(paginationParameters: PaginationParameters) {
+    return this.getVehicleTransactionsUseCase.execute(paginationParameters);
   }
   async processVehicleDataFromFile(filePath: string) {
     await this.resetVehicleTransactionsUseCase.execute();
