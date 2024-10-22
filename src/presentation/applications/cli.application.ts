@@ -3,6 +3,7 @@ import path from 'node:path';
 import { TransactionService } from '../../application/services/transaction.service.js';
 import { ConsumeCompletedVehicleTransactionsUseCase } from '../../application/use-cases/consume-completed-vehicle-transactions.use-case.js';
 import { CreateVehicleTransactionUseCase } from '../../application/use-cases/create-vehicle-transaction.use-case.js';
+import { GetVehicleTransactionByIdUseCase } from '../../application/use-cases/get-vehicle-transaction-by-id.use-case.js';
 import { GetVehicleTransactionsUseCase } from '../../application/use-cases/get-vehicle-transactions.use-case.js';
 import { MapRawVehicleToVehicleUseCase } from '../../application/use-cases/map-raw-vehicle-to-vehicle.use-case.js';
 import { ReadRawVehicleFileUseCase } from '../../application/use-cases/read-raw-vehicle-file.use-case.js';
@@ -65,6 +66,9 @@ export class CliApplication extends AbstractApplication {
       stubExternalTransactionDataValidator
     );
     const getVehicleTransactionsUseCase = new GetVehicleTransactionsUseCase(transactionRepository);
+    const getVehicleTransactionByIdUseCase = new GetVehicleTransactionByIdUseCase(
+      transactionRepository
+    );
     const comsumeCompletedVehicleTransactionsUseCase =
       new ConsumeCompletedVehicleTransactionsUseCase(
         transactionRepository,
@@ -78,6 +82,7 @@ export class CliApplication extends AbstractApplication {
       validateVehicleTransactionDataUseCase,
       resetVehicleTransactionsUseCase,
       getVehicleTransactionsUseCase,
+      getVehicleTransactionByIdUseCase,
       comsumeCompletedVehicleTransactionsUseCase,
       this.logger
     );

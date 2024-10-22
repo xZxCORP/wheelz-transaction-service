@@ -31,4 +31,7 @@ export class TransactionController {
   getTransactions(paginationParameters: PaginationParameters) {
     return this.transactionService.getTransactions(paginationParameters);
   }
+  getTransactionById(transactionId: string) {
+    return this.transactionService.getTransactionById(transactionId);
+  }
 }

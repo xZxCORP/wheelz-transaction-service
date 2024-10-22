@@ -17,12 +17,16 @@ export class TransactionRouter {
   getTransactionById = async (
     input: ServerInferRequest<typeof transactionContract.transactions.getTransactionById>
   ): Promise<ServerInferResponses<typeof transactionContract.transactions.getTransactionById>> => {
+    const result = await this.transactionController.getTransactionById(input.params.id);
+    if (!result) {
+      return {
+        status: 404,
+        body: { message: 'Transaction not found' },
+      };
+    }
     return {
-      status: 404,
-      body: {
-        message: 'Not Found',
-        data: null,
-      },
+      status: 200,
+      body: result,
     };
   };
   submitTransaction = async (

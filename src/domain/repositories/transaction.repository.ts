@@ -3,6 +3,7 @@ import type { PaginatedTransactions, PaginationParameters } from '@zcorp/wheelz-
 
 export interface TransactionRepository {
   getAll(paginationParameters: PaginationParameters): Promise<PaginatedTransactions>;
+  getById(transactionId: string): Promise<VehicleTransaction | null>;
   save(transaction: VehicleTransaction): Promise<void>;
   removeAll(): Promise<void>;
   isRunning(): Promise<boolean>;

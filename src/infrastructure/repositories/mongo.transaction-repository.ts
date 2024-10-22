@@ -91,6 +91,13 @@ export class MongoTransactionRepository implements TransactionRepository, Manage
       meta,
     };
   }
+  async getById(transactionId: string): Promise<VehicleTransaction | null> {
+    const transaction = await this.collection!.findOne({ id: transactionId });
+    if (!transaction) {
+      return null;
+    }
+    return this.mapToTransaction(transaction);
+  }
 
   async removeAll(): Promise<void> {
     await this.collection!.deleteMany({});

@@ -1,6 +1,7 @@
 import { TransactionService } from '../../application/services/transaction.service.js';
 import { ConsumeCompletedVehicleTransactionsUseCase } from '../../application/use-cases/consume-completed-vehicle-transactions.use-case.js';
 import { CreateVehicleTransactionUseCase } from '../../application/use-cases/create-vehicle-transaction.use-case.js';
+import { GetVehicleTransactionByIdUseCase } from '../../application/use-cases/get-vehicle-transaction-by-id.use-case.js';
 import { GetVehicleTransactionsUseCase } from '../../application/use-cases/get-vehicle-transactions.use-case.js';
 import { MapRawVehicleToVehicleUseCase } from '../../application/use-cases/map-raw-vehicle-to-vehicle.use-case.js';
 import { PerformHealthCheckUseCase } from '../../application/use-cases/perform-health-check.use-case.js';
@@ -75,6 +76,9 @@ export class MainApplication extends AbstractApplication {
       stubExternalTransactionDataValidator
     );
     const getVehicleTransactionsUseCase = new GetVehicleTransactionsUseCase(transactionRepository);
+    const getVehicleTransactionByIdUseCase = new GetVehicleTransactionByIdUseCase(
+      transactionRepository
+    );
     const comsumeCompletedVehicleTransactionsUseCase =
       new ConsumeCompletedVehicleTransactionsUseCase(
         transactionRepository,
@@ -89,6 +93,7 @@ export class MainApplication extends AbstractApplication {
       validateVehicleTransactionDataUseCase,
       resetVehicleTransactionsUseCase,
       getVehicleTransactionsUseCase,
+      getVehicleTransactionByIdUseCase,
       comsumeCompletedVehicleTransactionsUseCase,
       this.logger
     );
