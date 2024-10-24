@@ -1,11 +1,34 @@
 import type { ServerInferRequest, ServerInferResponses } from '@ts-rest/core';
 import type { transactionContract } from '@zcorp/wheelz-contracts';
 
-import type { TransactionController } from '../../controllers/transaction.controller.ts.js';
+import type { TransactionController } from '../../controllers/transaction.controller.js';
 
 export class TransactionRouter {
   constructor(private readonly transactionController: TransactionController) {}
-
+  getTransactions = async (
+    input: ServerInferRequest<typeof transactionContract.transactions.getTransactions>
+  ): Promise<ServerInferResponses<typeof transactionContract.transactions.getTransactions>> => {
+    const result = await this.transactionController.getTransactions(input.query);
+    return {
+      status: 200,
+      body: result,
+    };
+  };
+  getTransactionById = async (
+    input: ServerInferRequest<typeof transactionContract.transactions.getTransactionById>
+  ): Promise<ServerInferResponses<typeof transactionContract.transactions.getTransactionById>> => {
+    const result = await this.transactionController.getTransactionById(input.params.id);
+    if (!result) {
+      return {
+        status: 404,
+        body: { message: 'Transaction not found' },
+      };
+    }
+    return {
+      status: 200,
+      body: result,
+    };
+  };
   submitTransaction = async (
     input: ServerInferRequest<typeof transactionContract.transactions.submitTransaction>
   ): Promise<ServerInferResponses<typeof transactionContract.transactions.submitTransaction>> => {

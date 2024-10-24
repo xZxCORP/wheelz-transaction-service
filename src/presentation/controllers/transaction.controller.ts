@@ -3,6 +3,7 @@ import type {
   DeleteVehicleTransactionData,
   UpdateVehicleTransactionData,
 } from '@zcorp/shared-typing-wheelz';
+import type { PaginationParameters } from '@zcorp/wheelz-contracts';
 
 import type { TransactionService } from '../../application/services/transaction.service.js';
 
@@ -26,5 +27,11 @@ export class TransactionController {
       action: 'delete',
       data,
     });
+  }
+  getTransactions(paginationParameters: PaginationParameters) {
+    return this.transactionService.getTransactions(paginationParameters);
+  }
+  getTransactionById(transactionId: string) {
+    return this.transactionService.getTransactionById(transactionId);
   }
 }

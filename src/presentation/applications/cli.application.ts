@@ -1,9 +1,14 @@
 import path from 'node:path';
 
 import { TransactionService } from '../../application/services/transaction.service.js';
+import { ConsumeCompletedVehicleTransactionsUseCase } from '../../application/use-cases/consume-completed-vehicle-transactions.use-case.js';
 import { CreateVehicleTransactionUseCase } from '../../application/use-cases/create-vehicle-transaction.use-case.js';
+import { GetVehicleTransactionByIdUseCase } from '../../application/use-cases/get-vehicle-transaction-by-id.use-case.js';
+import { GetVehicleTransactionsUseCase } from '../../application/use-cases/get-vehicle-transactions.use-case.js';
 import { MapRawVehicleToVehicleUseCase } from '../../application/use-cases/map-raw-vehicle-to-vehicle.use-case.js';
 import { ReadRawVehicleFileUseCase } from '../../application/use-cases/read-raw-vehicle-file.use-case.js';
+import { ResetVehicleTransactionsUseCase } from '../../application/use-cases/reset-vehicle-transactions.use-case.js';
+import { ValidateVehicleTransactionDataUseCase } from '../../application/use-cases/validate-vehicle-transaction-data.use-case.js';
 import { EnvironmentConfigLoader } from '../../infrastructure/adapters/config/environment.config-loader.js';
 import { CryptoDataSigner } from '../../infrastructure/adapters/data-signer/crypto.data-signer.js';
 import { RealDateProvider } from '../../infrastructure/adapters/date-provider/real.date-provider.port.js';
@@ -12,15 +17,21 @@ import { UuidIdGenerator } from '../../infrastructure/adapters/id-generator/uuid
 import { WinstonLogger } from '../../infrastructure/adapters/logger/winston.logger.js';
 import { RabbitMQQueue } from '../../infrastructure/adapters/queue/rabbit-mq.queue.js';
 import { ValidStubTransactionValidator } from '../../infrastructure/adapters/transaction-validator/valid-stub.transaction-validator.js';
+import { MongoTransactionRepository } from '../../infrastructure/repositories/mongo.transaction-repository.js';
 import { AbstractApplication } from './base.application.js';
 
 export class CliApplication extends AbstractApplication {
   private transactionService!: TransactionService;
 
   async initializeResources(): Promise<void> {
-    const queue = new RabbitMQQueue(
+    const newQueue = new RabbitMQQueue(
       this.config.transactionQueue.url,
-      this.config.transactionQueue.queueName,
+      this.config.transactionQueue.newQueueName,
+      this.logger
+    );
+    const completedQueue = new RabbitMQQueue(
+      this.config.transactionQueue.url,
+      this.config.transactionQueue.completedQueueName,
       this.logger
     );
 
@@ -32,24 +43,51 @@ export class CliApplication extends AbstractApplication {
     const dateProvider = new RealDateProvider();
     const fileReader = new RealFileReader();
     const idGenerator = new UuidIdGenerator();
-
+    const transactionRepository = new MongoTransactionRepository(
+      this.config.transactionRepository.url,
+      this.config.transactionRepository.database,
+      this.config.transactionRepository.collection,
+      this.logger
+    );
     const createVehicleTransactionUseCase = new CreateVehicleTransactionUseCase(
       dataSigner,
       dateProvider,
-      idGenerator
+      idGenerator,
+      transactionRepository,
+      newQueue
     );
     const readRawVehicleFileUseCase = new ReadRawVehicleFileUseCase(fileReader);
     const mapRawVehicleToVehicleUseCase = new MapRawVehicleToVehicleUseCase();
+    const resetVehicleTransactionsUseCase = new ResetVehicleTransactionsUseCase(
+      transactionRepository,
+      newQueue
+    );
+    const validateVehicleTransactionDataUseCase = new ValidateVehicleTransactionDataUseCase(
+      stubExternalTransactionDataValidator
+    );
+    const getVehicleTransactionsUseCase = new GetVehicleTransactionsUseCase(transactionRepository);
+    const getVehicleTransactionByIdUseCase = new GetVehicleTransactionByIdUseCase(
+      transactionRepository
+    );
+    const comsumeCompletedVehicleTransactionsUseCase =
+      new ConsumeCompletedVehicleTransactionsUseCase(
+        transactionRepository,
+        completedQueue,
+        this.logger
+      );
     this.transactionService = new TransactionService(
-      stubExternalTransactionDataValidator,
       createVehicleTransactionUseCase,
       readRawVehicleFileUseCase,
       mapRawVehicleToVehicleUseCase,
-      queue,
+      validateVehicleTransactionDataUseCase,
+      resetVehicleTransactionsUseCase,
+      getVehicleTransactionsUseCase,
+      getVehicleTransactionByIdUseCase,
+      comsumeCompletedVehicleTransactionsUseCase,
       this.logger
     );
 
-    this.managedResources = [queue];
+    this.managedResources = [newQueue, completedQueue, transactionRepository];
   }
 
   async importVehicles(filePath: string): Promise<void> {
