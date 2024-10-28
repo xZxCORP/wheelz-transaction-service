@@ -6,16 +6,13 @@ export class MapRawVehicleToVehicleUseCase {
   constructor() {}
 
   async execute(rawVehicle: RawVehicle): Promise<Vehicle | null> {
-    const data = {
+    const data: Vehicle = {
       vin: rawVehicle.vin,
       constructorName: rawVehicle.constructor,
       model: rawVehicle.model,
       year: rawVehicle.year,
-      risks: rawVehicle.risks,
       sinisters: rawVehicle.sinisters.map((sinister) => ({
-        date: new Date(sinister.Year, sinister.Month - 1, sinister.Day),
-        type: '1-Car',
-        severity: 'Unknown',
+        date: new Date(sinister.Year, sinister.Month - 1, sinister.Day, sinister.Hour / 100),
         primaryFactor: sinister['Primary Factor'],
         injuryType: sinister['Injury Type'],
         collisionType: sinister['Collision Type'],
@@ -28,7 +25,17 @@ export class MapRawVehicleToVehicleUseCase {
           },
         },
       })),
-      issues: rawVehicle.issues,
+      risks: {
+        exterior: rawVehicle.risks.exterior.map((risk) => ({ name: risk })),
+        generic: rawVehicle.risks.generic.map((risk) => ({ name: risk })),
+        mechanical: rawVehicle.risks.mechanical.map((risk) => ({ name: risk })),
+      },
+
+      issues: {
+        exterior: rawVehicle.issues.exterior.map((risk) => ({ name: risk })),
+        generic: rawVehicle.issues.generic.map((risk) => ({ name: risk })),
+        mechanical: rawVehicle.issues.mechanical.map((risk) => ({ name: risk })),
+      },
     };
     const result = await vehicleSchema.safeParseAsync(data);
     return result.success ? result.data : null;
