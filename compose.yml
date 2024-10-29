@@ -1,5 +1,5 @@
 services:
-  app:
+  transaction_api:
     build:
       context: .
       target: development

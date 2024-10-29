@@ -21,7 +21,12 @@ export class CreateVehicleTransactionUseCase {
 
   async execute(vehicleTransactionData: VehicleTransactionData): Promise<VehicleTransaction> {
     const currentDate = this.dateProvider.now();
-    const signature = await this.dataSigner.sign(JSON.stringify(vehicleTransactionData));
+    const signature = await this.dataSigner.sign(
+      JSON.stringify({
+        action: vehicleTransactionData.action,
+        data: vehicleTransactionData.data,
+      })
+    );
     const id = await this.idGenerator.generate();
     const transaction: VehicleTransaction = {
       ...vehicleTransactionData,

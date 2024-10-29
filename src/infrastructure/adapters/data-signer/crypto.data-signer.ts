@@ -14,9 +14,8 @@ export class CryptoDataSigner implements DataSignerPort {
     try {
       const signer = createSign(this.signAlgorithm);
       signer.update(data);
-      signer.end();
 
-      const signature = signer.sign(this.privateKey, 'base64');
+      const signature = signer.sign(this.privateKey, 'hex');
 
       return Promise.resolve({
         signAlgorithm: this.signAlgorithm,
