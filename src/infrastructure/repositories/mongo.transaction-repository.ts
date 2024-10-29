@@ -1,4 +1,4 @@
-import type { VehicleTransaction } from '@zcorp/shared-typing-wheelz';
+import type { Status, VehicleTransaction } from '@zcorp/shared-typing-wheelz';
 import type {
   PaginatedTransactions,
   Pagination,
@@ -70,7 +70,7 @@ export class MongoTransactionRepository implements TransactionRepository, Manage
     this.logger.info('MongoDB disposed');
   }
 
-  async changeStatus(transactionId: string, status: 'pending' | 'finished'): Promise<void> {
+  async changeStatus(transactionId: string, status: Status): Promise<void> {
     await this.collection!.updateOne({ id: transactionId }, { $set: { status } });
   }
 

@@ -34,6 +34,7 @@ export class EnvironmentConfigLoader implements ConfigLoaderPort {
         signAlgorithm: process.env.DATA_SIGNER_ALGORITHM,
         privateKey: process.env.DATA_SIGNER_PRIVATE,
       },
+      authServiceUrl: process.env.AUTH_SERVICE_URL,
     };
     const config = await configSchema.safeParseAsync(data);
     if (!config.success) {
