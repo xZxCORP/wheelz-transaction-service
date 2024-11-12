@@ -109,10 +109,27 @@ export class FastifyApiServer implements ManagedResource {
 
     this.fastifyInstance
       .register(fastifySwagger, {
-        transformObject: () => openApiDocument,
+        transformObject: () => ({
+          ...openApiDocument,
+          security: [{ BearerAuth: [] }],
+          components: {
+            securitySchemes: {
+              BearerAuth: {
+                type: 'http',
+                scheme: 'bearer',
+                bearerFormat: 'JWT',
+              },
+            },
+          },
+        }),
       })
       .register(fastifySwaggerUI, {
         routePrefix: '/ui',
+        uiConfig: {
+          docExpansion: 'list',
+          deepLinking: true,
+          persistAuthorization: true,
+        },
       });
   }
 
