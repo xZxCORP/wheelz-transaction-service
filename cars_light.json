@@ -1,5 +1,4 @@
 [
-  //turpin gregory
   {
     "vehicule": {
       "caracteristiques": {
@@ -198,7 +197,6 @@
     },
     "dateMiseAJour": "2024-11-02"
   },
-  //turpin clea
   {
     "vehicule": {
       "caracteristiques": {
@@ -390,7 +388,6 @@
     },
     "dateMiseAJour": "2024-11-02"
   },
-  //garo nino
   {
     "vehicule": {
       "caracteristiques": {
@@ -547,7 +544,6 @@
     },
     "dateMiseAJour": "2024-11-02"
   },
-  //josse jean-pierre
   {
     "vehicule": {
       "caracteristiques": {
@@ -558,7 +554,7 @@
         "tvv": "2RA11A",
         "numCnit": "M10RENVP471J119",
         "typeReception": "CE",
-        "vin": "V***************1",
+        "vin": "VF12RA11A53526651",
         "champF1": 1653,
         "champF2": 1653,
         "champF3": 2553,

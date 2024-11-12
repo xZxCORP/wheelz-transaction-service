@@ -4,16 +4,16 @@ export interface RawVehicleInfos {
   certificatImmatriculation: CertificatImmatriculation;
   utac: Utac;
   clefAcheteur: string;
-  validiteClefAcheteur: Date;
+  validiteClefAcheteur: string;
   messageUsager: string;
   plaqImmatHash: string;
   incomingQuery: IncomingQuery;
-  dateMiseAJour: Date;
+  dateMiseAJour: string;
 }
 
 export interface CertificatImmatriculation {
   age: number;
-  dateEmission: Date;
+  dateEmission: string;
 }
 
 export interface IncomingQuery {
@@ -44,13 +44,13 @@ export interface PersonnePhysique {
 }
 
 export interface Utac {
-  updateDate: Date;
+  updateDate: string;
   status: number;
   ct: CT[];
 }
 
 export interface CT {
-  ctDate: Date;
+  ctDate: string;
   resultat: string;
   resultatRaw: string;
   nature: string;
@@ -69,8 +69,8 @@ export interface Vehicule {
 
 export interface Accidents {
   nbSinistres: number;
-  dateDerniereResolution: null;
-  dateDernierSinistre: null;
+  dateDerniereResolution: string | null;
+  dateDernierSinistre: string | null;
 }
 
 export interface Caracteristiques {
@@ -105,16 +105,16 @@ export interface Caracteristiques {
 }
 
 export interface Historique {
-  opaDate: Date;
+  opaDate: string;
   opaType: string;
 }
 
 export interface Infos {
   nbTitulaires: number;
-  datePremiereImmatriculationFrance: Date;
-  datePremiereImmatSiv: Date;
+  datePremiereImmatriculationFrance: string;
+  datePremiereImmatSiv: string;
   plaqueImmatriculation: string;
-  dateConvertionSiv: Date;
+  dateConvertionSiv: string;
 }
 
 export interface InfosImport {
