@@ -1,4 +1,4 @@
-import type { VehicleTransaction } from '@zcorp/shared-typing-wheelz';
+import type { Status, VehicleTransaction } from '@zcorp/shared-typing-wheelz';
 import type { PaginatedTransactions, PaginationParameters } from '@zcorp/wheelz-contracts';
 
 export interface TransactionRepository {
@@ -7,5 +7,5 @@ export interface TransactionRepository {
   save(transaction: VehicleTransaction): Promise<void>;
   removeAll(): Promise<void>;
   isRunning(): Promise<boolean>;
-  changeStatus(transactionId: string, status: 'pending' | 'finished'): Promise<void>;
+  changeStatus(transactionId: string, status: Status): Promise<void>;
 }

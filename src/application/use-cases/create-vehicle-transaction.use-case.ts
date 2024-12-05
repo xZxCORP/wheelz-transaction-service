@@ -1,6 +1,9 @@
-import type { VehicleTransaction, VehicleTransactionData } from '@zcorp/shared-typing-wheelz';
+import type {
+  QueueTransaction,
+  VehicleTransaction,
+  VehicleTransactionData,
+} from '@zcorp/shared-typing-wheelz';
 
-import type { QueueTransaction } from '../../domain/entities/queue-transaction.entity.js';
 import type { TransactionRepository } from '../../domain/repositories/transaction.repository.js';
 import type { DataSignerPort } from '../ports/data-signer.port.js';
 import type { DateProviderPort } from '../ports/date-provider.port.js';
@@ -18,7 +21,12 @@ export class CreateVehicleTransactionUseCase {
 
   async execute(vehicleTransactionData: VehicleTransactionData): Promise<VehicleTransaction> {
     const currentDate = this.dateProvider.now();
-    const signature = await this.dataSigner.sign(JSON.stringify(vehicleTransactionData));
+    const signature = await this.dataSigner.sign(
+      JSON.stringify({
+        action: vehicleTransactionData.action,
+        data: vehicleTransactionData.data,
+      })
+    );
     const id = await this.idGenerator.generate();
     const transaction: VehicleTransaction = {
       ...vehicleTransactionData,

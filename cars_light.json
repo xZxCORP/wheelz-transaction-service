@@ -1,124 +1,697 @@
 [
   {
-    "constructor": "audi",
-    "model": "Q5",
-    "year": 2008,
-    "risks": { "exterior": [], "mechanical": ["STARTER_PROBLEM", "STARTER_PROBLEM"], "generic": [] },
-    "sinisters": [
-      {
-        "Year": 2013,
-        "Month": 9,
-        "Day": 4,
-        "Weekend?": "Weekday",
-        "Hour": 2000.0,
-        "Collision Type": "1-Car",
-        "Injury Type": "No injury/unknown",
-        "Primary Factor": "OTHER (DRIVER) - EXPLAIN IN NARRATIVE",
-        "Reported_Location": "E 10TH ST",
-        "Latitude": 39.171504,
-        "Longitude": -86.512288
-      }
-    ],
-    "vin": "9VCXVZFUZCWZADWTC",
-    "issues": { "exterior": [], "mechanical": [], "generic": ["DENTED_BODY"] }
-  },
-  {
-    "constructor": "audi",
-    "model": "Q2",
-    "year": 2016,
-    "risks": { "exterior": ["RIGHT_DOOR_REAR"], "mechanical": ["STARTER_PROBLEM"], "generic": [] },
-    "sinisters": [
-      {
-        "Year": 2016,
-        "Month": 5,
-        "Day": 6,
-        "Weekend?": "Weekday",
-        "Hour": 1800.0,
-        "Collision Type": "2-Car",
-        "Injury Type": "Non-incapacitating",
-        "Primary Factor": "OTHER (DRIVER) - EXPLAIN IN NARRATIVE",
-        "Reported_Location": "HIGH & MAXWELL",
-        "Latitude": 39.1592,
-        "Longitude": -86.508399
+    "vehicule": {
+      "caracteristiques": {
+        "marque": "CITROEN",
+        "nomCommercial": "C3",
+        "puissanceCv": 5,
+        "couleur": "VERT FONCE",
+        "tvv": "FCKFVC",
+        "numCnit": "MCT1102P3962",
+        "typeReception": "CE",
+        "vin": "V***************7",
+        "champF1": 1510,
+        "champF2": 1510,
+        "champF3": 2410,
+        "champG": 1089,
+        "champG1": 1014,
+        "categorie": "M1",
+        "genre": "VP",
+        "carrosserieCe": "AB",
+        "carrosserieNationale": "CI",
+        "numeroReception": "e2*98/14*0257*09",
+        "cylindree": 1360.0,
+        "puissanceNette": 54.0,
+        "energie": "ES",
+        "nbPlacesAssises": 5,
+        "nbPlacesDebout": -99,
+        "niveauSonore": 85,
+        "vitesseMoteur": 4050,
+        "co2": 145,
+        "pollution": "70/220*2003/76EURO4",
+        "rapportPuissMasse": -99
       },
-      {
-        "Year": 2019,
-        "Month": 10,
-        "Day": 4,
-        "Weekend?": "Weekday",
-        "Hour": 1500.0,
-        "Collision Type": "2-Car",
-        "Injury Type": "No injury/unknown",
-        "Primary Factor": "FAILURE TO YIELD RIGHT OF WAY",
-        "Reported_Location": "8TH ST & GRANT",
-        "Latitude": 39.16947976,
-        "Longitude": -86.5297801
+      "infos": {
+        "nbTitulaires": 3,
+        "datePremiereImmatriculationFrance": "2007-06-19",
+        "datePremiereImmatSiv": "2013-06-21",
+        "plaqueImmatriculation": "CW-8**-CB",
+        "dateConvertionSiv": "2013-06-21T15:04:24.176000"
+      },
+      "infosImport": {
+        "datePremiereImmatEtranger": null,
+        "dateImportFrance": null,
+        "isImported": false,
+        "immatriculationOrigine": null,
+        "codePaysOrigine": null,
+        "nomPaysOrigine": null
+      },
+      "usage": {
+        "listeDesUsages": [],
+        "isAgricole": false,
+        "isCollection": false
+      },
+      "situationAdmin": {
+        "isApteACirculer": true,
+        "isCiAnnule": false,
+        "dateAnnulation": null,
+        "isCiVole": false,
+        "isDuplicata": false,
+        "gages": {
+          "hasGages": false,
+          "informations": []
+        },
+        "isCiPerdu": false,
+        "dvs": {
+          "hasDvs": false,
+          "informations": []
+        },
+        "suspensions": {
+          "hasSuspensions": false,
+          "informations": []
+        },
+        "oppositions": {
+          "hasOppositions": false,
+          "informations": {
+            "oves": [],
+            "oveis": [],
+            "otcisPv": [],
+            "otcis": []
+          }
+        },
+        "isVehVole": false
+      },
+      "accidents": {
+        "nbSinistres": 0,
+        "dateDerniereResolution": null,
+        "dateDernierSinistre": null
+      },
+      "historique": [
+        {
+          "opaDate": "2020-07-22",
+          "opaType": "Changement de titulaire"
+        },
+        {
+          "opaDate": "2020-06-25",
+          "opaType": "Achat ou reprise par un professionnel"
+        },
+        {
+          "opaDate": "2013-06-21",
+          "opaType": "Conversion au nouveau format d'immatriculation"
+        },
+        {
+          "opaDate": "2009-07-08",
+          "opaType": "Changement de titulaire"
+        },
+        {
+          "opaDate": "2008-12-02",
+          "opaType": "Achat ou reprise par un professionnel"
+        },
+        {
+          "opaDate": "2007-06-19",
+          "opaType": "Première immatriculation d'un véhicule neuf"
+        }
+      ]
+    },
+    "proprietaire": {
+      "personnePhysique": {
+        "nomNaissance": "T****N",
+        "prenom": "G*****Y"
+      },
+      "personneMorale": {
+        "raisonSociale": "",
+        "siren": ""
+      },
+      "codePostal": "60340"
+    },
+    "certificatImmatriculation": {
+      "age": 52,
+      "dateEmission": "2020-07-22"
+    },
+    "utac": {
+      "updateDate": "2024-11-12",
+      "status": 200,
+      "ct": [
+        {
+          "ctDate": "2011-06-14",
+          "resultat": "Favorable",
+          "resultatRaw": "A",
+          "nature": "Visite Technique Périodique",
+          "km": 37203
+        },
+        {
+          "ctDate": "2013-06-14",
+          "resultat": "Favorable",
+          "resultatRaw": "A",
+          "nature": "Visite Technique Périodique",
+          "km": 51951
+        },
+        {
+          "ctDate": "2015-06-11",
+          "resultat": "Favorable",
+          "resultatRaw": "A",
+          "nature": "Visite Technique Périodique",
+          "km": 64929
+        },
+        {
+          "ctDate": "2017-06-07",
+          "resultat": "Favorable",
+          "resultatRaw": "A",
+          "nature": "Visite Technique Périodique",
+          "km": 79861
+        },
+        {
+          "ctDate": "2018-03-24",
+          "resultat": "Favorable",
+          "resultatRaw": "A",
+          "nature": "Visite Technique Périodique",
+          "km": 87914
+        },
+        {
+          "ctDate": "2020-07-11",
+          "resultat": "Favorable",
+          "resultatRaw": "A",
+          "nature": "Contrôle Technique Périodique",
+          "km": 111915
+        },
+        {
+          "ctDate": "2022-07-25",
+          "resultat": "Favorable",
+          "resultatRaw": "A",
+          "nature": "Contrôle Technique Périodique",
+          "km": 121832
+        }
+      ]
+    },
+    "clefAcheteur": "bd66a36f-5f0c-420f-919c-95e0e02865ab",
+    "validiteClefAcheteur": "2024-12-12",
+    "messageUsager": "",
+    "plaqImmatHash": "34871eb48d28bb75bdf40c0c3648762c5da093029a41f3a5478347e56cd99db2",
+    "incomingQuery": {
+      "SivPhysique": {
+        "nom": "Turpin",
+        "prenom": "Gregory",
+        "immat": "CW-847-CB",
+        "numeroFormule": "2020CT59258"
       }
-    ],
-    "vin": "3PWGK6BHY707U9R5K",
-    "issues": { "exterior": ["REAR_BUMPER"], "mechanical": ["ENGINE_FAILURE"], "generic": [] }
+    },
+    "dateMiseAJour": "2024-11-02"
   },
   {
-    "constructor": "audi",
-    "model": "A5",
-    "year": 2018,
-    "risks": { "exterior": ["RIGHT_DOOR_REAR"], "mechanical": ["STARTER_PROBLEM", "STARTER_PROBLEM"], "generic": [] },
-    "sinisters": [],
-    "vin": "76S9WU6Y4VXN63BMT",
-    "issues": { "exterior": [], "mechanical": [], "generic": [] }
+    "vehicule": {
+      "caracteristiques": {
+        "marque": "CITROEN",
+        "nomCommercial": "C3",
+        "puissanceCv": 4,
+        "couleur": "ROUGE FONCE",
+        "tvv": "SC8HR0/1",
+        "numCnit": "M10CTRVP000V685",
+        "typeReception": "CE",
+        "vin": "V***************1",
+        "champF1": 1581,
+        "champF2": 1581,
+        "champF3": 2281,
+        "champG": 1145,
+        "champG1": 1070,
+        "categorie": "M1",
+        "genre": "VP",
+        "carrosserieCe": "AB",
+        "carrosserieNationale": "CI",
+        "numeroReception": "e2*2007/46*0003*09",
+        "cylindree": 1398.0,
+        "puissanceNette": 50.0,
+        "energie": "GO",
+        "nbPlacesAssises": 5,
+        "nbPlacesDebout": -99,
+        "niveauSonore": 76,
+        "vitesseMoteur": 3000,
+        "co2": 104,
+        "pollution": "715/2007*692/2008EURO5",
+        "rapportPuissMasse": -99
+      },
+      "infos": {
+        "nbTitulaires": 3,
+        "datePremiereImmatriculationFrance": "2011-11-19",
+        "datePremiereImmatSiv": "2011-11-19",
+        "plaqueImmatriculation": "BX-9**-XD",
+        "dateConvertionSiv": null
+      },
+      "infosImport": {
+        "datePremiereImmatEtranger": null,
+        "dateImportFrance": null,
+        "isImported": false,
+        "immatriculationOrigine": null,
+        "codePaysOrigine": null,
+        "nomPaysOrigine": null
+      },
+      "usage": {
+        "listeDesUsages": [],
+        "isAgricole": false,
+        "isCollection": false
+      },
+      "situationAdmin": {
+        "isApteACirculer": true,
+        "isCiAnnule": false,
+        "dateAnnulation": null,
+        "isCiVole": false,
+        "isDuplicata": false,
+        "gages": {
+          "hasGages": false,
+          "informations": []
+        },
+        "isCiPerdu": false,
+        "dvs": {
+          "hasDvs": false,
+          "informations": []
+        },
+        "suspensions": {
+          "hasSuspensions": false,
+          "informations": []
+        },
+        "oppositions": {
+          "hasOppositions": false,
+          "informations": {
+            "oves": [],
+            "oveis": [],
+            "otcisPv": [],
+            "otcis": []
+          }
+        },
+        "isVehVole": false
+      },
+      "accidents": {
+        "nbSinistres": 0,
+        "dateDerniereResolution": null,
+        "dateDernierSinistre": null
+      },
+      "historique": [
+        {
+          "opaDate": "2023-08-21",
+          "opaType": "Changement de titulaire"
+        },
+        {
+          "opaDate": "2023-07-17",
+          "opaType": "Cession (vente)"
+        },
+        {
+          "opaDate": "2023-07-17",
+          "opaType": "Achat ou reprise par un professionnel"
+        },
+        {
+          "opaDate": "2013-09-24",
+          "opaType": "Changement de titulaire"
+        },
+        {
+          "opaDate": "2013-06-12",
+          "opaType": "Achat ou reprise par un professionnel"
+        },
+        {
+          "opaDate": "2011-11-19",
+          "opaType": "Première immatriculation d'un véhicule neuf"
+        }
+      ]
+    },
+    "proprietaire": {
+      "personnePhysique": {
+        "nomNaissance": "T****N",
+        "prenom": "C**A"
+      },
+      "personneMorale": {
+        "raisonSociale": "",
+        "siren": ""
+      },
+      "codePostal": "60340"
+    },
+    "certificatImmatriculation": {
+      "age": 15,
+      "dateEmission": "2023-08-21"
+    },
+    "utac": {
+      "updateDate": "2024-11-12",
+      "status": 200,
+      "ct": [
+        {
+          "ctDate": "2015-11-14",
+          "resultat": "Favorable",
+          "resultatRaw": "A",
+          "nature": "Visite Technique Périodique",
+          "km": 67961
+        },
+        {
+          "ctDate": "2017-11-14",
+          "resultat": "Favorable",
+          "resultatRaw": "A",
+          "nature": "Visite Technique Périodique",
+          "km": 89678
+        },
+        {
+          "ctDate": "2019-11-14",
+          "resultat": "Favorable",
+          "resultatRaw": "A",
+          "nature": "Contrôle Technique Périodique",
+          "km": 103111
+        },
+        {
+          "ctDate": "2021-11-12",
+          "resultat": "Défavorable pour défaillances majeures",
+          "resultatRaw": "S",
+          "nature": "Contrôle Technique Périodique",
+          "km": 113773
+        },
+        {
+          "ctDate": "2021-11-23",
+          "resultat": "Favorable",
+          "resultatRaw": "A",
+          "nature": "Contre-Visite",
+          "km": 113921
+        },
+        {
+          "ctDate": "2023-08-10",
+          "resultat": "Favorable",
+          "resultatRaw": "A",
+          "nature": "Contrôle Technique Périodique",
+          "km": 122921
+        }
+      ]
+    },
+    "clefAcheteur": "43364821-bede-4c0c-b15b-f0686263acd7",
+    "validiteClefAcheteur": "2024-12-12",
+    "messageUsager": "",
+    "plaqImmatHash": "e0ed48a910acbc4bcb083f596f83643a8c5684ea078012eeb54e42bf43e10265",
+    "incomingQuery": {
+      "SivPhysique": {
+        "nom": "Turpin",
+        "prenom": "Clea",
+        "immat": "BX-944-XD",
+        "numeroFormule": "2023DL66488"
+      }
+    },
+    "dateMiseAJour": "2024-11-02"
   },
   {
-    "constructor": "audi",
-    "model": "RS5",
-    "year": 2014,
-    "risks": { "exterior": ["RIGHT_DOOR_REAR"], "mechanical": ["STARTER_PROBLEM"], "generic": [] },
-    "sinisters": [],
-    "vin": "S7VLKC8JE5VAJDDRA",
-    "issues": { "exterior": [], "mechanical": [], "generic": [] }
+    "vehicule": {
+      "caracteristiques": {
+        "marque": "KAWASAKI",
+        "nomCommercial": "NINJA 300",
+        "puissanceCv": 4,
+        "couleur": "BLANC",
+        "tvv": "EX300AA1",
+        "numCnit": "L3EKWAM20004144",
+        "typeReception": "CE",
+        "vin": "J***************8",
+        "champF1": 352,
+        "champF2": 352,
+        "champF3": -99,
+        "champG": 172,
+        "champG1": 159,
+        "categorie": "L3e",
+        "genre": "MTT2",
+        "carrosserieCe": "NON_CONNU",
+        "carrosserieNationale": "SOLO",
+        "numeroReception": "e1*2002/24*0572*02",
+        "cylindree": 296.0,
+        "puissanceNette": 29.0,
+        "energie": "ES",
+        "nbPlacesAssises": 2,
+        "nbPlacesDebout": -99,
+        "niveauSonore": 88,
+        "vitesseMoteur": 5500,
+        "co2": -99,
+        "pollution": "97/24*2009/108EURO3",
+        "rapportPuissMasse": 0.17
+      },
+      "infos": {
+        "nbTitulaires": 4,
+        "datePremiereImmatriculationFrance": "2014-12-31",
+        "datePremiereImmatSiv": "2014-12-31",
+        "plaqueImmatriculation": "DM-1**-ZH",
+        "dateConvertionSiv": null
+      },
+      "infosImport": {
+        "datePremiereImmatEtranger": null,
+        "dateImportFrance": null,
+        "isImported": false,
+        "immatriculationOrigine": null,
+        "codePaysOrigine": null,
+        "nomPaysOrigine": null
+      },
+      "usage": {
+        "listeDesUsages": [],
+        "isAgricole": false,
+        "isCollection": false
+      },
+      "situationAdmin": {
+        "isApteACirculer": true,
+        "isCiAnnule": false,
+        "dateAnnulation": null,
+        "isCiVole": false,
+        "isDuplicata": false,
+        "gages": {
+          "hasGages": false,
+          "informations": []
+        },
+        "isCiPerdu": false,
+        "dvs": {
+          "hasDvs": false,
+          "informations": []
+        },
+        "suspensions": {
+          "hasSuspensions": false,
+          "informations": []
+        },
+        "oppositions": {
+          "hasOppositions": false,
+          "informations": {
+            "oves": [],
+            "oveis": [],
+            "otcisPv": [],
+            "otcis": []
+          }
+        },
+        "isVehVole": false
+      },
+      "accidents": {
+        "nbSinistres": 0,
+        "dateDerniereResolution": null,
+        "dateDernierSinistre": null
+      },
+      "historique": [
+        {
+          "opaDate": "2023-02-22",
+          "opaType": "Changement de titulaire"
+        },
+        {
+          "opaDate": "2023-02-15",
+          "opaType": "Cession (vente)"
+        },
+        {
+          "opaDate": "2022-06-03",
+          "opaType": "Achat ou reprise par un professionnel"
+        },
+        {
+          "opaDate": "2021-08-20",
+          "opaType": "Changement de titulaire"
+        },
+        {
+          "opaDate": "2021-03-09",
+          "opaType": "Cession (vente)"
+        },
+        {
+          "opaDate": "2015-05-12",
+          "opaType": "Fin d'usage démonstration pour vente du véhicule"
+        },
+        {
+          "opaDate": "2015-05-12",
+          "opaType": "Changement de titulaire"
+        },
+        {
+          "opaDate": "2014-12-31",
+          "opaType": "Première immatriculation d'un véhicule neuf"
+        }
+      ]
+    },
+    "proprietaire": {
+      "personnePhysique": {
+        "nomNaissance": "G**O",
+        "prenom": "N**O"
+      },
+      "personneMorale": {
+        "raisonSociale": "",
+        "siren": ""
+      },
+      "codePostal": "75006"
+    },
+    "certificatImmatriculation": {
+      "age": 21,
+      "dateEmission": "2023-02-22"
+    },
+    "utac": {
+      "updateDate": "",
+      "status": null,
+      "ct": []
+    },
+    "clefAcheteur": "2034b253-4589-4f6e-85ce-d9714460eaca",
+    "validiteClefAcheteur": "2024-12-12",
+    "messageUsager": "",
+    "plaqImmatHash": "34cf3227f424222b628d559f962eeefef7a2adc47ead3d3dd017074704e6a54f",
+    "incomingQuery": {
+      "SivPhysique": {
+        "nom": "GARO",
+        "prenom": "Nino\n",
+        "immat": "DM-190-ZH",
+        "numeroFormule": "2023AT14081"
+      }
+    },
+    "dateMiseAJour": "2024-11-02"
   },
   {
-    "constructor": "audi",
-    "model": "A7",
-    "year": 2020,
-    "risks": { "exterior": ["RIGHT_DOOR_REAR"], "mechanical": ["STARTER_PROBLEM"], "generic": [] },
-    "sinisters": [],
-    "vin": "ML2SWBXAJP8WB7TKL",
-    "issues": { "exterior": [], "mechanical": [], "generic": ["UNKNOWN_DAMAGE"] }
-  },
-  {
-    "constructor": "audi",
-    "model": "A5",
-    "year": 2012,
-    "risks": { "exterior": ["RIGHT_DOOR_REAR"], "mechanical": ["STARTER_PROBLEM"], "generic": [] },
-    "sinisters": [],
-    "vin": "PM2JMUJ54NBHDY29Z",
-    "issues": { "exterior": [], "mechanical": ["STARTER_PROBLEM"], "generic": [] }
-  },
-  {
-    "constructor": "audi",
-    "model": "A3",
-    "year": 2020,
-    "risks": { "exterior": ["RIGHT_DOOR_REAR"], "mechanical": ["STARTER_PROBLEM", "STARTER_PROBLEM"], "generic": [] },
-    "sinisters": [],
-    "vin": "ZVXVBVHWE77DCW0B8",
-    "issues": { "exterior": [], "mechanical": [], "generic": [] }
-  },
-  {
-    "constructor": "audi",
-    "model": "TT",
-    "year": 2014,
-    "risks": { "exterior": [], "mechanical": ["STARTER_PROBLEM", "STARTER_PROBLEM"], "generic": [] },
-    "sinisters": [],
-    "vin": "C6U1AN2VUJGZ0EMLB",
-    "issues": { "exterior": [], "mechanical": [], "generic": [] }
-  },
-  {
-    "constructor": "audi",
-    "model": "RS4",
-    "year": 2013,
-    "risks": { "exterior": ["RIGHT_DOOR_REAR"], "mechanical": ["STARTER_PROBLEM"], "generic": [] },
-    "sinisters": [],
-    "vin": "TKERZP3SEHGRCY68P",
-    "issues": { "exterior": [], "mechanical": ["STARTER_PROBLEM"], "generic": [] }
+    "vehicule": {
+      "caracteristiques": {
+        "marque": "RENAULT",
+        "nomCommercial": "CAPTUR",
+        "puissanceCv": 5,
+        "couleur": "NOIR",
+        "tvv": "2RA11A",
+        "numCnit": "M10RENVP471J119",
+        "typeReception": "CE",
+        "vin": "VF12RA11A53526651",
+        "champF1": 1653,
+        "champF2": 1653,
+        "champF3": 2553,
+        "champG": 1180,
+        "champG1": 1105,
+        "categorie": "M1",
+        "genre": "VP",
+        "carrosserieCe": "AB",
+        "carrosserieNationale": "CI",
+        "numeroReception": "e2*2001/116*0327*71",
+        "cylindree": 898.0,
+        "puissanceNette": 66.0,
+        "energie": "ES",
+        "nbPlacesAssises": 5,
+        "nbPlacesDebout": -99,
+        "niveauSonore": 80,
+        "vitesseMoteur": 3750,
+        "co2": 113,
+        "pollution": "715/2007*136/2014EURO6",
+        "rapportPuissMasse": -99
+      },
+      "infos": {
+        "nbTitulaires": 2,
+        "datePremiereImmatriculationFrance": "2016-03-31",
+        "datePremiereImmatSiv": "2016-03-31",
+        "plaqueImmatriculation": "EA-9**-YV",
+        "dateConvertionSiv": null
+      },
+      "infosImport": {
+        "datePremiereImmatEtranger": "2015-11-27",
+        "dateImportFrance": "2016-03-31",
+        "isImported": true,
+        "immatriculationOrigine": "KR 7J457",
+        "codePaysOrigine": "pol",
+        "nomPaysOrigine": "POLOGNE"
+      },
+      "usage": {
+        "listeDesUsages": [],
+        "isAgricole": false,
+        "isCollection": false
+      },
+      "situationAdmin": {
+        "isApteACirculer": true,
+        "isCiAnnule": false,
+        "dateAnnulation": null,
+        "isCiVole": false,
+        "isDuplicata": false,
+        "gages": {
+          "hasGages": false,
+          "informations": []
+        },
+        "isCiPerdu": false,
+        "dvs": {
+          "hasDvs": false,
+          "informations": []
+        },
+        "suspensions": {
+          "hasSuspensions": false,
+          "informations": []
+        },
+        "oppositions": {
+          "hasOppositions": false,
+          "informations": {
+            "oves": [],
+            "oveis": [],
+            "otcisPv": [],
+            "otcis": []
+          }
+        },
+        "isVehVole": false
+      },
+      "accidents": {
+        "nbSinistres": 0,
+        "dateDerniereResolution": null,
+        "dateDernierSinistre": null
+      },
+      "historique": [
+        {
+          "opaDate": "2016-03-31",
+          "opaType": "Première immatriculation d'un véhicule d'occasion"
+        }
+      ]
+    },
+    "proprietaire": {
+      "personnePhysique": {
+        "nomNaissance": "J***E",
+        "prenom": "J*********E"
+      },
+      "personneMorale": {
+        "raisonSociale": "",
+        "siren": ""
+      },
+      "codePostal": "35560"
+    },
+    "certificatImmatriculation": {
+      "age": 103,
+      "dateEmission": "2016-03-31"
+    },
+    "utac": {
+      "updateDate": "2024-11-12",
+      "status": 200,
+      "ct": [
+        {
+          "ctDate": "2020-07-09",
+          "resultat": "Favorable",
+          "resultatRaw": "A",
+          "nature": "Contrôle Technique Périodique",
+          "km": 66291
+        },
+        {
+          "ctDate": "2022-07-06",
+          "resultat": "Favorable",
+          "resultatRaw": "A",
+          "nature": "Contrôle Technique Périodique",
+          "km": 92499
+        },
+        {
+          "ctDate": "2024-06-28",
+          "resultat": "Favorable",
+          "resultatRaw": "A",
+          "nature": "Contrôle Technique Périodique",
+          "km": 121131
+        }
+      ]
+    },
+    "clefAcheteur": "2561c6ca-1c34-43b7-8687-08d71ab72ac8",
+    "validiteClefAcheteur": "2024-12-12",
+    "messageUsager": "",
+    "plaqImmatHash": "f4fed68883d56372dd51787d7c7eab34671732cb7b6c6f4155b0ed7bd1bde4ed",
+    "incomingQuery": {
+      "SivPhysique": {
+        "nom": "JOSSE",
+        "prenom": "Jean-Pierre",
+        "immat": "EA-966-YV",
+        "numeroFormule": "2016BJ48875"
+      }
+    },
+    "dateMiseAJour": "2024-11-02"
   }
 ]

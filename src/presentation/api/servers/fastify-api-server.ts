@@ -2,6 +2,7 @@ import cors from '@fastify/cors';
 import fastifySwagger from '@fastify/swagger';
 import fastifySwaggerUI from '@fastify/swagger-ui';
 import { initServer } from '@ts-rest/fastify';
+import { authPlugin, requireAuth } from '@zcorp/shared-fastify';
 import { transactionContract } from '@zcorp/wheelz-contracts';
 import type { FastifyInstance } from 'fastify';
 import Fastify from 'fastify';
@@ -40,6 +41,9 @@ export class FastifyApiServer implements ManagedResource {
     this.fastifyInstance.register(cors, {
       origin: '*',
     });
+    this.fastifyInstance.register(authPlugin, {
+      authServiceUrl: config.authServiceUrl,
+    });
     this.healthcheckRouter = new HealthcheckRouter(this.healthcheckController);
     this.transactionRouter = new TransactionRouter(this.transactionController);
 
@@ -57,11 +61,36 @@ export class FastifyApiServer implements ManagedResource {
     server.registerRouter(
       transactionContract.transactions,
       {
-        getTransactions: this.transactionRouter.getTransactions,
-        getTransactionById: this.transactionRouter.getTransactionById,
-        submitTransaction: this.transactionRouter.submitTransaction,
-        updateTransaction: this.transactionRouter.updateTransaction,
-        deleteTransaction: this.transactionRouter.deleteTransaction,
+        getTransactions: {
+          handler: this.transactionRouter.getTransactions,
+          hooks: {
+            onRequest: [requireAuth()],
+          },
+        },
+        getTransactionById: {
+          handler: this.transactionRouter.getTransactionById,
+          hooks: {
+            onRequest: [requireAuth()],
+          },
+        },
+        submitTransaction: {
+          handler: this.transactionRouter.submitTransaction,
+          hooks: {
+            onRequest: [requireAuth()],
+          },
+        },
+        updateTransaction: {
+          handler: this.transactionRouter.updateTransaction,
+          hooks: {
+            onRequest: [requireAuth()],
+          },
+        },
+        deleteTransaction: {
+          handler: this.transactionRouter.deleteTransaction,
+          hooks: {
+            onRequest: [requireAuth()],
+          },
+        },
       },
       this.fastifyInstance,
       {
@@ -80,10 +109,27 @@ export class FastifyApiServer implements ManagedResource {
 
     this.fastifyInstance
       .register(fastifySwagger, {
-        transformObject: () => openApiDocument,
+        transformObject: () => ({
+          ...openApiDocument,
+          security: [{ BearerAuth: [] }],
+          components: {
+            securitySchemes: {
+              BearerAuth: {
+                type: 'http',
+                scheme: 'bearer',
+                bearerFormat: 'JWT',
+              },
+            },
+          },
+        }),
       })
       .register(fastifySwaggerUI, {
         routePrefix: '/ui',
+        uiConfig: {
+          docExpansion: 'list',
+          deepLinking: true,
+          persistAuthorization: true,
+        },
       });
   }
 

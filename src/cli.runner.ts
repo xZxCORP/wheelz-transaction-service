@@ -13,8 +13,8 @@ async function main() {
       try {
         const app = await CliApplication.create();
         thisCommand.setOptionValue('app', app);
-      } catch {
-        console.error('Error initializing application');
+      } catch (error) {
+        console.error('Error initializing application', error);
         process.exit(1);
       }
     });

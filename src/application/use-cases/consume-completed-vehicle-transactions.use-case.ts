@@ -18,7 +18,7 @@ export class ConsumeCompletedVehicleTransactionsUseCase {
         this.logger.info('Consuming completed transaction', completedTransactionResult.data);
         await this.transactionRepository.changeStatus(
           completedTransactionResult.data.transactionId,
-          'finished'
+          completedTransactionResult.data.newStatus
         );
       }
     });
