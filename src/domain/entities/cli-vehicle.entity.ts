@@ -114,7 +114,7 @@ export interface Infos {
   datePremiereImmatriculationFrance: string;
   datePremiereImmatSiv: string;
   plaqueImmatriculation: string;
-  dateConvertionSiv: string;
+  dateConvertionSiv: string | null;
 }
 
 export interface InfosImport {

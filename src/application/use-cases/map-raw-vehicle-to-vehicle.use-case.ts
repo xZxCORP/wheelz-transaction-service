@@ -42,7 +42,7 @@ export class MapRawVehicleToVehicleUseCase {
         firstRegistrationInFranceDate: rawVehicle.vehicule.infos.datePremiereImmatriculationFrance,
         firstSivRegistrationDate: rawVehicle.vehicule.infos.datePremiereImmatSiv,
         licensePlate: rawVehicle.incomingQuery.SivPhysique.immat,
-        sivConversionDate: rawVehicle.vehicule.infos.dateConvertionSiv,
+        sivConversionDate: this.nullOrValue(rawVehicle.vehicule.infos.dateConvertionSiv),
       },
       history: rawVehicle.vehicule.historique.map((historyItem) => ({
         date: historyItem.opaDate,
@@ -57,8 +57,8 @@ export class MapRawVehicleToVehicleUseCase {
       })),
       sinisterInfos: {
         count: rawVehicle.vehicule.accidents.nbSinistres,
-        lastResolutionDate: rawVehicle.vehicule.accidents.dateDerniereResolution,
-        lastSinisterDate: rawVehicle.vehicule.accidents.dateDernierSinistre,
+        lastResolutionDate: this.nullOrValue(rawVehicle.vehicule.accidents.dateDerniereResolution),
+        lastSinisterDate: this.nullOrValue(rawVehicle.vehicule.accidents.dateDernierSinistre),
       },
     };
     const result = await vehicleSchema.safeParseAsync(data);
