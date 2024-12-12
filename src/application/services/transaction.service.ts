@@ -1,4 +1,4 @@
-import { type VehicleTransactionData } from '@zcorp/shared-typing-wheelz';
+import { type ScrapVehicleData, type VehicleTransactionData } from '@zcorp/shared-typing-wheelz';
 import type { PaginationParameters } from '@zcorp/wheelz-contracts';
 
 import type { LoggerPort } from '../ports/logger.port.js';
@@ -9,6 +9,7 @@ import type { GetVehicleTransactionsUseCase as GetVehicleTransactionsUseCase } f
 import type { MapRawVehicleToVehicleUseCase } from '../use-cases/map-raw-vehicle-to-vehicle.use-case.js';
 import type { ReadRawVehicleFileUseCase } from '../use-cases/read-raw-vehicle-file.use-case.js';
 import type { ResetVehicleTransactionsUseCase } from '../use-cases/reset-vehicle-transactions.use-case.js';
+import type { ScrapVehicleDataUseCase } from '../use-cases/scrap-vehicle-data.use-case.js';
 import type { ValidateVehicleTransactionDataUseCase } from '../use-cases/validate-vehicle-transaction-data.use-case.js';
 export class TransactionService {
   constructor(
@@ -20,6 +21,7 @@ export class TransactionService {
     private readonly getVehicleTransactionsUseCase: GetVehicleTransactionsUseCase,
     private readonly getVehicleTransactionByIdUseCase: GetVehicleTransactionByIdUseCase,
     private readonly consumeCompletedVehicleTransactionsUseCase: ConsumeCompletedVehicleTransactionsUseCase,
+    private readonly scrapVehicleDataUseCase: ScrapVehicleDataUseCase,
     private logger: LoggerPort
   ) {}
 
@@ -58,5 +60,20 @@ export class TransactionService {
       const transaction = await this.processTransactionData(transactionData);
       this.logger.info(`Vehicle transaction created: ${transaction.id}`);
     }
+  }
+  async scrapAndProcessVehicleData(data: ScrapVehicleData): Promise<VehicleTransactionData | null> {
+    const scraperResult = await this.scrapVehicleDataUseCase.execute(data);
+    if (!scraperResult.data) {
+      return null;
+    }
+    const mappedVehicle = await this.mapRawVehicleToVehicleUseCase.execute(scraperResult.data);
+    if (!mappedVehicle) {
+      return null;
+    }
+
+    return this.processTransactionData({
+      action: 'create',
+      data: mappedVehicle,
+    });
   }
 }
