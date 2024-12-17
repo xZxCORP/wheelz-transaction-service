@@ -7,6 +7,7 @@ import { MapRawVehicleToVehicleUseCase } from '../../application/use-cases/map-r
 import { PerformHealthCheckUseCase } from '../../application/use-cases/perform-health-check.use-case.js';
 import { ReadRawVehicleFileUseCase } from '../../application/use-cases/read-raw-vehicle-file.use-case.js';
 import { ResetVehicleTransactionsUseCase } from '../../application/use-cases/reset-vehicle-transactions.use-case.js';
+import { ScrapVehicleDataUseCase } from '../../application/use-cases/scrap-vehicle-data.use-case.js';
 import { ValidateVehicleTransactionDataUseCase } from '../../application/use-cases/validate-vehicle-transaction-data.use-case.js';
 import { EnvironmentConfigLoader } from '../../infrastructure/adapters/config/environment.config-loader.js';
 import { CryptoDataSigner } from '../../infrastructure/adapters/data-signer/crypto.data-signer.js';
@@ -18,6 +19,7 @@ import { UuidIdGenerator } from '../../infrastructure/adapters/id-generator/uuid
 import { WinstonLogger } from '../../infrastructure/adapters/logger/winston.logger.js';
 import { RabbitMQQueue } from '../../infrastructure/adapters/queue/rabbit-mq.queue.js';
 import { ValidStubTransactionValidator } from '../../infrastructure/adapters/transaction-validator/valid-stub.transaction-validator.js';
+import { GoblinVehicleScraper } from '../../infrastructure/adapters/vehicle-scraper/goblin.vehicle-scraper.js';
 import { MongoTransactionRepository } from '../../infrastructure/repositories/mongo.transaction-repository.js';
 import { FastifyApiServer } from '../api/servers/fastify-api-server.js';
 import { HealthcheckController } from '../controllers/healthcheck.controller.js';
@@ -58,6 +60,7 @@ export class MainApplication extends AbstractApplication {
     const dateProvider = new RealDateProvider();
     const fileReader = new RealFileReader();
     const idGenerator = new UuidIdGenerator();
+    const vehicleScraperPort = new GoblinVehicleScraper(this.config.vehicleScraper.url);
 
     const createVehicleTransactionUseCase = new CreateVehicleTransactionUseCase(
       dataSigner,
@@ -85,6 +88,7 @@ export class MainApplication extends AbstractApplication {
         completedQueue,
         this.logger
       );
+    const scrapVehicleDataUseCase = new ScrapVehicleDataUseCase(vehicleScraperPort);
 
     this.transactionService = new TransactionService(
       createVehicleTransactionUseCase,
@@ -95,6 +99,7 @@ export class MainApplication extends AbstractApplication {
       getVehicleTransactionsUseCase,
       getVehicleTransactionByIdUseCase,
       comsumeCompletedVehicleTransactionsUseCase,
+      scrapVehicleDataUseCase,
       this.logger
     );
 

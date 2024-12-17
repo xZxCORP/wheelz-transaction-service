@@ -7,17 +7,12 @@ export interface RawVehicleInfos {
   validiteClefAcheteur: string;
   messageUsager: string;
   plaqImmatHash: string;
-  incomingQuery: IncomingQuery;
   dateMiseAJour: string;
 }
 
 export interface CertificatImmatriculation {
   age: number;
   dateEmission: string;
-}
-
-export interface IncomingQuery {
-  SivPhysique: SivPhysique;
 }
 
 export interface SivPhysique {

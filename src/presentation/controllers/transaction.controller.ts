@@ -1,6 +1,7 @@
 import type {
   CreateVehicleTransactionData,
   DeleteVehicleTransactionData,
+  ScrapVehicleData,
   UpdateVehicleTransactionData,
 } from '@zcorp/shared-typing-wheelz';
 import type { PaginationParameters } from '@zcorp/wheelz-contracts';
@@ -33,5 +34,8 @@ export class TransactionController {
   }
   getTransactionById(transactionId: string) {
     return this.transactionService.getTransactionById(transactionId);
+  }
+  scrapAndCreateTransaction(data: ScrapVehicleData) {
+    return this.transactionService.scrapAndProcessVehicleData(data);
   }
 }

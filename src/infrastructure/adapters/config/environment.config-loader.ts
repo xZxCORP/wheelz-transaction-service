@@ -26,6 +26,9 @@ export class EnvironmentConfigLoader implements ConfigLoaderPort {
         database: process.env.TRANSACTION_REPOSITORY_DATABASE,
         collection: process.env.TRANSACTION_REPOSITORY_COLLECTION,
       },
+      vehicleScraper: {
+        url: process.env.VEHICLE_SCRAPER_URL,
+      },
       api: {
         host: process.env.API_HOST,
         port: process.env.API_PORT,
