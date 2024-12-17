@@ -91,6 +91,9 @@ export class FastifyApiServer implements ManagedResource {
             onRequest: [requireAuth()],
           },
         },
+        scrapAndCreateTransaction: {
+          handler: this.transactionRouter.scrapAndCreateTransaction,
+        },
       },
       this.fastifyInstance,
       {
