@@ -4,6 +4,7 @@ import { TransactionService } from '../../application/services/transaction.servi
 import { ConsumeCompletedVehicleTransactionsUseCase } from '../../application/use-cases/consume-completed-vehicle-transactions.use-case.js';
 import { CreateVehicleTransactionUseCase } from '../../application/use-cases/create-vehicle-transaction.use-case.js';
 import { GetVehicleTransactionByIdUseCase } from '../../application/use-cases/get-vehicle-transaction-by-id.use-case.js';
+import { GetVehicleTransactionByVinOrImmatUseCase } from '../../application/use-cases/get-vehicle-transaction-by-vin-or-immat.use-case.js';
 import { GetVehicleTransactionsUseCase } from '../../application/use-cases/get-vehicle-transactions.use-case.js';
 import { MapRawVehicleToVehicleUseCase } from '../../application/use-cases/map-raw-vehicle-to-vehicle.use-case.js';
 import { ReadRawVehicleFileUseCase } from '../../application/use-cases/read-raw-vehicle-file.use-case.js';
@@ -73,6 +74,9 @@ export class CliApplication extends AbstractApplication {
     const getVehicleTransactionByIdUseCase = new GetVehicleTransactionByIdUseCase(
       transactionRepository
     );
+    const getVehicleTransactionByVinOrImmatUseCase = new GetVehicleTransactionByVinOrImmatUseCase(
+      transactionRepository
+    );
     const comsumeCompletedVehicleTransactionsUseCase =
       new ConsumeCompletedVehicleTransactionsUseCase(
         transactionRepository,
@@ -88,6 +92,7 @@ export class CliApplication extends AbstractApplication {
       resetVehicleTransactionsUseCase,
       getVehicleTransactionsUseCase,
       getVehicleTransactionByIdUseCase,
+      getVehicleTransactionByVinOrImmatUseCase,
       comsumeCompletedVehicleTransactionsUseCase,
       scrapVehicleDataUseCase,
       this.logger

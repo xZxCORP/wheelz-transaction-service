@@ -5,6 +5,7 @@ import type { LoggerPort } from '../ports/logger.port.js';
 import type { ConsumeCompletedVehicleTransactionsUseCase } from '../use-cases/consume-completed-vehicle-transactions.use-case.js';
 import { CreateVehicleTransactionUseCase } from '../use-cases/create-vehicle-transaction.use-case.js';
 import type { GetVehicleTransactionByIdUseCase } from '../use-cases/get-vehicle-transaction-by-id.use-case.js';
+import type { GetVehicleTransactionByVinOrImmatUseCase } from '../use-cases/get-vehicle-transaction-by-vin-or-immat.use-case.js';
 import type { GetVehicleTransactionsUseCase as GetVehicleTransactionsUseCase } from '../use-cases/get-vehicle-transactions.use-case.js';
 import type { MapRawVehicleToVehicleUseCase } from '../use-cases/map-raw-vehicle-to-vehicle.use-case.js';
 import type { ReadRawVehicleFileUseCase } from '../use-cases/read-raw-vehicle-file.use-case.js';
@@ -20,6 +21,7 @@ export class TransactionService {
     private readonly resetVehicleTransactionsUseCase: ResetVehicleTransactionsUseCase,
     private readonly getVehicleTransactionsUseCase: GetVehicleTransactionsUseCase,
     private readonly getVehicleTransactionByIdUseCase: GetVehicleTransactionByIdUseCase,
+    private readonly getVehicleTransactionByVinOrImmatUseCase: GetVehicleTransactionByVinOrImmatUseCase,
     private readonly consumeCompletedVehicleTransactionsUseCase: ConsumeCompletedVehicleTransactionsUseCase,
     private readonly scrapVehicleDataUseCase: ScrapVehicleDataUseCase,
     private logger: LoggerPort
@@ -62,6 +64,13 @@ export class TransactionService {
     }
   }
   async scrapAndProcessVehicleData(data: ScrapVehicleData): Promise<VehicleTransactionData | null> {
+    const existingTransaction = await this.getVehicleTransactionByVinOrImmatUseCase.execute(
+      data.vin,
+      data.immat
+    );
+    if (existingTransaction) {
+      return existingTransaction;
+    }
     const scraperResult = await this.scrapVehicleDataUseCase.execute(data);
     if (!scraperResult.data) {
       return null;
