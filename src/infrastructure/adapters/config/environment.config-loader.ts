@@ -10,6 +10,7 @@ export class EnvironmentConfigLoader implements ConfigLoaderPort {
   constructor(path: string = '.env') {
     configDotenv({
       path,
+      override: true,
     });
   }
   async load(): Promise<Config> {
@@ -25,6 +26,9 @@ export class EnvironmentConfigLoader implements ConfigLoaderPort {
         url: process.env.TRANSACTION_REPOSITORY_URL,
         database: process.env.TRANSACTION_REPOSITORY_DATABASE,
         collection: process.env.TRANSACTION_REPOSITORY_COLLECTION,
+      },
+      vehicleScraper: {
+        url: process.env.VEHICLE_SCRAPER_URL,
       },
       api: {
         host: process.env.API_HOST,

@@ -34,7 +34,7 @@ async function main() {
         await app.importVehicles(filePath);
         await app.stop();
       } catch (error) {
-        app.logger.error('Error importing vehicles', error);
+        console.error('Error importing vehicles', error);
         await app.stop();
         process.exit(1);
       }

@@ -41,7 +41,7 @@ export class MapRawVehicleToVehicleUseCase {
         holderCount: rawVehicle.vehicule.infos.nbTitulaires,
         firstRegistrationInFranceDate: rawVehicle.vehicule.infos.datePremiereImmatriculationFrance,
         firstSivRegistrationDate: rawVehicle.vehicule.infos.datePremiereImmatSiv,
-        licensePlate: rawVehicle.incomingQuery.SivPhysique.immat,
+        licensePlate: rawVehicle.vehicule.infos.plaqueImmatriculation,
         sivConversionDate: this.nullOrValue(rawVehicle.vehicule.infos.dateConvertionSiv),
       },
       history: rawVehicle.vehicule.historique.map((historyItem) => ({

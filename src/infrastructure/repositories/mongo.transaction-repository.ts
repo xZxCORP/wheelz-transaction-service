@@ -98,6 +98,22 @@ export class MongoTransactionRepository implements TransactionRepository, Manage
     }
     return this.mapToTransaction(transaction);
   }
+  async getByVinOrImmat(vin: string, immat: string): Promise<VehicleTransaction | null> {
+    const transaction = await this.collection!.findOne({
+      $or: [
+        {
+          'data.vin': vin,
+        },
+        {
+          'data.infos.licensePlate': immat,
+        },
+      ],
+    });
+    if (!transaction) {
+      return null;
+    }
+    return this.mapToTransaction(transaction);
+  }
 
   async removeAll(): Promise<void> {
     await this.collection!.deleteMany({});

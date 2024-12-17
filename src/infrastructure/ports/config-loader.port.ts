@@ -13,6 +13,9 @@ export const configSchema = z.object({
     database: z.string(),
     collection: z.string(),
   }),
+  vehicleScraper: z.object({
+    url: z.string(),
+  }),
   api: z.object({
     host: z.string(),
     port: z.coerce.number(),

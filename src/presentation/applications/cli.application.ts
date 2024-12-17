@@ -4,10 +4,12 @@ import { TransactionService } from '../../application/services/transaction.servi
 import { ConsumeCompletedVehicleTransactionsUseCase } from '../../application/use-cases/consume-completed-vehicle-transactions.use-case.js';
 import { CreateVehicleTransactionUseCase } from '../../application/use-cases/create-vehicle-transaction.use-case.js';
 import { GetVehicleTransactionByIdUseCase } from '../../application/use-cases/get-vehicle-transaction-by-id.use-case.js';
+import { GetVehicleTransactionByVinOrImmatUseCase } from '../../application/use-cases/get-vehicle-transaction-by-vin-or-immat.use-case.js';
 import { GetVehicleTransactionsUseCase } from '../../application/use-cases/get-vehicle-transactions.use-case.js';
 import { MapRawVehicleToVehicleUseCase } from '../../application/use-cases/map-raw-vehicle-to-vehicle.use-case.js';
 import { ReadRawVehicleFileUseCase } from '../../application/use-cases/read-raw-vehicle-file.use-case.js';
 import { ResetVehicleTransactionsUseCase } from '../../application/use-cases/reset-vehicle-transactions.use-case.js';
+import { ScrapVehicleDataUseCase } from '../../application/use-cases/scrap-vehicle-data.use-case.js';
 import { ValidateVehicleTransactionDataUseCase } from '../../application/use-cases/validate-vehicle-transaction-data.use-case.js';
 import { EnvironmentConfigLoader } from '../../infrastructure/adapters/config/environment.config-loader.js';
 import { CryptoDataSigner } from '../../infrastructure/adapters/data-signer/crypto.data-signer.js';
@@ -17,6 +19,7 @@ import { UuidIdGenerator } from '../../infrastructure/adapters/id-generator/uuid
 import { WinstonLogger } from '../../infrastructure/adapters/logger/winston.logger.js';
 import { RabbitMQQueue } from '../../infrastructure/adapters/queue/rabbit-mq.queue.js';
 import { ValidStubTransactionValidator } from '../../infrastructure/adapters/transaction-validator/valid-stub.transaction-validator.js';
+import { GoblinVehicleScraper } from '../../infrastructure/adapters/vehicle-scraper/goblin.vehicle-scraper.js';
 import { MongoTransactionRepository } from '../../infrastructure/repositories/mongo.transaction-repository.js';
 import { AbstractApplication } from './base.application.js';
 
@@ -43,6 +46,8 @@ export class CliApplication extends AbstractApplication {
     const dateProvider = new RealDateProvider();
     const fileReader = new RealFileReader();
     const idGenerator = new UuidIdGenerator();
+    const vehicleScraperPort = new GoblinVehicleScraper(this.config.vehicleScraper.url);
+
     const transactionRepository = new MongoTransactionRepository(
       this.config.transactionRepository.url,
       this.config.transactionRepository.database,
@@ -69,12 +74,16 @@ export class CliApplication extends AbstractApplication {
     const getVehicleTransactionByIdUseCase = new GetVehicleTransactionByIdUseCase(
       transactionRepository
     );
+    const getVehicleTransactionByVinOrImmatUseCase = new GetVehicleTransactionByVinOrImmatUseCase(
+      transactionRepository
+    );
     const comsumeCompletedVehicleTransactionsUseCase =
       new ConsumeCompletedVehicleTransactionsUseCase(
         transactionRepository,
         completedQueue,
         this.logger
       );
+    const scrapVehicleDataUseCase = new ScrapVehicleDataUseCase(vehicleScraperPort);
     this.transactionService = new TransactionService(
       createVehicleTransactionUseCase,
       readRawVehicleFileUseCase,
@@ -83,7 +92,9 @@ export class CliApplication extends AbstractApplication {
       resetVehicleTransactionsUseCase,
       getVehicleTransactionsUseCase,
       getVehicleTransactionByIdUseCase,
+      getVehicleTransactionByVinOrImmatUseCase,
       comsumeCompletedVehicleTransactionsUseCase,
+      scrapVehicleDataUseCase,
       this.logger
     );
 

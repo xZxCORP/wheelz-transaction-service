@@ -56,4 +56,21 @@ export class TransactionRouter {
       body: result,
     };
   };
+  scrapAndCreateTransaction = async (
+    input: ServerInferRequest<typeof transactionContract.transactions.scrapAndCreateTransaction>
+  ): Promise<
+    ServerInferResponses<typeof transactionContract.transactions.scrapAndCreateTransaction>
+  > => {
+    const result = await this.transactionController.scrapAndCreateTransaction(input.body);
+    if (!result) {
+      return {
+        status: 404,
+        body: { message: 'Invalid vehicle data' },
+      };
+    }
+    return {
+      status: 201,
+      body: { message: 'Vehicle scraped and transaction created' },
+    };
+  };
 }
