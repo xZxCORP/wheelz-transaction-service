@@ -98,14 +98,25 @@ export class MongoTransactionRepository implements TransactionRepository, Manage
     }
     return this.mapToTransaction(transaction);
   }
-  async getByVinOrImmat(vin: string, immat: string): Promise<VehicleTransaction | null> {
+  async getByVinOrImmat(
+    action: 'create' | 'update',
+    vin?: string,
+    immat?: string
+  ): Promise<VehicleTransaction | null> {
     const transaction = await this.collection!.findOne({
-      $or: [
+      $and: [
         {
-          'data.vin': vin,
+          action,
         },
         {
-          'data.infos.licensePlate': immat,
+          $or: [
+            {
+              'data.vin': vin,
+            },
+            {
+              'data.infos.licensePlate': immat,
+            },
+          ],
         },
       ],
     });
