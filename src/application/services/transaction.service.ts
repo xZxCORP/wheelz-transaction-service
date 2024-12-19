@@ -31,7 +31,45 @@ export class TransactionService {
     const isValid =
       await this.validateVehicleTransactionDataUseCase.execute(vehicleTransactionData);
     if (!isValid) {
-      throw new Error('Invalid vehicle transaction data');
+      throw new Error('Transaction invalide');
+    }
+    if (vehicleTransactionData.action === 'create') {
+      const existingTransaction = await this.getVehicleTransactionByVinOrImmatUseCase.execute(
+        'create',
+        vehicleTransactionData.data.vin,
+        undefined
+      );
+      if (existingTransaction) {
+        throw new Error('Une transaction avec ce VIN existe déjà');
+      }
+    }
+    if (vehicleTransactionData.action === 'update') {
+      const existingTransaction = await this.getVehicleTransactionByVinOrImmatUseCase.execute(
+        'update',
+        vehicleTransactionData.data.vin,
+        undefined
+      );
+      if (!existingTransaction) {
+        throw new Error("Aucune transaction avec ce VIN n'existe");
+      }
+    }
+    if (vehicleTransactionData.action === 'delete') {
+      const existingCreateTransaction = await this.getVehicleTransactionByVinOrImmatUseCase.execute(
+        'create',
+        vehicleTransactionData.data.vin,
+        undefined
+      );
+      if (!existingCreateTransaction) {
+        throw new Error('Impossible de supprimer une transaction avec un vin inexistant');
+      }
+      const existingDeleteTransaction = await this.getVehicleTransactionByVinOrImmatUseCase.execute(
+        'delete',
+        vehicleTransactionData.data.vin,
+        undefined
+      );
+      if (existingDeleteTransaction) {
+        throw new Error('Une transaction de suppression avec ce VIN existe déjà');
+      }
     }
     const transaction = await this.createVehicleTransactionUseCase.execute(vehicleTransactionData);
     return transaction;
@@ -65,6 +103,7 @@ export class TransactionService {
   }
   async scrapAndProcessVehicleData(data: ScrapVehicleData): Promise<VehicleTransactionData | null> {
     const existingTransaction = await this.getVehicleTransactionByVinOrImmatUseCase.execute(
+      'create',
       data.vin,
       data.immat
     );
