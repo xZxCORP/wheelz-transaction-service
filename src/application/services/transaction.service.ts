@@ -11,13 +11,13 @@ import type { MapRawVehicleToVehicleUseCase } from '../use-cases/map-raw-vehicle
 import type { ReadRawVehicleFileUseCase } from '../use-cases/read-raw-vehicle-file.use-case.js';
 import type { ResetVehicleTransactionsUseCase } from '../use-cases/reset-vehicle-transactions.use-case.js';
 import type { ScrapVehicleDataUseCase } from '../use-cases/scrap-vehicle-data.use-case.js';
-import type { ValidateVehicleTransactionDataUseCase } from '../use-cases/validate-vehicle-transaction-data.use-case.js';
+import type { ValidateCreateVehicleTransactionDataUseCase } from '../use-cases/validate-create-vehicle-transaction-data.use-case.js';
 export class TransactionService {
   constructor(
     private readonly createVehicleTransactionUseCase: CreateVehicleTransactionUseCase,
     private readonly readRawVehicleFileUseCase: ReadRawVehicleFileUseCase,
     private readonly mapRawVehicleToVehicleUseCase: MapRawVehicleToVehicleUseCase,
-    private readonly validateVehicleTransactionDataUseCase: ValidateVehicleTransactionDataUseCase,
+    private readonly validateCreateVehicleTransactionDataUseCase: ValidateCreateVehicleTransactionDataUseCase,
     private readonly resetVehicleTransactionsUseCase: ResetVehicleTransactionsUseCase,
     private readonly getVehicleTransactionsUseCase: GetVehicleTransactionsUseCase,
     private readonly getVehicleTransactionByIdUseCase: GetVehicleTransactionByIdUseCase,
@@ -28,12 +28,12 @@ export class TransactionService {
   ) {}
 
   async processTransactionData(vehicleTransactionData: VehicleTransactionData) {
-    const isValid =
-      await this.validateVehicleTransactionDataUseCase.execute(vehicleTransactionData);
-    if (!isValid) {
-      throw new Error('Transaction invalide');
-    }
     if (vehicleTransactionData.action === 'create') {
+      const validationResult =
+        await this.validateCreateVehicleTransactionDataUseCase.execute(vehicleTransactionData);
+      if (!validationResult.isValid) {
+        throw new Error(validationResult.message);
+      }
       const existingTransaction = await this.getVehicleTransactionByVinOrImmatUseCase.execute(
         'create',
         vehicleTransactionData.data.vin,

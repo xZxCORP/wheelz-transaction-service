@@ -13,6 +13,9 @@ export const configSchema = z.object({
     database: z.string(),
     collection: z.string(),
   }),
+  transactionValidator: z.object({
+    url: z.string(),
+  }),
   vehicleScraper: z.object({
     url: z.string(),
   }),

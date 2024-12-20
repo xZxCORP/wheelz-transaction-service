@@ -30,6 +30,9 @@ export class EnvironmentConfigLoader implements ConfigLoaderPort {
       vehicleScraper: {
         url: process.env.VEHICLE_SCRAPER_URL,
       },
+      transactionValidator: {
+        url: process.env.TRANSACTION_VALIDATOR_URL,
+      },
       api: {
         host: process.env.API_HOST,
         port: process.env.API_PORT,
