@@ -9,8 +9,9 @@ import { PerformHealthCheckUseCase } from '../../application/use-cases/perform-h
 import { ReadRawVehicleFileUseCase } from '../../application/use-cases/read-raw-vehicle-file.use-case.js';
 import { ResetVehicleTransactionsUseCase } from '../../application/use-cases/reset-vehicle-transactions.use-case.js';
 import { ScrapVehicleDataUseCase } from '../../application/use-cases/scrap-vehicle-data.use-case.js';
-import { ValidateVehicleTransactionDataUseCase } from '../../application/use-cases/validate-vehicle-transaction-data.use-case.js';
+import { ValidateCreateVehicleTransactionDataUseCase } from '../../application/use-cases/validate-create-vehicle-transaction-data.use-case.js';
 import { EnvironmentConfigLoader } from '../../infrastructure/adapters/config/environment.config-loader.js';
+import { KerekCreateTransactionValidator } from '../../infrastructure/adapters/create-transaction-validator/kerek.create-transaction-validator.js';
 import { CryptoDataSigner } from '../../infrastructure/adapters/data-signer/crypto.data-signer.js';
 import { RealDateProvider } from '../../infrastructure/adapters/date-provider/real.date-provider.port.js';
 import { RealFileReader } from '../../infrastructure/adapters/file-reader/real.file-reader.js';
@@ -19,7 +20,6 @@ import { TransactionRepositoryHealthCheck } from '../../infrastructure/adapters/
 import { UuidIdGenerator } from '../../infrastructure/adapters/id-generator/uuid.id-generator.js';
 import { WinstonLogger } from '../../infrastructure/adapters/logger/winston.logger.js';
 import { RabbitMQQueue } from '../../infrastructure/adapters/queue/rabbit-mq.queue.js';
-import { ValidStubTransactionValidator } from '../../infrastructure/adapters/transaction-validator/valid-stub.transaction-validator.js';
 import { GoblinVehicleScraper } from '../../infrastructure/adapters/vehicle-scraper/goblin.vehicle-scraper.js';
 import { MongoTransactionRepository } from '../../infrastructure/repositories/mongo.transaction-repository.js';
 import { FastifyApiServer } from '../api/servers/fastify-api-server.js';
@@ -52,7 +52,9 @@ export class MainApplication extends AbstractApplication {
       new TransactionRepositoryHealthCheck(transactionRepository),
     ]);
 
-    const stubExternalTransactionDataValidator = new ValidStubTransactionValidator();
+    const externalCreateTransactionValidator = new KerekCreateTransactionValidator(
+      this.config.transactionValidator.url
+    );
 
     const dataSigner = new CryptoDataSigner(
       this.config.dataSigner.signAlgorithm,
@@ -76,9 +78,8 @@ export class MainApplication extends AbstractApplication {
       transactionRepository,
       newQueue
     );
-    const validateVehicleTransactionDataUseCase = new ValidateVehicleTransactionDataUseCase(
-      stubExternalTransactionDataValidator
-    );
+    const validateCreateVehicleTransactionDataUseCase =
+      new ValidateCreateVehicleTransactionDataUseCase(externalCreateTransactionValidator);
     const getVehicleTransactionsUseCase = new GetVehicleTransactionsUseCase(transactionRepository);
     const getVehicleTransactionByIdUseCase = new GetVehicleTransactionByIdUseCase(
       transactionRepository
@@ -98,7 +99,7 @@ export class MainApplication extends AbstractApplication {
       createVehicleTransactionUseCase,
       readRawVehicleFileUseCase,
       mapRawVehicleToVehicleUseCase,
-      validateVehicleTransactionDataUseCase,
+      validateCreateVehicleTransactionDataUseCase,
       resetVehicleTransactionsUseCase,
       getVehicleTransactionsUseCase,
       getVehicleTransactionByIdUseCase,

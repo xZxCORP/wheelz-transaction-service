@@ -5,6 +5,6 @@ export type TransactionValidationResult = {
   transaction: VehicleTransactionData;
   message: string;
 };
-export interface ExternalTransactionDataValidatorPort {
+export interface ExternalCreateTransactionDataValidatorPort {
   validate(transactionData: VehicleTransactionData): Promise<TransactionValidationResult>;
 }
