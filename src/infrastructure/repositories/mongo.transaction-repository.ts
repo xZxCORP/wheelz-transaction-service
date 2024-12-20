@@ -4,7 +4,7 @@ import type {
   Pagination,
   PaginationParameters,
 } from '@zcorp/wheelz-contracts';
-import { type Collection, type Db, MongoClient, type WithId } from 'mongodb';
+import { type Collection, type Db, type Filter, MongoClient, type WithId } from 'mongodb';
 
 import type { LoggerPort } from '../../application/ports/logger.port.js';
 import type { TransactionRepository } from '../../domain/repositories/transaction.repository.js';
@@ -103,20 +103,24 @@ export class MongoTransactionRepository implements TransactionRepository, Manage
     vin?: string,
     immat?: string
   ): Promise<VehicleTransaction | null> {
+    const orFilters: Filter<VehicleTransaction>[] = [];
+    if (vin) {
+      orFilters.push({
+        'data.vin': vin,
+      });
+    }
+    if (immat) {
+      orFilters.push({
+        'data.infos.licensePlate': immat,
+      });
+    }
     const transaction = await this.collection!.findOne({
       $and: [
         {
           action,
         },
         {
-          $or: [
-            {
-              'data.vin': vin,
-            },
-            {
-              'data.infos.licensePlate': immat,
-            },
-          ],
+          $or: orFilters,
         },
       ],
     });
