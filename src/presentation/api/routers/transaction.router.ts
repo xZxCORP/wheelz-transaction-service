@@ -65,12 +65,15 @@ export class TransactionRouter {
     if (!result) {
       return {
         status: 404,
-        body: { message: 'Invalid vehicle data' },
+        body: { message: 'Impossible de trouver le véhicule après une recherche approfondie.' },
       };
     }
     return {
       status: 201,
-      body: { message: 'Vehicle scraped and transaction created' },
+      body: {
+        message:
+          'Le véhicule a bien été trouvé et est en attente de validation, vous pourrez récupérer son rapport très bientôt',
+      },
     };
   };
 }
