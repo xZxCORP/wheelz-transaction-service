@@ -38,4 +38,7 @@ export class TransactionController {
   scrapAndCreateTransaction(data: ScrapVehicleData) {
     return this.transactionService.scrapAndProcessVehicleData(data);
   }
+  getTransactionStats() {
+    return this.transactionService.getTransactionStats();
+  }
 }

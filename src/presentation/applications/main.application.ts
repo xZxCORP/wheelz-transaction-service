@@ -1,6 +1,7 @@
 import { TransactionService } from '../../application/services/transaction.service.js';
 import { ConsumeCompletedVehicleTransactionsUseCase } from '../../application/use-cases/consume-completed-vehicle-transactions.use-case.js';
 import { CreateVehicleTransactionUseCase } from '../../application/use-cases/create-vehicle-transaction.use-case.js';
+import { GetTransactionStatsUseCase } from '../../application/use-cases/get-transaction-stats.use-case.js';
 import { GetVehicleTransactionByIdUseCase } from '../../application/use-cases/get-vehicle-transaction-by-id.use-case.js';
 import { GetVehicleTransactionByVinOrImmatUseCase } from '../../application/use-cases/get-vehicle-transaction-by-vin-or-immat.use-case.js';
 import { GetVehicleTransactionsUseCase } from '../../application/use-cases/get-vehicle-transactions.use-case.js';
@@ -94,6 +95,7 @@ export class MainApplication extends AbstractApplication {
         this.logger
       );
     const scrapVehicleDataUseCase = new ScrapVehicleDataUseCase(vehicleScraperPort);
+    const getTransactionStatsUseCase = new GetTransactionStatsUseCase();
 
     this.transactionService = new TransactionService(
       createVehicleTransactionUseCase,
@@ -106,6 +108,7 @@ export class MainApplication extends AbstractApplication {
       getVehicleTransactionByVinOrImmatUseCase,
       comsumeCompletedVehicleTransactionsUseCase,
       scrapVehicleDataUseCase,
+      getTransactionStatsUseCase,
       this.logger
     );
 
