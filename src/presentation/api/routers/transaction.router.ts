@@ -76,4 +76,13 @@ export class TransactionRouter {
       },
     };
   };
+  stats = async (
+    _input: ServerInferRequest<typeof transactionContract.transactions.stats>
+  ): Promise<ServerInferResponses<typeof transactionContract.transactions.stats>> => {
+    const result = await this.transactionController.getTransactionStats();
+    return {
+      status: 200,
+      body: result,
+    };
+  };
 }

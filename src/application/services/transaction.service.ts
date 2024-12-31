@@ -4,6 +4,7 @@ import type { PaginationParameters } from '@zcorp/wheelz-contracts';
 import type { LoggerPort } from '../ports/logger.port.js';
 import type { ConsumeCompletedVehicleTransactionsUseCase } from '../use-cases/consume-completed-vehicle-transactions.use-case.js';
 import { CreateVehicleTransactionUseCase } from '../use-cases/create-vehicle-transaction.use-case.js';
+import type { GetTransactionStatsUseCase } from '../use-cases/get-transaction-stats.use-case.js';
 import type { GetVehicleTransactionByIdUseCase } from '../use-cases/get-vehicle-transaction-by-id.use-case.js';
 import type { GetVehicleTransactionByVinOrImmatUseCase } from '../use-cases/get-vehicle-transaction-by-vin-or-immat.use-case.js';
 import type { GetVehicleTransactionsUseCase as GetVehicleTransactionsUseCase } from '../use-cases/get-vehicle-transactions.use-case.js';
@@ -24,6 +25,7 @@ export class TransactionService {
     private readonly getVehicleTransactionByVinOrImmatUseCase: GetVehicleTransactionByVinOrImmatUseCase,
     private readonly consumeCompletedVehicleTransactionsUseCase: ConsumeCompletedVehicleTransactionsUseCase,
     private readonly scrapVehicleDataUseCase: ScrapVehicleDataUseCase,
+    private readonly getTransactionStatsUseCase: GetTransactionStatsUseCase,
     private logger: LoggerPort
   ) {}
 
@@ -123,5 +125,8 @@ export class TransactionService {
       action: 'create',
       data: mappedVehicle,
     });
+  }
+  async getTransactionStats() {
+    return this.getTransactionStatsUseCase.execute();
   }
 }
