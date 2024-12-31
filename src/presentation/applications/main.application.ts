@@ -95,7 +95,7 @@ export class MainApplication extends AbstractApplication {
         this.logger
       );
     const scrapVehicleDataUseCase = new ScrapVehicleDataUseCase(vehicleScraperPort);
-    const getTransactionStatsUseCase = new GetTransactionStatsUseCase();
+    const getTransactionStatsUseCase = new GetTransactionStatsUseCase(transactionRepository);
 
     this.transactionService = new TransactionService(
       createVehicleTransactionUseCase,

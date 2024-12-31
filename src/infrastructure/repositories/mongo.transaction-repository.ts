@@ -73,6 +73,10 @@ export class MongoTransactionRepository implements TransactionRepository, Manage
   async changeStatus(transactionId: string, status: Status): Promise<void> {
     await this.collection!.updateOne({ id: transactionId }, { $set: { status } });
   }
+  async getAllWithoutPagination(): Promise<VehicleTransaction[]> {
+    const transactions = await this.collection!.find().toArray();
+    return transactions.map((element) => this.mapToTransaction(element));
+  }
 
   async getAll(paginationParameters: PaginationParameters): Promise<PaginatedTransactions> {
     const total = await this.collection!.countDocuments();
