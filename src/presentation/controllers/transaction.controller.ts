@@ -11,11 +11,14 @@ import type { TransactionService } from '../../application/services/transaction.
 export class TransactionController {
   constructor(private readonly transactionService: TransactionService) {}
 
-  createTransaction(data: CreateVehicleTransactionData) {
-    return this.transactionService.processTransactionData({
-      action: 'create',
-      data,
-    });
+  createTransaction(data: CreateVehicleTransactionData, force: boolean) {
+    return this.transactionService.processTransactionData(
+      {
+        action: 'create',
+        data,
+      },
+      force
+    );
   }
   updateTransaction(data: UpdateVehicleTransactionData) {
     return this.transactionService.processTransactionData({
