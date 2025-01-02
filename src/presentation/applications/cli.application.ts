@@ -3,6 +3,7 @@ import path from 'node:path';
 import { TransactionService } from '../../application/services/transaction.service.js';
 import { ConsumeCompletedVehicleTransactionsUseCase } from '../../application/use-cases/consume-completed-vehicle-transactions.use-case.js';
 import { CreateVehicleTransactionUseCase } from '../../application/use-cases/create-vehicle-transaction.use-case.js';
+import { GetTransactionAnomaliesUseCase } from '../../application/use-cases/get-transaction-anomalies.use-case.js';
 import { GetTransactionEvolutionUseCase } from '../../application/use-cases/get-transaction-evolution.use-case.js';
 import { GetTransactionRepartitionUseCase } from '../../application/use-cases/get-transaction-repartition.use-case.js';
 import { GetVehicleTransactionByIdUseCase } from '../../application/use-cases/get-vehicle-transaction-by-id.use-case.js';
@@ -92,6 +93,9 @@ export class CliApplication extends AbstractApplication {
     const scrapVehicleDataUseCase = new ScrapVehicleDataUseCase(vehicleScraperPort);
     const getTransactionEvolutionUseCase = new GetTransactionEvolutionUseCase();
     const getTransactionRepartitionUseCase = new GetTransactionRepartitionUseCase();
+    const getTransactionAnomaliesUseCase = new GetTransactionAnomaliesUseCase(
+      externalCreateTransactionDataValidator
+    );
     this.transactionService = new TransactionService(
       createVehicleTransactionUseCase,
       readRawVehicleFileUseCase,
@@ -106,6 +110,7 @@ export class CliApplication extends AbstractApplication {
       scrapVehicleDataUseCase,
       getTransactionEvolutionUseCase,
       getTransactionRepartitionUseCase,
+      getTransactionAnomaliesUseCase,
       this.logger
     );
 

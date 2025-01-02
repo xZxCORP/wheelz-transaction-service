@@ -9,6 +9,7 @@ import { InvalidTransactionError } from '../../domain/errors/invalid-transaction
 import type { LoggerPort } from '../ports/logger.port.js';
 import type { ConsumeCompletedVehicleTransactionsUseCase } from '../use-cases/consume-completed-vehicle-transactions.use-case.js';
 import { CreateVehicleTransactionUseCase } from '../use-cases/create-vehicle-transaction.use-case.js';
+import type { GetTransactionAnomaliesUseCase } from '../use-cases/get-transaction-anomalies.use-case.js';
 import type { GetTransactionEvolutionUseCase } from '../use-cases/get-transaction-evolution.use-case.js';
 import type { GetTransactionRepartitionUseCase } from '../use-cases/get-transaction-repartition.use-case.js';
 import type { GetVehicleTransactionByIdUseCase } from '../use-cases/get-vehicle-transaction-by-id.use-case.js';
@@ -35,6 +36,7 @@ export class TransactionService {
     private readonly scrapVehicleDataUseCase: ScrapVehicleDataUseCase,
     private readonly getTransactionEvolutionUseCase: GetTransactionEvolutionUseCase,
     private readonly getTransactionRepartitionUseCase: GetTransactionRepartitionUseCase,
+    private readonly getTransactionAnomaliesUseCase: GetTransactionAnomaliesUseCase,
     private logger: LoggerPort
   ) {}
 
@@ -144,10 +146,11 @@ export class TransactionService {
     const transactions = await this.getVehicleTransactionsWithoutPaginationUseCase.execute();
     const evolution = this.getTransactionEvolutionUseCase.execute(transactions);
     const repartition = this.getTransactionRepartitionUseCase.execute(transactions);
+    const anomalies = await this.getTransactionAnomaliesUseCase.execute(transactions);
     return {
       evolution,
       repartition,
-      anomalies: [],
+      anomalies,
     };
   }
 }
