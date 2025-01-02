@@ -1,6 +1,7 @@
 import { type ScrapVehicleData, type VehicleTransactionData } from '@zcorp/shared-typing-wheelz';
 import type { PaginationParameters } from '@zcorp/wheelz-contracts';
 
+import { InvalidTransactionError } from '../../domain/errors/invalid-transaction.error.js';
 import type { LoggerPort } from '../ports/logger.port.js';
 import type { ConsumeCompletedVehicleTransactionsUseCase } from '../use-cases/consume-completed-vehicle-transactions.use-case.js';
 import { CreateVehicleTransactionUseCase } from '../use-cases/create-vehicle-transaction.use-case.js';
@@ -29,12 +30,17 @@ export class TransactionService {
     private logger: LoggerPort
   ) {}
 
-  async processTransactionData(vehicleTransactionData: VehicleTransactionData) {
+  async processTransactionData(
+    vehicleTransactionData: VehicleTransactionData,
+    force: boolean = false
+  ) {
     if (vehicleTransactionData.action === 'create') {
-      const validationResult =
-        await this.validateCreateVehicleTransactionDataUseCase.execute(vehicleTransactionData);
-      if (!validationResult.isValid) {
-        throw new Error(validationResult.message);
+      if (!force) {
+        const validationResult =
+          await this.validateCreateVehicleTransactionDataUseCase.execute(vehicleTransactionData);
+        if (!validationResult.isValid) {
+          throw new InvalidTransactionError(validationResult.message);
+        }
       }
       const existingTransaction = await this.getVehicleTransactionByVinOrImmatUseCase.execute(
         'create',

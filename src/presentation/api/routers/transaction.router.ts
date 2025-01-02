@@ -1,6 +1,7 @@
 import type { ServerInferRequest, ServerInferResponses } from '@ts-rest/core';
 import type { transactionContract } from '@zcorp/wheelz-contracts';
 
+import { InvalidTransactionError } from '../../../domain/errors/invalid-transaction.error.js';
 import type { TransactionController } from '../../controllers/transaction.controller.js';
 
 export class TransactionRouter {
@@ -32,12 +33,26 @@ export class TransactionRouter {
   submitTransaction = async (
     input: ServerInferRequest<typeof transactionContract.transactions.submitTransaction>
   ): Promise<ServerInferResponses<typeof transactionContract.transactions.submitTransaction>> => {
-    const result = await this.transactionController.createTransaction(input.body);
-    return {
-      status: 201,
-      body: result,
-    };
+    try {
+      const result = await this.transactionController.createTransaction(
+        input.body,
+        input.query.force
+      );
+      return {
+        status: 201,
+        body: result,
+      };
+    } catch (error) {
+      if (error instanceof InvalidTransactionError) {
+        return {
+          status: 422,
+          body: { message: error.message },
+        };
+      }
+      throw error;
+    }
   };
+
   updateTransaction = async (
     input: ServerInferRequest<typeof transactionContract.transactions.updateTransaction>
   ): Promise<ServerInferResponses<typeof transactionContract.transactions.updateTransaction>> => {
