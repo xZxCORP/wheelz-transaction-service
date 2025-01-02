@@ -1,15 +1,8 @@
 import type { TransactionStats, VehicleTransaction } from '@zcorp/shared-typing-wheelz';
 import dayjs from 'dayjs';
 
-import type { TransactionRepository } from '../../domain/repositories/transaction.repository.js';
-
-export class GetTransactionStatsUseCase {
-  constructor(private readonly transactionRepository: TransactionRepository) {}
-  async execute(): Promise<TransactionStats> {
-    const transactions = await this.transactionRepository.getAllWithoutPagination();
-    //TODO: implement anomalies
-    const anomalies: TransactionStats['anomalies'] = [];
-    const evolution: TransactionStats['evolution'] = [];
+export class GetTransactionRepartitionUseCase {
+  execute(transactions: VehicleTransaction[]) {
     const repartition: TransactionStats['repartition'] = {
       status: {
         error: 0,
@@ -25,6 +18,7 @@ export class GetTransactionStatsUseCase {
       },
     };
     const dateMap = new Map<string, VehicleTransaction[]>();
+
     let transactionsCount = 0;
     for (const transaction of transactions) {
       const formattedDate = dayjs(transaction.timestamp).format('YYYY-MM-DD');
@@ -32,10 +26,6 @@ export class GetTransactionStatsUseCase {
       dateMap.set(formattedDate, [...oldData, transaction]);
     }
     for (const [date, transactions] of dateMap.entries()) {
-      evolution.push({
-        date,
-        value: transactions.length + transactionsCount,
-      });
       for (const transaction of transactions) {
         switch (transaction.action) {
           case 'create': {
@@ -70,10 +60,6 @@ export class GetTransactionStatsUseCase {
       }
       transactionsCount += transactions.length;
     }
-    return {
-      anomalies,
-      evolution,
-      repartition,
-    };
+    return repartition;
   }
 }

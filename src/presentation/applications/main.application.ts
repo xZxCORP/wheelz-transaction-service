@@ -1,10 +1,12 @@
 import { TransactionService } from '../../application/services/transaction.service.js';
 import { ConsumeCompletedVehicleTransactionsUseCase } from '../../application/use-cases/consume-completed-vehicle-transactions.use-case.js';
 import { CreateVehicleTransactionUseCase } from '../../application/use-cases/create-vehicle-transaction.use-case.js';
-import { GetTransactionStatsUseCase } from '../../application/use-cases/get-transaction-stats.use-case.js';
+import { GetTransactionEvolutionUseCase } from '../../application/use-cases/get-transaction-evolution.use-case.js';
+import { GetTransactionRepartitionUseCase } from '../../application/use-cases/get-transaction-repartition.use-case.js';
 import { GetVehicleTransactionByIdUseCase } from '../../application/use-cases/get-vehicle-transaction-by-id.use-case.js';
 import { GetVehicleTransactionByVinOrImmatUseCase } from '../../application/use-cases/get-vehicle-transaction-by-vin-or-immat.use-case.js';
 import { GetVehicleTransactionsUseCase } from '../../application/use-cases/get-vehicle-transactions.use-case.js';
+import { GetVehicleTransactionsWithoutPaginationUseCase } from '../../application/use-cases/get-vehicle-transactions-without-pagination.use-case.js';
 import { MapRawVehicleToVehicleUseCase } from '../../application/use-cases/map-raw-vehicle-to-vehicle.use-case.js';
 import { PerformHealthCheckUseCase } from '../../application/use-cases/perform-health-check.use-case.js';
 import { ReadRawVehicleFileUseCase } from '../../application/use-cases/read-raw-vehicle-file.use-case.js';
@@ -82,6 +84,8 @@ export class MainApplication extends AbstractApplication {
     const validateCreateVehicleTransactionDataUseCase =
       new ValidateCreateVehicleTransactionDataUseCase(externalCreateTransactionValidator);
     const getVehicleTransactionsUseCase = new GetVehicleTransactionsUseCase(transactionRepository);
+    const getVehicleTransactionsWithoutPaginationUseCase =
+      new GetVehicleTransactionsWithoutPaginationUseCase(transactionRepository);
     const getVehicleTransactionByIdUseCase = new GetVehicleTransactionByIdUseCase(
       transactionRepository
     );
@@ -95,7 +99,8 @@ export class MainApplication extends AbstractApplication {
         this.logger
       );
     const scrapVehicleDataUseCase = new ScrapVehicleDataUseCase(vehicleScraperPort);
-    const getTransactionStatsUseCase = new GetTransactionStatsUseCase(transactionRepository);
+    const getTransactionEvolutionUseCase = new GetTransactionEvolutionUseCase();
+    const getTransactionRepartitionUseCase = new GetTransactionRepartitionUseCase();
 
     this.transactionService = new TransactionService(
       createVehicleTransactionUseCase,
@@ -104,11 +109,13 @@ export class MainApplication extends AbstractApplication {
       validateCreateVehicleTransactionDataUseCase,
       resetVehicleTransactionsUseCase,
       getVehicleTransactionsUseCase,
+      getVehicleTransactionsWithoutPaginationUseCase,
       getVehicleTransactionByIdUseCase,
       getVehicleTransactionByVinOrImmatUseCase,
       comsumeCompletedVehicleTransactionsUseCase,
       scrapVehicleDataUseCase,
-      getTransactionStatsUseCase,
+      getTransactionEvolutionUseCase,
+      getTransactionRepartitionUseCase,
       this.logger
     );
 
