@@ -63,7 +63,7 @@ export class TransactionService {
     }
     if (vehicleTransactionData.action === 'update') {
       const existingTransaction = await this.getVehicleTransactionByVinOrImmatUseCase.execute(
-        'update',
+        'create',
         vehicleTransactionData.data.vin,
         undefined
       );
