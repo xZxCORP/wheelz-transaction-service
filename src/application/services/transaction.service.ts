@@ -7,6 +7,7 @@ import type { PaginationParameters } from '@zcorp/wheelz-contracts';
 
 import { InvalidTransactionError } from '../../domain/errors/invalid-transaction.error.js';
 import type { LoggerPort } from '../ports/logger.port.js';
+import type { AnalyseVehicleUseCase } from '../use-cases/analyse-vehicle.use-case.js';
 import type { ConsumeCompletedVehicleTransactionsUseCase } from '../use-cases/consume-completed-vehicle-transactions.use-case.js';
 import { CreateVehicleTransactionUseCase } from '../use-cases/create-vehicle-transaction.use-case.js';
 import type { GetTransactionAnomaliesUseCase } from '../use-cases/get-transaction-anomalies.use-case.js';
@@ -20,13 +21,12 @@ import type { MapRawVehicleToVehicleUseCase } from '../use-cases/map-raw-vehicle
 import type { ReadRawVehicleFileUseCase } from '../use-cases/read-raw-vehicle-file.use-case.js';
 import type { ResetVehicleTransactionsUseCase } from '../use-cases/reset-vehicle-transactions.use-case.js';
 import type { ScrapVehicleDataUseCase } from '../use-cases/scrap-vehicle-data.use-case.js';
-import type { ValidateCreateVehicleTransactionDataUseCase } from '../use-cases/validate-create-vehicle-transaction-data.use-case.js';
 export class TransactionService {
   constructor(
     private readonly createVehicleTransactionUseCase: CreateVehicleTransactionUseCase,
     private readonly readRawVehicleFileUseCase: ReadRawVehicleFileUseCase,
     private readonly mapRawVehicleToVehicleUseCase: MapRawVehicleToVehicleUseCase,
-    private readonly validateCreateVehicleTransactionDataUseCase: ValidateCreateVehicleTransactionDataUseCase,
+    private readonly analyseVehicleUseCase: AnalyseVehicleUseCase,
     private readonly resetVehicleTransactionsUseCase: ResetVehicleTransactionsUseCase,
     private readonly getVehicleTransactionsUseCase: GetVehicleTransactionsUseCase,
     private readonly getVehicleTransactionsWithoutPaginationUseCase: GetVehicleTransactionsWithoutPaginationUseCase,
@@ -46,10 +46,13 @@ export class TransactionService {
   ) {
     if (vehicleTransactionData.action === 'create') {
       if (!force) {
-        const validationResult =
-          await this.validateCreateVehicleTransactionDataUseCase.execute(vehicleTransactionData);
+        const validationResult = await this.analyseVehicleUseCase.execute(
+          vehicleTransactionData.data
+        );
         if (!validationResult.isValid) {
-          throw new InvalidTransactionError(validationResult.message);
+          throw new InvalidTransactionError(
+            validationResult.message ?? 'Impossible de valider la transaction'
+          );
         }
       }
       const existingTransaction = await this.getVehicleTransactionByVinOrImmatUseCase.execute(

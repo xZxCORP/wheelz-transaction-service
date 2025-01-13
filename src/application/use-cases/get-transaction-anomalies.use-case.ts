@@ -1,12 +1,10 @@
 import type { TransactionStats, VehicleTransaction } from '@zcorp/shared-typing-wheelz';
 import dayjs from 'dayjs';
 
-import type { ExternalCreateTransactionDataValidatorPort } from '../ports/external-create-transaction-data-validator.port.js';
+import type { ExternalVehicleValidatorPort } from '../ports/external-vehicle-validator.port.js';
 
 export class GetTransactionAnomaliesUseCase {
-  constructor(
-    private readonly externalCreateTransactionDataValidator: ExternalCreateTransactionDataValidatorPort
-  ) {}
+  constructor(private readonly externalVehicleValidator: ExternalVehicleValidatorPort) {}
   async execute(transactions: VehicleTransaction[]) {
     const anomalies: TransactionStats['anomalies'] = [];
     const dateMap = new Map<string, VehicleTransaction[]>();
@@ -21,8 +19,7 @@ export class GetTransactionAnomaliesUseCase {
       let currentAnomamies = 0;
       for (const transaction of transactions) {
         if (transaction.action === 'create') {
-          const validationResult =
-            await this.externalCreateTransactionDataValidator.validate(transaction);
+          const validationResult = await this.externalVehicleValidator.analyse(transaction.data);
           currentAnomamies += Number(!validationResult.isValid);
         }
       }

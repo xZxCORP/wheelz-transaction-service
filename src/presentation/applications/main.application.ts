@@ -1,4 +1,5 @@
 import { TransactionService } from '../../application/services/transaction.service.js';
+import { AnalyseVehicleUseCase } from '../../application/use-cases/analyse-vehicle.use-case.js';
 import { ConsumeCompletedVehicleTransactionsUseCase } from '../../application/use-cases/consume-completed-vehicle-transactions.use-case.js';
 import { CreateVehicleTransactionUseCase } from '../../application/use-cases/create-vehicle-transaction.use-case.js';
 import { GetTransactionAnomaliesUseCase } from '../../application/use-cases/get-transaction-anomalies.use-case.js';
@@ -13,11 +14,10 @@ import { PerformHealthCheckUseCase } from '../../application/use-cases/perform-h
 import { ReadRawVehicleFileUseCase } from '../../application/use-cases/read-raw-vehicle-file.use-case.js';
 import { ResetVehicleTransactionsUseCase } from '../../application/use-cases/reset-vehicle-transactions.use-case.js';
 import { ScrapVehicleDataUseCase } from '../../application/use-cases/scrap-vehicle-data.use-case.js';
-import { ValidateCreateVehicleTransactionDataUseCase } from '../../application/use-cases/validate-create-vehicle-transaction-data.use-case.js';
 import { EnvironmentConfigLoader } from '../../infrastructure/adapters/config/environment.config-loader.js';
-import { KerekCreateTransactionValidator } from '../../infrastructure/adapters/create-transaction-validator/kerek.create-transaction-validator.js';
 import { CryptoDataSigner } from '../../infrastructure/adapters/data-signer/crypto.data-signer.js';
 import { RealDateProvider } from '../../infrastructure/adapters/date-provider/real.date-provider.port.js';
+import { KerekExternalVehicleValidator } from '../../infrastructure/adapters/external-vehicle-validator/kerek.external-vehicle-validator.js';
 import { RealFileReader } from '../../infrastructure/adapters/file-reader/real.file-reader.js';
 import { QueueHealthCheck } from '../../infrastructure/adapters/health-check/queue.health-check.js';
 import { TransactionRepositoryHealthCheck } from '../../infrastructure/adapters/health-check/transaction-repository.health-check.js';
@@ -56,7 +56,7 @@ export class MainApplication extends AbstractApplication {
       new TransactionRepositoryHealthCheck(transactionRepository),
     ]);
 
-    const externalCreateTransactionValidator = new KerekCreateTransactionValidator(
+    const externalVehicleValidator = new KerekExternalVehicleValidator(
       this.config.transactionValidator.url
     );
 
@@ -82,8 +82,7 @@ export class MainApplication extends AbstractApplication {
       transactionRepository,
       newQueue
     );
-    const validateCreateVehicleTransactionDataUseCase =
-      new ValidateCreateVehicleTransactionDataUseCase(externalCreateTransactionValidator);
+    const analyseVehicleUseCase = new AnalyseVehicleUseCase(externalVehicleValidator);
     const getVehicleTransactionsUseCase = new GetVehicleTransactionsUseCase(transactionRepository);
     const getVehicleTransactionsWithoutPaginationUseCase =
       new GetVehicleTransactionsWithoutPaginationUseCase(transactionRepository);
@@ -103,13 +102,13 @@ export class MainApplication extends AbstractApplication {
     const getTransactionEvolutionUseCase = new GetTransactionEvolutionUseCase();
     const getTransactionRepartitionUseCase = new GetTransactionRepartitionUseCase();
     const getTransactionAnomaliesUseCase = new GetTransactionAnomaliesUseCase(
-      externalCreateTransactionValidator
+      externalVehicleValidator
     );
     this.transactionService = new TransactionService(
       createVehicleTransactionUseCase,
       readRawVehicleFileUseCase,
       mapRawVehicleToVehicleUseCase,
-      validateCreateVehicleTransactionDataUseCase,
+      analyseVehicleUseCase,
       resetVehicleTransactionsUseCase,
       getVehicleTransactionsUseCase,
       getVehicleTransactionsWithoutPaginationUseCase,
