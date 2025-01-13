@@ -28,6 +28,7 @@ export const configSchema = z.object({
     privateKey: z.string(),
   }),
   authServiceUrl: z.string(),
+  chainServiceUrl: z.string(),
 });
 export type Config = z.infer<typeof configSchema>;
 

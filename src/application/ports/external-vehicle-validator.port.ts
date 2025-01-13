@@ -1,4 +1,4 @@
-import type { Vehicle } from '@zcorp/shared-typing-wheelz';
+import type { UpdateVehicleTransactionData, Vehicle } from '@zcorp/shared-typing-wheelz';
 
 export type VehicleValidationResult = {
   isValid: boolean;
@@ -6,5 +6,8 @@ export type VehicleValidationResult = {
 };
 export interface ExternalVehicleValidatorPort {
   analyse(vehicle: Vehicle): Promise<VehicleValidationResult>;
-  compare(vehicle: Vehicle, previousVehicle: Vehicle): Promise<VehicleValidationResult>;
+  compare(
+    vehicle: UpdateVehicleTransactionData['changes'],
+    previousVehicle: Vehicle
+  ): Promise<VehicleValidationResult>;
 }

@@ -8,11 +8,13 @@ import type { PaginationParameters } from '@zcorp/wheelz-contracts';
 import { InvalidTransactionError } from '../../domain/errors/invalid-transaction.error.js';
 import type { LoggerPort } from '../ports/logger.port.js';
 import type { AnalyseVehicleUseCase } from '../use-cases/analyse-vehicle.use-case.js';
+import type { CompareVehiclesUseCase } from '../use-cases/compare-vehicles.use-case.js';
 import type { ConsumeCompletedVehicleTransactionsUseCase } from '../use-cases/consume-completed-vehicle-transactions.use-case.js';
 import { CreateVehicleTransactionUseCase } from '../use-cases/create-vehicle-transaction.use-case.js';
 import type { GetTransactionAnomaliesUseCase } from '../use-cases/get-transaction-anomalies.use-case.js';
 import type { GetTransactionEvolutionUseCase } from '../use-cases/get-transaction-evolution.use-case.js';
 import type { GetTransactionRepartitionUseCase } from '../use-cases/get-transaction-repartition.use-case.js';
+import type { GetVehicleOfTheChainUseCase } from '../use-cases/get-vehicle-of-the-chain.use-case.js';
 import type { GetVehicleTransactionByIdUseCase } from '../use-cases/get-vehicle-transaction-by-id.use-case.js';
 import type { GetVehicleTransactionByVinOrImmatUseCase } from '../use-cases/get-vehicle-transaction-by-vin-or-immat.use-case.js';
 import type { GetVehicleTransactionsUseCase as GetVehicleTransactionsUseCase } from '../use-cases/get-vehicle-transactions.use-case.js';
@@ -27,6 +29,7 @@ export class TransactionService {
     private readonly readRawVehicleFileUseCase: ReadRawVehicleFileUseCase,
     private readonly mapRawVehicleToVehicleUseCase: MapRawVehicleToVehicleUseCase,
     private readonly analyseVehicleUseCase: AnalyseVehicleUseCase,
+    private readonly compareVehiclesUseCase: CompareVehiclesUseCase,
     private readonly resetVehicleTransactionsUseCase: ResetVehicleTransactionsUseCase,
     private readonly getVehicleTransactionsUseCase: GetVehicleTransactionsUseCase,
     private readonly getVehicleTransactionsWithoutPaginationUseCase: GetVehicleTransactionsWithoutPaginationUseCase,
@@ -37,6 +40,7 @@ export class TransactionService {
     private readonly getTransactionEvolutionUseCase: GetTransactionEvolutionUseCase,
     private readonly getTransactionRepartitionUseCase: GetTransactionRepartitionUseCase,
     private readonly getTransactionAnomaliesUseCase: GetTransactionAnomaliesUseCase,
+    private readonly getVehicleOfTheChainUseCase: GetVehicleOfTheChainUseCase,
     private logger: LoggerPort
   ) {}
 
@@ -65,6 +69,18 @@ export class TransactionService {
       }
     }
     if (vehicleTransactionData.action === 'update') {
+      if (!force) {
+        const previousVehicle = await this.getVehicleOfTheChainUseCase.execute(
+          vehicleTransactionData.data.vin
+        );
+        if (!previousVehicle) {
+          throw new Error('Impossible de trouver le véhicule dans la chaîne');
+        }
+        const validationResult = await this.compareVehiclesUseCase.execute(
+          vehicleTransactionData.data.changes,
+          previousVehicle
+        );
+      }
       const existingTransaction = await this.getVehicleTransactionByVinOrImmatUseCase.execute(
         'create',
         vehicleTransactionData.data.vin,
