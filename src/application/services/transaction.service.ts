@@ -80,6 +80,11 @@ export class TransactionService {
           vehicleTransactionData.data.changes,
           previousVehicle
         );
+        if (!validationResult.isValid) {
+          throw new InvalidTransactionError(
+            validationResult.message ?? 'Impossible de valider la transaction'
+          );
+        }
       }
       const existingTransaction = await this.getVehicleTransactionByVinOrImmatUseCase.execute(
         'create',
@@ -108,7 +113,10 @@ export class TransactionService {
         throw new Error('Une transaction de suppression avec ce VIN existe déjà');
       }
     }
-    const transaction = await this.createVehicleTransactionUseCase.execute(vehicleTransactionData);
+    const transaction = await this.createVehicleTransactionUseCase.execute(
+      vehicleTransactionData,
+      force
+    );
     return transaction;
   }
   async consumeCompletedTransactions() {

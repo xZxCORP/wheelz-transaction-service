@@ -41,7 +41,11 @@ export class EnvironmentConfigLoader implements ConfigLoaderPort {
         signAlgorithm: process.env.DATA_SIGNER_ALGORITHM,
         privateKey: process.env.DATA_SIGNER_PRIVATE,
       },
-      authServiceUrl: process.env.AUTH_SERVICE_URL,
+      authService: {
+        url: process.env.AUTH_SERVICE_URL,
+        email: process.env.ADMIN_EMAIL,
+        password: process.env.ADMIN_PASSWORD,
+      },
       chainServiceUrl: process.env.CHAIN_SERVICE_URL,
     };
     const config = await configSchema.safeParseAsync(data);

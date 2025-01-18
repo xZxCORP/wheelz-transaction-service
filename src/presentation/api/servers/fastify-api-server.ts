@@ -42,7 +42,7 @@ export class FastifyApiServer implements ManagedResource {
       origin: '*',
     });
     this.fastifyInstance.register(authPlugin, {
-      authServiceUrl: config.authServiceUrl,
+      authServiceUrl: config.authService.url,
     });
     this.healthcheckRouter = new HealthcheckRouter(this.healthcheckController);
     this.transactionRouter = new TransactionRouter(this.transactionController);

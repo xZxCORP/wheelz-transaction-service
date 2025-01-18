@@ -27,7 +27,11 @@ export const configSchema = z.object({
     signAlgorithm: z.enum(supportedSignAlgorithms),
     privateKey: z.string(),
   }),
-  authServiceUrl: z.string(),
+  authService: z.object({
+    url: z.string(),
+    email: z.string(),
+    password: z.string(),
+  }),
   chainServiceUrl: z.string(),
 });
 export type Config = z.infer<typeof configSchema>;

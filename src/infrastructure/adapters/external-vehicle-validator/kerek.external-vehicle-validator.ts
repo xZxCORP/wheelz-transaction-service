@@ -14,12 +14,10 @@ interface KerekVehicle {
   model: string;
 }
 type KerkePartialVehicle = Partial<KerekVehicle>;
-interface KerekAnalyseRequest {
-  vehicle: KerekVehicle;
-}
+type KerekAnalyseRequest = KerekVehicle;
 interface KerekCompareRequest {
   vehicle: KerkePartialVehicle;
-  old_vehicle: KerekVehicle;
+  last_vehicle: KerekVehicle;
 }
 interface KerekResponse {
   anomaly: boolean;
@@ -36,11 +34,11 @@ export class KerekExternalVehicleValidator implements ExternalVehicleValidatorPo
   async analyse(vehicle: Vehicle): Promise<VehicleValidationResult> {
     try {
       const mappedVehicle = this._prepareVehicle(vehicle);
-      const request: KerekAnalyseRequest = { vehicle: mappedVehicle };
-      const { data } = await this.client.post<KerekResponse>('/predict/analyse', request);
+      const request: KerekAnalyseRequest = mappedVehicle;
+      const { data } = await this.client.post<KerekResponse>('/predict/analyze', request);
 
       return {
-        isValid: data.anomaly,
+        isValid: !data.anomaly,
         message: data.reason,
       };
     } catch {
@@ -60,12 +58,13 @@ export class KerekExternalVehicleValidator implements ExternalVehicleValidatorPo
       const mappedPreviousVehicle = this._prepareVehicle(previousVehicle);
       const request: KerekCompareRequest = {
         vehicle: mappedVehicle,
-        old_vehicle: mappedPreviousVehicle,
+        last_vehicle: mappedPreviousVehicle,
       };
+      console.log(request);
       const { data } = await this.client.post<KerekResponse>('/predict/compare', request);
 
       return {
-        isValid: data.anomaly,
+        isValid: !data.anomaly,
         message: data.reason,
       };
     } catch {

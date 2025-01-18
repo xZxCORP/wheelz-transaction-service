@@ -26,7 +26,7 @@ import { UuidIdGenerator } from '../../infrastructure/adapters/id-generator/uuid
 import { WinstonLogger } from '../../infrastructure/adapters/logger/winston.logger.js';
 import { RabbitMQQueue } from '../../infrastructure/adapters/queue/rabbit-mq.queue.js';
 import { GoblinVehicleScraper } from '../../infrastructure/adapters/vehicle-scraper/goblin.vehicle-scraper.js';
-import { TsrChainService } from '../../infrastructure/chain-service/tsr.chain-service.js';
+import { TsRestChainService } from '../../infrastructure/chain-service/ts-rest.chain-service.js';
 import { MongoTransactionRepository } from '../../infrastructure/repositories/mongo.transaction-repository.js';
 import { AbstractApplication } from './base.application.js';
 
@@ -63,7 +63,12 @@ export class CliApplication extends AbstractApplication {
       this.config.transactionRepository.collection,
       this.logger
     );
-    const chainService = new TsrChainService();
+    const chainService = new TsRestChainService(
+      this.config.chainServiceUrl,
+      this.config.authService.url,
+      this.config.authService.email,
+      this.config.authService.password
+    );
     const createVehicleTransactionUseCase = new CreateVehicleTransactionUseCase(
       dataSigner,
       dateProvider,
@@ -97,9 +102,7 @@ export class CliApplication extends AbstractApplication {
     const scrapVehicleDataUseCase = new ScrapVehicleDataUseCase(vehicleScraperPort);
     const getTransactionEvolutionUseCase = new GetTransactionEvolutionUseCase();
     const getTransactionRepartitionUseCase = new GetTransactionRepartitionUseCase();
-    const getTransactionAnomaliesUseCase = new GetTransactionAnomaliesUseCase(
-      externalVehicleValidator
-    );
+    const getTransactionAnomaliesUseCase = new GetTransactionAnomaliesUseCase();
     const getVehicleOfTheChainUseCase = new GetVehicleOfTheChainUseCase(chainService);
     this.transactionService = new TransactionService(
       createVehicleTransactionUseCase,
