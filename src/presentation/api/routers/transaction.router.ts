@@ -56,11 +56,24 @@ export class TransactionRouter {
   updateTransaction = async (
     input: ServerInferRequest<typeof transactionContract.transactions.updateTransaction>
   ): Promise<ServerInferResponses<typeof transactionContract.transactions.updateTransaction>> => {
-    const result = await this.transactionController.updateTransaction(input.body);
-    return {
-      status: 201,
-      body: result,
-    };
+    try {
+      const result = await this.transactionController.updateTransaction(
+        input.body,
+        input.query.force
+      );
+      return {
+        status: 201,
+        body: result,
+      };
+    } catch (error) {
+      if (error instanceof InvalidTransactionError) {
+        return {
+          status: 422,
+          body: { message: error.message },
+        };
+      }
+      throw error;
+    }
   };
   deleteTransaction = async (
     input: ServerInferRequest<typeof transactionContract.transactions.deleteTransaction>

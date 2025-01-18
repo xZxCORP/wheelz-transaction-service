@@ -1,11 +1,14 @@
 import path from 'node:path';
 
 import { TransactionService } from '../../application/services/transaction.service.js';
+import { AnalyseVehicleUseCase } from '../../application/use-cases/analyse-vehicle.use-case.js';
+import { CompareVehiclesUseCase } from '../../application/use-cases/compare-vehicles.use-case.js';
 import { ConsumeCompletedVehicleTransactionsUseCase } from '../../application/use-cases/consume-completed-vehicle-transactions.use-case.js';
 import { CreateVehicleTransactionUseCase } from '../../application/use-cases/create-vehicle-transaction.use-case.js';
 import { GetTransactionAnomaliesUseCase } from '../../application/use-cases/get-transaction-anomalies.use-case.js';
 import { GetTransactionEvolutionUseCase } from '../../application/use-cases/get-transaction-evolution.use-case.js';
 import { GetTransactionRepartitionUseCase } from '../../application/use-cases/get-transaction-repartition.use-case.js';
+import { GetVehicleOfTheChainUseCase } from '../../application/use-cases/get-vehicle-of-the-chain.use-case.js';
 import { GetVehicleTransactionByIdUseCase } from '../../application/use-cases/get-vehicle-transaction-by-id.use-case.js';
 import { GetVehicleTransactionByVinOrImmatUseCase } from '../../application/use-cases/get-vehicle-transaction-by-vin-or-immat.use-case.js';
 import { GetVehicleTransactionsUseCase } from '../../application/use-cases/get-vehicle-transactions.use-case.js';
@@ -14,16 +17,16 @@ import { MapRawVehicleToVehicleUseCase } from '../../application/use-cases/map-r
 import { ReadRawVehicleFileUseCase } from '../../application/use-cases/read-raw-vehicle-file.use-case.js';
 import { ResetVehicleTransactionsUseCase } from '../../application/use-cases/reset-vehicle-transactions.use-case.js';
 import { ScrapVehicleDataUseCase } from '../../application/use-cases/scrap-vehicle-data.use-case.js';
-import { ValidateCreateVehicleTransactionDataUseCase } from '../../application/use-cases/validate-create-vehicle-transaction-data.use-case.js';
 import { EnvironmentConfigLoader } from '../../infrastructure/adapters/config/environment.config-loader.js';
-import { KerekCreateTransactionValidator } from '../../infrastructure/adapters/create-transaction-validator/kerek.create-transaction-validator.js';
 import { CryptoDataSigner } from '../../infrastructure/adapters/data-signer/crypto.data-signer.js';
 import { RealDateProvider } from '../../infrastructure/adapters/date-provider/real.date-provider.port.js';
+import { KerekExternalVehicleValidator } from '../../infrastructure/adapters/external-vehicle-validator/kerek.external-vehicle-validator.js';
 import { RealFileReader } from '../../infrastructure/adapters/file-reader/real.file-reader.js';
 import { UuidIdGenerator } from '../../infrastructure/adapters/id-generator/uuid.id-generator.js';
 import { WinstonLogger } from '../../infrastructure/adapters/logger/winston.logger.js';
 import { RabbitMQQueue } from '../../infrastructure/adapters/queue/rabbit-mq.queue.js';
 import { GoblinVehicleScraper } from '../../infrastructure/adapters/vehicle-scraper/goblin.vehicle-scraper.js';
+import { TsRestChainService } from '../../infrastructure/chain-service/ts-rest.chain-service.js';
 import { MongoTransactionRepository } from '../../infrastructure/repositories/mongo.transaction-repository.js';
 import { AbstractApplication } from './base.application.js';
 
@@ -42,7 +45,7 @@ export class CliApplication extends AbstractApplication {
       this.logger
     );
 
-    const externalCreateTransactionDataValidator = new KerekCreateTransactionValidator(
+    const externalVehicleValidator = new KerekExternalVehicleValidator(
       this.config.transactionValidator.url
     );
     const dataSigner = new CryptoDataSigner(
@@ -60,6 +63,12 @@ export class CliApplication extends AbstractApplication {
       this.config.transactionRepository.collection,
       this.logger
     );
+    const chainService = new TsRestChainService(
+      this.config.chainServiceUrl,
+      this.config.authService.url,
+      this.config.authService.email,
+      this.config.authService.password
+    );
     const createVehicleTransactionUseCase = new CreateVehicleTransactionUseCase(
       dataSigner,
       dateProvider,
@@ -73,8 +82,8 @@ export class CliApplication extends AbstractApplication {
       transactionRepository,
       newQueue
     );
-    const validateCreateVehicleTransactionDataUseCase =
-      new ValidateCreateVehicleTransactionDataUseCase(externalCreateTransactionDataValidator);
+    const analyseVehicleUseCase = new AnalyseVehicleUseCase(externalVehicleValidator);
+    const compareVehiclesUseCase = new CompareVehiclesUseCase(externalVehicleValidator);
     const getVehicleTransactionsUseCase = new GetVehicleTransactionsUseCase(transactionRepository);
     const getVehicleTransactionsWithoutPaginationUseCase =
       new GetVehicleTransactionsWithoutPaginationUseCase(transactionRepository);
@@ -93,14 +102,14 @@ export class CliApplication extends AbstractApplication {
     const scrapVehicleDataUseCase = new ScrapVehicleDataUseCase(vehicleScraperPort);
     const getTransactionEvolutionUseCase = new GetTransactionEvolutionUseCase();
     const getTransactionRepartitionUseCase = new GetTransactionRepartitionUseCase();
-    const getTransactionAnomaliesUseCase = new GetTransactionAnomaliesUseCase(
-      externalCreateTransactionDataValidator
-    );
+    const getTransactionAnomaliesUseCase = new GetTransactionAnomaliesUseCase();
+    const getVehicleOfTheChainUseCase = new GetVehicleOfTheChainUseCase(chainService);
     this.transactionService = new TransactionService(
       createVehicleTransactionUseCase,
       readRawVehicleFileUseCase,
       mapRawVehicleToVehicleUseCase,
-      validateCreateVehicleTransactionDataUseCase,
+      analyseVehicleUseCase,
+      compareVehiclesUseCase,
       resetVehicleTransactionsUseCase,
       getVehicleTransactionsUseCase,
       getVehicleTransactionsWithoutPaginationUseCase,
@@ -111,6 +120,7 @@ export class CliApplication extends AbstractApplication {
       getTransactionEvolutionUseCase,
       getTransactionRepartitionUseCase,
       getTransactionAnomaliesUseCase,
+      getVehicleOfTheChainUseCase,
       this.logger
     );
 

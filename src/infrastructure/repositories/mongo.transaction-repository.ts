@@ -32,6 +32,7 @@ export class MongoTransactionRepository implements TransactionRepository, Manage
       id: mongodbVehicleTransaction.id,
       status: mongodbVehicleTransaction.status,
       dataSignature: mongodbVehicleTransaction.dataSignature,
+      withAnomaly: mongodbVehicleTransaction.withAnomaly,
     } as VehicleTransaction;
   }
 
