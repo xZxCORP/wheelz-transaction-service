@@ -114,13 +114,11 @@ export class TransactionRouter {
       body: result,
     };
   };
-  revertTransactionById = async (
-    input: ServerInferRequest<typeof transactionContract.transactions.revertTransactionById>
-  ): Promise<
-    ServerInferResponses<typeof transactionContract.transactions.revertTransactionById>
-  > => {
+  revertTransaction = async (
+    input: ServerInferRequest<typeof transactionContract.transactions.revertTransaction>
+  ): Promise<ServerInferResponses<typeof transactionContract.transactions.revertTransaction>> => {
     try {
-      await this.transactionController.revertTransactionById(input.params.id);
+      await this.transactionController.revertTransaction(input.body.id);
       return {
         status: 201,
         body: { message: 'La transaction a bien été revertée' },
