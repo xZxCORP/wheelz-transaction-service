@@ -2,6 +2,7 @@ import type { ServerInferRequest, ServerInferResponses } from '@ts-rest/core';
 import type { transactionContract } from '@zcorp/wheelz-contracts';
 
 import { InvalidTransactionError } from '../../../domain/errors/invalid-transaction.error.js';
+import { TransactionNotFoundError } from '../../../domain/errors/transaction-not-found.error.js';
 import type { TransactionController } from '../../controllers/transaction.controller.js';
 
 export class TransactionRouter {
@@ -112,5 +113,26 @@ export class TransactionRouter {
       status: 200,
       body: result,
     };
+  };
+  revertTransactionById = async (
+    input: ServerInferRequest<typeof transactionContract.transactions.revertTransactionById>
+  ): Promise<
+    ServerInferResponses<typeof transactionContract.transactions.revertTransactionById>
+  > => {
+    try {
+      await this.transactionController.revertTransactionById(input.params.id);
+      return {
+        status: 201,
+        body: { message: 'La transaction a bien été revertée' },
+      };
+    } catch (error) {
+      if (error instanceof TransactionNotFoundError) {
+        return {
+          status: 404,
+          body: { message: error.message },
+        };
+      }
+      throw error;
+    }
   };
 }

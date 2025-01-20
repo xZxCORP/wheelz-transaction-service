@@ -100,6 +100,12 @@ export class FastifyApiServer implements ManagedResource {
             onRequest: [requireAuth(), requireAllRoles(['admin'])],
           },
         },
+        revertTransactionById: {
+          handler: this.transactionRouter.revertTransactionById,
+          hooks: {
+            onRequest: [requireAuth(), requireAllRoles(['admin'])],
+          },
+        },
       },
       this.fastifyInstance,
       {

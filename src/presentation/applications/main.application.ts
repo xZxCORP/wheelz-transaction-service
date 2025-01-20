@@ -1,5 +1,6 @@
 import { TransactionService } from '../../application/services/transaction.service.js';
 import { AnalyseVehicleUseCase } from '../../application/use-cases/analyse-vehicle.use-case.js';
+import { CalculateVehicleWithTransactionsUseCase } from '../../application/use-cases/calculate-vehicle-with-transactions.use-case.js';
 import { CompareVehiclesUseCase } from '../../application/use-cases/compare-vehicles.use-case.js';
 import { ConsumeCompletedVehicleTransactionsUseCase } from '../../application/use-cases/consume-completed-vehicle-transactions.use-case.js';
 import { CreateVehicleTransactionUseCase } from '../../application/use-cases/create-vehicle-transaction.use-case.js';
@@ -112,6 +113,7 @@ export class MainApplication extends AbstractApplication {
     const getTransactionRepartitionUseCase = new GetTransactionRepartitionUseCase();
     const getTransactionAnomaliesUseCase = new GetTransactionAnomaliesUseCase();
     const getVehicleOfTheChainUseCase = new GetVehicleOfTheChainUseCase(chainService);
+    const calculateVehicleWithTransactionsUseCase = new CalculateVehicleWithTransactionsUseCase();
     this.transactionService = new TransactionService(
       createVehicleTransactionUseCase,
       readRawVehicleFileUseCase,
@@ -129,6 +131,7 @@ export class MainApplication extends AbstractApplication {
       getTransactionRepartitionUseCase,
       getTransactionAnomaliesUseCase,
       getVehicleOfTheChainUseCase,
+      calculateVehicleWithTransactionsUseCase,
       this.logger
     );
 
