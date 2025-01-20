@@ -1,4 +1,4 @@
-import type { Status, VehicleTransaction } from '@zcorp/shared-typing-wheelz';
+import type { Status, TransactionAction, VehicleTransaction } from '@zcorp/shared-typing-wheelz';
 import type {
   PaginatedTransactions,
   Pagination,
@@ -95,6 +95,9 @@ export class MongoTransactionRepository implements TransactionRepository, Manage
       items: mapped,
       meta,
     };
+  }
+  countTransactionsOfActionWithVin(vin: string, type: TransactionAction): Promise<number> {
+    return this.collection!.countDocuments({ $and: [{ 'data.vin': vin }, { action: type }] });
   }
   async getById(transactionId: string): Promise<VehicleTransaction | null> {
     const transaction = await this.collection!.findOne({ id: transactionId });
