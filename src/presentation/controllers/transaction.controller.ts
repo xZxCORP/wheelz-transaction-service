@@ -47,4 +47,7 @@ export class TransactionController {
   getTransactionStats() {
     return this.transactionService.getTransactionStats();
   }
+  revertTransaction(transactionId: string) {
+    return this.transactionService.revertTransaction(transactionId);
+  }
 }

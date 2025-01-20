@@ -14,4 +14,5 @@ export interface TransactionRepository {
   removeAll(): Promise<void>;
   isRunning(): Promise<boolean>;
   changeStatus(transactionId: string, status: Status): Promise<void>;
+  countTransactionsOfActionWithVin(vin: string, type: TransactionAction): Promise<number>;
 }
