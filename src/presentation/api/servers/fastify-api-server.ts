@@ -2,7 +2,7 @@ import cors from '@fastify/cors';
 import fastifySwagger from '@fastify/swagger';
 import fastifySwaggerUI from '@fastify/swagger-ui';
 import { initServer } from '@ts-rest/fastify';
-import { authPlugin, requireAuth } from '@zcorp/shared-fastify';
+import { authPlugin, requireAllRoles, requireAuth } from '@zcorp/shared-fastify';
 import { transactionContract } from '@zcorp/wheelz-contracts';
 import type { FastifyInstance } from 'fastify';
 import Fastify from 'fastify';
@@ -42,7 +42,7 @@ export class FastifyApiServer implements ManagedResource {
       origin: '*',
     });
     this.fastifyInstance.register(authPlugin, {
-      authServiceUrl: config.authServiceUrl,
+      authServiceUrl: config.authService.url,
     });
     this.healthcheckRouter = new HealthcheckRouter(this.healthcheckController);
     this.transactionRouter = new TransactionRouter(this.transactionController);
@@ -64,31 +64,31 @@ export class FastifyApiServer implements ManagedResource {
         getTransactions: {
           handler: this.transactionRouter.getTransactions,
           hooks: {
-            onRequest: [requireAuth()],
+            onRequest: [requireAuth(), requireAllRoles(['admin'])],
           },
         },
         getTransactionById: {
           handler: this.transactionRouter.getTransactionById,
           hooks: {
-            onRequest: [requireAuth()],
+            onRequest: [requireAuth(), requireAllRoles(['admin'])],
           },
         },
         submitTransaction: {
           handler: this.transactionRouter.submitTransaction,
           hooks: {
-            onRequest: [requireAuth()],
+            onRequest: [requireAuth(), requireAllRoles(['admin'])],
           },
         },
         updateTransaction: {
           handler: this.transactionRouter.updateTransaction,
           hooks: {
-            onRequest: [requireAuth()],
+            onRequest: [requireAuth(), requireAllRoles(['admin'])],
           },
         },
         deleteTransaction: {
           handler: this.transactionRouter.deleteTransaction,
           hooks: {
-            onRequest: [requireAuth()],
+            onRequest: [requireAuth(), requireAllRoles(['admin'])],
           },
         },
         scrapAndCreateTransaction: {
@@ -97,7 +97,13 @@ export class FastifyApiServer implements ManagedResource {
         stats: {
           handler: this.transactionRouter.stats,
           hooks: {
-            onRequest: [requireAuth()],
+            onRequest: [requireAuth(), requireAllRoles(['admin'])],
+          },
+        },
+        revertTransaction: {
+          handler: this.transactionRouter.revertTransaction,
+          hooks: {
+            onRequest: [requireAuth(), requireAllRoles(['admin'])],
           },
         },
       },

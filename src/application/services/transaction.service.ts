@@ -6,12 +6,18 @@ import {
 import type { PaginationParameters } from '@zcorp/wheelz-contracts';
 
 import { InvalidTransactionError } from '../../domain/errors/invalid-transaction.error.js';
+import { TransactionNotFoundError } from '../../domain/errors/transaction-not-found.error.js';
 import type { LoggerPort } from '../ports/logger.port.js';
+import type { AnalyseVehicleUseCase } from '../use-cases/analyse-vehicle.use-case.js';
+import type { CalculateVehicleWithTransactionsUseCase } from '../use-cases/calculate-vehicle-with-transactions.use-case.js';
+import type { CompareVehiclesUseCase } from '../use-cases/compare-vehicles.use-case.js';
 import type { ConsumeCompletedVehicleTransactionsUseCase } from '../use-cases/consume-completed-vehicle-transactions.use-case.js';
+import type { CountTransactionsOfActionWithVinUseCase } from '../use-cases/count-transactions-of-action-with-vin.use-case.js';
 import { CreateVehicleTransactionUseCase } from '../use-cases/create-vehicle-transaction.use-case.js';
 import type { GetTransactionAnomaliesUseCase } from '../use-cases/get-transaction-anomalies.use-case.js';
 import type { GetTransactionEvolutionUseCase } from '../use-cases/get-transaction-evolution.use-case.js';
 import type { GetTransactionRepartitionUseCase } from '../use-cases/get-transaction-repartition.use-case.js';
+import type { GetVehicleOfTheChainUseCase } from '../use-cases/get-vehicle-of-the-chain.use-case.js';
 import type { GetVehicleTransactionByIdUseCase } from '../use-cases/get-vehicle-transaction-by-id.use-case.js';
 import type { GetVehicleTransactionByVinOrImmatUseCase } from '../use-cases/get-vehicle-transaction-by-vin-or-immat.use-case.js';
 import type { GetVehicleTransactionsUseCase as GetVehicleTransactionsUseCase } from '../use-cases/get-vehicle-transactions.use-case.js';
@@ -20,13 +26,13 @@ import type { MapRawVehicleToVehicleUseCase } from '../use-cases/map-raw-vehicle
 import type { ReadRawVehicleFileUseCase } from '../use-cases/read-raw-vehicle-file.use-case.js';
 import type { ResetVehicleTransactionsUseCase } from '../use-cases/reset-vehicle-transactions.use-case.js';
 import type { ScrapVehicleDataUseCase } from '../use-cases/scrap-vehicle-data.use-case.js';
-import type { ValidateCreateVehicleTransactionDataUseCase } from '../use-cases/validate-create-vehicle-transaction-data.use-case.js';
 export class TransactionService {
   constructor(
     private readonly createVehicleTransactionUseCase: CreateVehicleTransactionUseCase,
     private readonly readRawVehicleFileUseCase: ReadRawVehicleFileUseCase,
     private readonly mapRawVehicleToVehicleUseCase: MapRawVehicleToVehicleUseCase,
-    private readonly validateCreateVehicleTransactionDataUseCase: ValidateCreateVehicleTransactionDataUseCase,
+    private readonly analyseVehicleUseCase: AnalyseVehicleUseCase,
+    private readonly compareVehiclesUseCase: CompareVehiclesUseCase,
     private readonly resetVehicleTransactionsUseCase: ResetVehicleTransactionsUseCase,
     private readonly getVehicleTransactionsUseCase: GetVehicleTransactionsUseCase,
     private readonly getVehicleTransactionsWithoutPaginationUseCase: GetVehicleTransactionsWithoutPaginationUseCase,
@@ -37,6 +43,9 @@ export class TransactionService {
     private readonly getTransactionEvolutionUseCase: GetTransactionEvolutionUseCase,
     private readonly getTransactionRepartitionUseCase: GetTransactionRepartitionUseCase,
     private readonly getTransactionAnomaliesUseCase: GetTransactionAnomaliesUseCase,
+    private readonly getVehicleOfTheChainUseCase: GetVehicleOfTheChainUseCase,
+    private readonly calculateVehicleWithTransactionsUseCase: CalculateVehicleWithTransactionsUseCase,
+    private readonly countTransactionsOfActionWithVinUseCase: CountTransactionsOfActionWithVinUseCase,
     private logger: LoggerPort
   ) {}
 
@@ -44,12 +53,49 @@ export class TransactionService {
     vehicleTransactionData: VehicleTransactionData,
     force: boolean = false
   ) {
+    const existingDeleteTransactionCount =
+      await this.countTransactionsOfActionWithVinUseCase.execute(
+        vehicleTransactionData.data.vin,
+        'delete'
+      );
+    const existingCreateTransactionCount =
+      await this.countTransactionsOfActionWithVinUseCase.execute(
+        vehicleTransactionData.data.vin,
+        'create'
+      );
+    console.log(existingCreateTransactionCount, existingDeleteTransactionCount);
     if (vehicleTransactionData.action === 'create') {
       if (!force) {
-        const validationResult =
-          await this.validateCreateVehicleTransactionDataUseCase.execute(vehicleTransactionData);
+        const validationResult = await this.analyseVehicleUseCase.execute(
+          vehicleTransactionData.data
+        );
         if (!validationResult.isValid) {
-          throw new InvalidTransactionError(validationResult.message);
+          throw new InvalidTransactionError(
+            validationResult.message ?? 'Impossible de valider la transaction'
+          );
+        }
+      }
+
+      if (existingCreateTransactionCount > existingDeleteTransactionCount) {
+        throw new Error('Une transaction avec ce VIN existe déjà');
+      }
+    }
+    if (vehicleTransactionData.action === 'update') {
+      if (!force) {
+        const previousVehicle = await this.getVehicleOfTheChainUseCase.execute(
+          vehicleTransactionData.data.vin
+        );
+        if (!previousVehicle) {
+          throw new Error('Impossible de trouver le véhicule dans la chaîne');
+        }
+        const validationResult = await this.compareVehiclesUseCase.execute(
+          vehicleTransactionData.data.changes,
+          previousVehicle
+        );
+        if (!validationResult.isValid) {
+          throw new InvalidTransactionError(
+            validationResult.message ?? 'Impossible de valider la transaction'
+          );
         }
       }
       const existingTransaction = await this.getVehicleTransactionByVinOrImmatUseCase.execute(
@@ -57,17 +103,10 @@ export class TransactionService {
         vehicleTransactionData.data.vin,
         undefined
       );
-      if (existingTransaction) {
-        throw new Error('Une transaction avec ce VIN existe déjà');
-      }
-    }
-    if (vehicleTransactionData.action === 'update') {
-      const existingTransaction = await this.getVehicleTransactionByVinOrImmatUseCase.execute(
-        'update',
-        vehicleTransactionData.data.vin,
-        undefined
-      );
-      if (!existingTransaction) {
+      if (
+        !existingTransaction ||
+        existingCreateTransactionCount === existingDeleteTransactionCount
+      ) {
         throw new Error("Aucune transaction avec ce VIN n'existe");
       }
     }
@@ -80,16 +119,15 @@ export class TransactionService {
       if (!existingCreateTransaction) {
         throw new Error('Impossible de supprimer une transaction avec un vin inexistant');
       }
-      const existingDeleteTransaction = await this.getVehicleTransactionByVinOrImmatUseCase.execute(
-        'delete',
-        vehicleTransactionData.data.vin,
-        undefined
-      );
-      if (existingDeleteTransaction) {
+
+      if (existingDeleteTransactionCount >= existingCreateTransactionCount) {
         throw new Error('Une transaction de suppression avec ce VIN existe déjà');
       }
     }
-    const transaction = await this.createVehicleTransactionUseCase.execute(vehicleTransactionData);
+    const transaction = await this.createVehicleTransactionUseCase.execute(
+      vehicleTransactionData,
+      force
+    );
     return transaction;
   }
   async consumeCompletedTransactions() {
@@ -152,5 +190,28 @@ export class TransactionService {
       repartition,
       anomalies,
     };
+  }
+  async revertTransaction(transactionId: string) {
+    const transaction = await this.getVehicleTransactionByIdUseCase.execute(transactionId);
+    if (!transaction) {
+      throw new TransactionNotFoundError('Impossible de trouver la transaction');
+    }
+    if (transaction.action !== 'delete') {
+      throw new Error('Le revert ne peut être effectué que sur une transaction de suppression');
+    }
+    const transactions = await this.getVehicleTransactionsWithoutPaginationUseCase.execute();
+    const previousTransactions = transactions.slice(0, -1);
+    const calculatedVehicle = this.calculateVehicleWithTransactionsUseCase.execute(
+      transaction.data.vin,
+      previousTransactions
+    );
+    if (!calculatedVehicle) {
+      throw new Error('Impossible de trouver le véhicule dans les transactions précédentes');
+    }
+    const newTransaction = await this.createVehicleTransactionUseCase.execute({
+      action: 'create',
+      data: calculatedVehicle,
+    });
+    return newTransaction;
   }
 }

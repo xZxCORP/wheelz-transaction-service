@@ -20,11 +20,14 @@ export class TransactionController {
       force
     );
   }
-  updateTransaction(data: UpdateVehicleTransactionData) {
-    return this.transactionService.processTransactionData({
-      action: 'update',
-      data,
-    });
+  updateTransaction(data: UpdateVehicleTransactionData, force: boolean) {
+    return this.transactionService.processTransactionData(
+      {
+        action: 'update',
+        data,
+      },
+      force
+    );
   }
   deleteTransaction(data: DeleteVehicleTransactionData) {
     return this.transactionService.processTransactionData({
@@ -43,5 +46,8 @@ export class TransactionController {
   }
   getTransactionStats() {
     return this.transactionService.getTransactionStats();
+  }
+  revertTransaction(transactionId: string) {
+    return this.transactionService.revertTransaction(transactionId);
   }
 }

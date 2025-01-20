@@ -19,12 +19,16 @@ export class CreateVehicleTransactionUseCase {
     private newQueue: QueuePort
   ) {}
 
-  async execute(vehicleTransactionData: VehicleTransactionData): Promise<VehicleTransaction> {
+  async execute(
+    vehicleTransactionData: VehicleTransactionData,
+    force: boolean = false
+  ): Promise<VehicleTransaction> {
     const currentDate = this.dateProvider.now();
     const signature = await this.dataSigner.sign(
       JSON.stringify({
         action: vehicleTransactionData.action,
         data: vehicleTransactionData.data,
+        withAnomaly: force,
       })
     );
     const id = await this.idGenerator.generate();
@@ -33,6 +37,7 @@ export class CreateVehicleTransactionUseCase {
       id,
       dataSignature: signature,
       timestamp: currentDate,
+      withAnomaly: force,
       status: 'pending',
     };
     await this.transactionRepository.save(transaction);
