@@ -28,6 +28,7 @@ export class CreateVehicleTransactionUseCase {
       JSON.stringify({
         action: vehicleTransactionData.action,
         data: vehicleTransactionData.data,
+        withAnomaly: force,
       })
     );
     const id = await this.idGenerator.generate();
