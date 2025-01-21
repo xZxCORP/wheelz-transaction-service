@@ -106,6 +106,12 @@ export class FastifyApiServer implements ManagedResource {
             onRequest: [requireAuth(), requireAllRoles(['admin'])],
           },
         },
+        getVinMetadatas: {
+          handler: this.transactionRouter.getVinMetadatas,
+          hooks: {
+            onRequest: [requireAuth()],
+          },
+        },
       },
       this.fastifyInstance,
       {

@@ -15,6 +15,7 @@ import { GetVehicleTransactionByIdUseCase } from '../../application/use-cases/ge
 import { GetVehicleTransactionByVinOrImmatUseCase } from '../../application/use-cases/get-vehicle-transaction-by-vin-or-immat.use-case.js';
 import { GetVehicleTransactionsUseCase } from '../../application/use-cases/get-vehicle-transactions.use-case.js';
 import { GetVehicleTransactionsWithoutPaginationUseCase } from '../../application/use-cases/get-vehicle-transactions-without-pagination.use-case.js';
+import { GetVinMetadatasUseCase } from '../../application/use-cases/get-vin-metadatas.use-case.js';
 import { MapRawVehicleToVehicleUseCase } from '../../application/use-cases/map-raw-vehicle-to-vehicle.use-case.js';
 import { ReadRawVehicleFileUseCase } from '../../application/use-cases/read-raw-vehicle-file.use-case.js';
 import { ResetVehicleTransactionsUseCase } from '../../application/use-cases/reset-vehicle-transactions.use-case.js';
@@ -110,6 +111,7 @@ export class CliApplication extends AbstractApplication {
     const countTransactionsOfActionWithVinUseCase = new CountTransactionsOfActionWithVinUseCase(
       transactionRepository
     );
+    const getVinMetadatasUseCase = new GetVinMetadatasUseCase(transactionRepository);
     this.transactionService = new TransactionService(
       createVehicleTransactionUseCase,
       readRawVehicleFileUseCase,
@@ -129,6 +131,7 @@ export class CliApplication extends AbstractApplication {
       getVehicleOfTheChainUseCase,
       calculateVehicleWithTransactionsUseCase,
       countTransactionsOfActionWithVinUseCase,
+      getVinMetadatasUseCase,
       this.logger
     );
 
