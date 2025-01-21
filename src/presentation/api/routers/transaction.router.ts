@@ -133,4 +133,13 @@ export class TransactionRouter {
       throw error;
     }
   };
+  getVinMetadatas = async (
+    input: ServerInferRequest<typeof transactionContract.transactions.getVinMetadatas>
+  ): Promise<ServerInferResponses<typeof transactionContract.transactions.getVinMetadatas>> => {
+    const result = await this.transactionController.getVinMetadatas(input.params.vin);
+    return {
+      status: 200,
+      body: result,
+    };
+  };
 }
