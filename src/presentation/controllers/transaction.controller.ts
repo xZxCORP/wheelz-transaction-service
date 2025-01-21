@@ -50,4 +50,7 @@ export class TransactionController {
   revertTransaction(transactionId: string) {
     return this.transactionService.revertTransaction(transactionId);
   }
+  getVinMetadatas(vin: string) {
+    return this.transactionService.getVinMetadatas(vin);
+  }
 }

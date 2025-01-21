@@ -22,6 +22,7 @@ import type { GetVehicleTransactionByIdUseCase } from '../use-cases/get-vehicle-
 import type { GetVehicleTransactionByVinOrImmatUseCase } from '../use-cases/get-vehicle-transaction-by-vin-or-immat.use-case.js';
 import type { GetVehicleTransactionsUseCase as GetVehicleTransactionsUseCase } from '../use-cases/get-vehicle-transactions.use-case.js';
 import type { GetVehicleTransactionsWithoutPaginationUseCase } from '../use-cases/get-vehicle-transactions-without-pagination.use-case.js';
+import type { GetVinMetadatasUseCase } from '../use-cases/get-vin-metadatas.use-case.js';
 import type { MapRawVehicleToVehicleUseCase } from '../use-cases/map-raw-vehicle-to-vehicle.use-case.js';
 import type { ReadRawVehicleFileUseCase } from '../use-cases/read-raw-vehicle-file.use-case.js';
 import type { ResetVehicleTransactionsUseCase } from '../use-cases/reset-vehicle-transactions.use-case.js';
@@ -46,6 +47,7 @@ export class TransactionService {
     private readonly getVehicleOfTheChainUseCase: GetVehicleOfTheChainUseCase,
     private readonly calculateVehicleWithTransactionsUseCase: CalculateVehicleWithTransactionsUseCase,
     private readonly countTransactionsOfActionWithVinUseCase: CountTransactionsOfActionWithVinUseCase,
+    private readonly getVinMetadatasUseCase: GetVinMetadatasUseCase,
     private logger: LoggerPort
   ) {}
 
@@ -213,5 +215,8 @@ export class TransactionService {
       data: calculatedVehicle,
     });
     return newTransaction;
+  }
+  async getVinMetadatas(vin: string) {
+    return this.getVinMetadatasUseCase.execute(vin);
   }
 }
