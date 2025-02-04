@@ -36,4 +36,22 @@ export class TsRestUserService extends BaseTsRestService implements UserServiceP
     }
     return null;
   }
+  async getUserById(id: string): Promise<User | null> {
+    const token = await this.getToken();
+    if (!token) {
+      return null;
+    }
+    const user = await this.userClient.users.getUserById({
+      params: {
+        id,
+      },
+      extraHeaders: {
+        authorization: `Bearer ${token}`,
+      },
+    });
+    if (user.status === 200) {
+      return user.body.data;
+    }
+    return null;
+  }
 }
