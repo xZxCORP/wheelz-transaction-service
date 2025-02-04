@@ -168,7 +168,7 @@ export class TransactionService {
   }
   async scrapAndProcessVehicleData(
     data: ScrapVehicleData,
-    userEmail: string
+    userId: string
   ): Promise<VehicleTransactionData | null> {
     const existingTransaction = await this.getVehicleTransactionByVinOrImmatUseCase.execute(
       'create',
@@ -186,16 +186,13 @@ export class TransactionService {
     if (!mappedVehicle) {
       return null;
     }
-    const user = await this.getUserByEmailUseCase.execute(userEmail);
-    if (!user) {
-      return null;
-    }
+
     return this.processTransactionData(
       {
         action: 'create',
         data: mappedVehicle,
       },
-      user.id.toString()
+      userId
     );
   }
   async getTransactionStats(): Promise<TransactionStats> {

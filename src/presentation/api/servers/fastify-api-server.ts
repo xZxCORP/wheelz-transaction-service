@@ -74,25 +74,32 @@ export class FastifyApiServer implements ManagedResource {
           },
         },
         submitTransaction: {
-          handler: this.transactionRouter.submitTransaction,
+          handler: (parameters) =>
+            this.transactionRouter.submitTransaction(parameters, parameters.request),
           hooks: {
             onRequest: [requireAuth(), requireAllRoles(['admin'])],
           },
         },
         updateTransaction: {
-          handler: this.transactionRouter.updateTransaction,
+          handler: (parameters) =>
+            this.transactionRouter.updateTransaction(parameters, parameters.request),
           hooks: {
             onRequest: [requireAuth(), requireAllRoles(['admin'])],
           },
         },
         deleteTransaction: {
-          handler: this.transactionRouter.deleteTransaction,
+          handler: (parameters) =>
+            this.transactionRouter.deleteTransaction(parameters, parameters.request),
           hooks: {
             onRequest: [requireAuth(), requireAllRoles(['admin'])],
           },
         },
         scrapAndCreateTransaction: {
-          handler: this.transactionRouter.scrapAndCreateTransaction,
+          handler: (paramaters) =>
+            this.transactionRouter.scrapAndCreateTransaction(paramaters, paramaters.request),
+          hooks: {
+            onRequest: [requireAuth()],
+          },
         },
         stats: {
           handler: this.transactionRouter.stats,
@@ -101,7 +108,8 @@ export class FastifyApiServer implements ManagedResource {
           },
         },
         revertTransaction: {
-          handler: this.transactionRouter.revertTransaction,
+          handler: (paramters) =>
+            this.transactionRouter.revertTransaction(paramters, paramters.request),
           hooks: {
             onRequest: [requireAuth(), requireAllRoles(['admin'])],
           },

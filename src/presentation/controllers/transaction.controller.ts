@@ -11,29 +11,34 @@ import type { TransactionService } from '../../application/services/transaction.
 export class TransactionController {
   constructor(private readonly transactionService: TransactionService) {}
 
-  createTransaction(data: CreateVehicleTransactionData, force: boolean) {
+  createTransaction(data: CreateVehicleTransactionData, userId: string, force: boolean) {
     return this.transactionService.processTransactionData(
       {
         action: 'create',
         data,
       },
+      userId,
       force
     );
   }
-  updateTransaction(data: UpdateVehicleTransactionData, force: boolean) {
+  updateTransaction(data: UpdateVehicleTransactionData, userId: string, force: boolean) {
     return this.transactionService.processTransactionData(
       {
         action: 'update',
         data,
       },
+      userId,
       force
     );
   }
-  deleteTransaction(data: DeleteVehicleTransactionData) {
-    return this.transactionService.processTransactionData({
-      action: 'delete',
-      data,
-    });
+  deleteTransaction(data: DeleteVehicleTransactionData, userId: string) {
+    return this.transactionService.processTransactionData(
+      {
+        action: 'delete',
+        data,
+      },
+      userId
+    );
   }
   getTransactions(paginationParameters: PaginationParameters) {
     return this.transactionService.getTransactions(paginationParameters);
@@ -41,14 +46,14 @@ export class TransactionController {
   getTransactionById(transactionId: string) {
     return this.transactionService.getTransactionById(transactionId);
   }
-  scrapAndCreateTransaction(data: ScrapVehicleData) {
-    return this.transactionService.scrapAndProcessVehicleData(data);
+  scrapAndCreateTransaction(data: ScrapVehicleData, userId: string) {
+    return this.transactionService.scrapAndProcessVehicleData(data, userId);
   }
   getTransactionStats() {
     return this.transactionService.getTransactionStats();
   }
-  revertTransaction(transactionId: string) {
-    return this.transactionService.revertTransaction(transactionId);
+  revertTransaction(transactionId: string, userId: string) {
+    return this.transactionService.revertTransaction(transactionId, userId);
   }
   getVinMetadatas(vin: string) {
     return this.transactionService.getVinMetadatas(vin);

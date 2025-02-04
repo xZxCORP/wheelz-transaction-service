@@ -1,5 +1,6 @@
 import type { ServerInferRequest, ServerInferResponses } from '@ts-rest/core';
 import type { transactionContract } from '@zcorp/wheelz-contracts';
+import type { FastifyRequest } from 'fastify';
 
 import { InvalidTransactionError } from '../../../domain/errors/invalid-transaction.error.js';
 import { TransactionNotFoundError } from '../../../domain/errors/transaction-not-found.error.js';
@@ -32,11 +33,13 @@ export class TransactionRouter {
     };
   };
   submitTransaction = async (
-    input: ServerInferRequest<typeof transactionContract.transactions.submitTransaction>
+    input: ServerInferRequest<typeof transactionContract.transactions.submitTransaction>,
+    request: FastifyRequest
   ): Promise<ServerInferResponses<typeof transactionContract.transactions.submitTransaction>> => {
     try {
       const result = await this.transactionController.createTransaction(
         input.body,
+        request.user!.userId.toString(),
         input.query.force
       );
       return {
@@ -55,11 +58,13 @@ export class TransactionRouter {
   };
 
   updateTransaction = async (
-    input: ServerInferRequest<typeof transactionContract.transactions.updateTransaction>
+    input: ServerInferRequest<typeof transactionContract.transactions.updateTransaction>,
+    request: FastifyRequest
   ): Promise<ServerInferResponses<typeof transactionContract.transactions.updateTransaction>> => {
     try {
       const result = await this.transactionController.updateTransaction(
         input.body,
+        request.user!.userId.toString(),
         input.query.force
       );
       return {
@@ -77,20 +82,28 @@ export class TransactionRouter {
     }
   };
   deleteTransaction = async (
-    input: ServerInferRequest<typeof transactionContract.transactions.deleteTransaction>
+    input: ServerInferRequest<typeof transactionContract.transactions.deleteTransaction>,
+    request: FastifyRequest
   ): Promise<ServerInferResponses<typeof transactionContract.transactions.deleteTransaction>> => {
-    const result = await this.transactionController.deleteTransaction(input.body);
+    const result = await this.transactionController.deleteTransaction(
+      input.body,
+      request.user!.userId.toString()
+    );
     return {
       status: 201,
       body: result,
     };
   };
   scrapAndCreateTransaction = async (
-    input: ServerInferRequest<typeof transactionContract.transactions.scrapAndCreateTransaction>
+    input: ServerInferRequest<typeof transactionContract.transactions.scrapAndCreateTransaction>,
+    request: FastifyRequest
   ): Promise<
     ServerInferResponses<typeof transactionContract.transactions.scrapAndCreateTransaction>
   > => {
-    const result = await this.transactionController.scrapAndCreateTransaction(input.body);
+    const result = await this.transactionController.scrapAndCreateTransaction(
+      input.body,
+      request.user!.userId.toString()
+    );
     if (!result) {
       return {
         status: 404,
@@ -115,10 +128,14 @@ export class TransactionRouter {
     };
   };
   revertTransaction = async (
-    input: ServerInferRequest<typeof transactionContract.transactions.revertTransaction>
+    input: ServerInferRequest<typeof transactionContract.transactions.revertTransaction>,
+    request: FastifyRequest
   ): Promise<ServerInferResponses<typeof transactionContract.transactions.revertTransaction>> => {
     try {
-      await this.transactionController.revertTransaction(input.body.id);
+      await this.transactionController.revertTransaction(
+        input.body.id,
+        request.user!.userId.toString()
+      );
       return {
         status: 201,
         body: { message: 'La transaction a bien été revertée' },
