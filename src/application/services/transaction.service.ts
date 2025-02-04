@@ -17,6 +17,7 @@ import { CreateVehicleTransactionUseCase } from '../use-cases/create-vehicle-tra
 import type { GetTransactionAnomaliesUseCase } from '../use-cases/get-transaction-anomalies.use-case.js';
 import type { GetTransactionEvolutionUseCase } from '../use-cases/get-transaction-evolution.use-case.js';
 import type { GetTransactionRepartitionUseCase } from '../use-cases/get-transaction-repartition.use-case.js';
+import type { GetUserByEmailUseCase } from '../use-cases/get-user-by-email.use-case.js';
 import type { GetVehicleOfTheChainUseCase } from '../use-cases/get-vehicle-of-the-chain.use-case.js';
 import type { GetVehicleTransactionByIdUseCase } from '../use-cases/get-vehicle-transaction-by-id.use-case.js';
 import type { GetVehicleTransactionByVinOrImmatUseCase } from '../use-cases/get-vehicle-transaction-by-vin-or-immat.use-case.js';
@@ -48,11 +49,13 @@ export class TransactionService {
     private readonly calculateVehicleWithTransactionsUseCase: CalculateVehicleWithTransactionsUseCase,
     private readonly countTransactionsOfActionWithVinUseCase: CountTransactionsOfActionWithVinUseCase,
     private readonly getVinMetadatasUseCase: GetVinMetadatasUseCase,
+    private readonly getUserByEmailUseCase: GetUserByEmailUseCase,
     private logger: LoggerPort
   ) {}
 
   async processTransactionData(
     vehicleTransactionData: VehicleTransactionData,
+    userId: string,
     force: boolean = false
   ) {
     const existingDeleteTransactionCount =
@@ -65,7 +68,6 @@ export class TransactionService {
         vehicleTransactionData.data.vin,
         'create'
       );
-    console.log(existingCreateTransactionCount, existingDeleteTransactionCount);
     if (vehicleTransactionData.action === 'create') {
       if (!force) {
         const validationResult = await this.analyseVehicleUseCase.execute(
@@ -128,6 +130,7 @@ export class TransactionService {
     }
     const transaction = await this.createVehicleTransactionUseCase.execute(
       vehicleTransactionData,
+      userId,
       force
     );
     return transaction;
@@ -142,7 +145,11 @@ export class TransactionService {
   async getTransactionById(id: string) {
     return this.getVehicleTransactionByIdUseCase.execute(id);
   }
-  async processVehicleDataFromFile(filePath: string) {
+  async processVehicleDataFromFile(filePath: string, userEmail: string) {
+    const user = await this.getUserByEmailUseCase.execute(userEmail);
+    if (!user) {
+      throw new Error("Impossible de trouver l'utilisateur avec cet email");
+    }
     await this.resetVehicleTransactionsUseCase.execute();
     const rawVehicles = await this.readRawVehicleFileUseCase.execute(filePath);
     for (const rawVehicle of rawVehicles) {
@@ -155,11 +162,14 @@ export class TransactionService {
         action: 'create',
         data: vehicle,
       };
-      const transaction = await this.processTransactionData(transactionData);
+      const transaction = await this.processTransactionData(transactionData, user.id.toString());
       this.logger.info(`Vehicle transaction created: ${transaction.id}`);
     }
   }
-  async scrapAndProcessVehicleData(data: ScrapVehicleData): Promise<VehicleTransactionData | null> {
+  async scrapAndProcessVehicleData(
+    data: ScrapVehicleData,
+    userEmail: string
+  ): Promise<VehicleTransactionData | null> {
     const existingTransaction = await this.getVehicleTransactionByVinOrImmatUseCase.execute(
       'create',
       data.vin,
@@ -176,11 +186,17 @@ export class TransactionService {
     if (!mappedVehicle) {
       return null;
     }
-
-    return this.processTransactionData({
-      action: 'create',
-      data: mappedVehicle,
-    });
+    const user = await this.getUserByEmailUseCase.execute(userEmail);
+    if (!user) {
+      return null;
+    }
+    return this.processTransactionData(
+      {
+        action: 'create',
+        data: mappedVehicle,
+      },
+      user.id.toString()
+    );
   }
   async getTransactionStats(): Promise<TransactionStats> {
     const transactions = await this.getVehicleTransactionsWithoutPaginationUseCase.execute();
@@ -193,7 +209,7 @@ export class TransactionService {
       anomalies,
     };
   }
-  async revertTransaction(transactionId: string) {
+  async revertTransaction(transactionId: string, userId: string) {
     const transaction = await this.getVehicleTransactionByIdUseCase.execute(transactionId);
     if (!transaction) {
       throw new TransactionNotFoundError('Impossible de trouver la transaction');
@@ -210,10 +226,13 @@ export class TransactionService {
     if (!calculatedVehicle) {
       throw new Error('Impossible de trouver le véhicule dans les transactions précédentes');
     }
-    const newTransaction = await this.createVehicleTransactionUseCase.execute({
-      action: 'create',
-      data: calculatedVehicle,
-    });
+    const newTransaction = await this.createVehicleTransactionUseCase.execute(
+      {
+        action: 'create',
+        data: calculatedVehicle,
+      },
+      userId
+    );
     return newTransaction;
   }
   async getVinMetadatas(vin: string) {

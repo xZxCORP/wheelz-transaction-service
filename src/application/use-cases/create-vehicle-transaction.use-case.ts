@@ -21,6 +21,7 @@ export class CreateVehicleTransactionUseCase {
 
   async execute(
     vehicleTransactionData: VehicleTransactionData,
+    userId: string,
     force: boolean = false
   ): Promise<VehicleTransaction> {
     const currentDate = this.dateProvider.now();
@@ -29,6 +30,7 @@ export class CreateVehicleTransactionUseCase {
         action: vehicleTransactionData.action,
         data: vehicleTransactionData.data,
         withAnomaly: force,
+        userId,
       })
     );
     const id = await this.idGenerator.generate();
@@ -39,6 +41,7 @@ export class CreateVehicleTransactionUseCase {
       timestamp: currentDate,
       withAnomaly: force,
       status: 'pending',
+      userId,
     };
     await this.transactionRepository.save(transaction);
     const queueTransaction: QueueTransaction = {
