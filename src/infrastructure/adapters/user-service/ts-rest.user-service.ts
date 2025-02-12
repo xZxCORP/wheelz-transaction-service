@@ -23,7 +23,7 @@ export class TsRestUserService extends BaseTsRestService implements UserServiceP
     if (!token) {
       return null;
     }
-    const user = await this.userClient.users.getUsers({
+    const user = await this.userClient.users.getPaginatedUsers({
       query: {
         email,
       },
