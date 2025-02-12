@@ -22,7 +22,7 @@
     "@ts-rest/open-api": "^3.52.0",
     "@zcorp/shared-fastify": "latest",
     "@zcorp/shared-typing-wheelz": "^1.0.44",
-    "@zcorp/wheelz-contracts": "^1.1.20",
+    "@zcorp/wheelz-contracts": "^1.1.23",
     "axios": "^1.7.9",
     "commander": "^12.1.0",
     "dayjs": "^1.11.13",
