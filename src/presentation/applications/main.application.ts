@@ -8,6 +8,7 @@ import { CreateVehicleTransactionUseCase } from '../../application/use-cases/cre
 import { GetTransactionAnomaliesUseCase } from '../../application/use-cases/get-transaction-anomalies.use-case.js';
 import { GetTransactionEvolutionUseCase } from '../../application/use-cases/get-transaction-evolution.use-case.js';
 import { GetTransactionRepartitionUseCase } from '../../application/use-cases/get-transaction-repartition.use-case.js';
+import { GetUserByEmailUseCase } from '../../application/use-cases/get-user-by-email.use-case.js';
 import { GetVehicleOfTheChainUseCase } from '../../application/use-cases/get-vehicle-of-the-chain.use-case.js';
 import { GetVehicleTransactionByIdUseCase } from '../../application/use-cases/get-vehicle-transaction-by-id.use-case.js';
 import { GetVehicleTransactionByVinOrImmatUseCase } from '../../application/use-cases/get-vehicle-transaction-by-vin-or-immat.use-case.js';
@@ -19,6 +20,7 @@ import { PerformHealthCheckUseCase } from '../../application/use-cases/perform-h
 import { ReadRawVehicleFileUseCase } from '../../application/use-cases/read-raw-vehicle-file.use-case.js';
 import { ResetVehicleTransactionsUseCase } from '../../application/use-cases/reset-vehicle-transactions.use-case.js';
 import { ScrapVehicleDataUseCase } from '../../application/use-cases/scrap-vehicle-data.use-case.js';
+import { TsRestChainService } from '../../infrastructure/adapters/chain-service/ts-rest.chain-service.js';
 import { EnvironmentConfigLoader } from '../../infrastructure/adapters/config/environment.config-loader.js';
 import { CryptoDataSigner } from '../../infrastructure/adapters/data-signer/crypto.data-signer.js';
 import { RealDateProvider } from '../../infrastructure/adapters/date-provider/real.date-provider.port.js';
@@ -29,8 +31,8 @@ import { TransactionRepositoryHealthCheck } from '../../infrastructure/adapters/
 import { UuidIdGenerator } from '../../infrastructure/adapters/id-generator/uuid.id-generator.js';
 import { WinstonLogger } from '../../infrastructure/adapters/logger/winston.logger.js';
 import { RabbitMQQueue } from '../../infrastructure/adapters/queue/rabbit-mq.queue.js';
+import { TsRestUserService } from '../../infrastructure/adapters/user-service/ts-rest.user-service.js';
 import { GoblinVehicleScraper } from '../../infrastructure/adapters/vehicle-scraper/goblin.vehicle-scraper.js';
-import { TsRestChainService } from '../../infrastructure/chain-service/ts-rest.chain-service.js';
 import { MongoTransactionRepository } from '../../infrastructure/repositories/mongo.transaction-repository.js';
 import { FastifyApiServer } from '../api/servers/fastify-api-server.js';
 import { HealthcheckController } from '../controllers/healthcheck.controller.js';
@@ -80,6 +82,12 @@ export class MainApplication extends AbstractApplication {
       this.config.authService.email,
       this.config.authService.password
     );
+    const userService = new TsRestUserService(
+      this.config.userServiceUrl,
+      this.config.authService.url,
+      this.config.authService.email,
+      this.config.authService.password
+    );
     const createVehicleTransactionUseCase = new CreateVehicleTransactionUseCase(
       dataSigner,
       dateProvider,
@@ -120,6 +128,7 @@ export class MainApplication extends AbstractApplication {
       transactionRepository
     );
     const getVinMetadatasUseCase = new GetVinMetadatasUseCase(transactionRepository);
+    const getUserByEmailUseCase = new GetUserByEmailUseCase(userService);
     this.transactionService = new TransactionService(
       createVehicleTransactionUseCase,
       readRawVehicleFileUseCase,
@@ -140,6 +149,7 @@ export class MainApplication extends AbstractApplication {
       calculateVehicleWithTransactionsUseCase,
       countTransactionsOfActionWithVinUseCase,
       getVinMetadatasUseCase,
+      getUserByEmailUseCase,
       this.logger
     );
 

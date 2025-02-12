@@ -60,7 +60,6 @@ export class KerekExternalVehicleValidator implements ExternalVehicleValidatorPo
         vehicle: mappedVehicle,
         last_vehicle: mappedPreviousVehicle,
       };
-      console.log(request);
       const { data } = await this.client.post<KerekResponse>('/predict/compare', request);
 
       return {

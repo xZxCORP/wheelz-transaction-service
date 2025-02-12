@@ -47,6 +47,7 @@ export class EnvironmentConfigLoader implements ConfigLoaderPort {
         password: process.env.ADMIN_PASSWORD,
       },
       chainServiceUrl: process.env.CHAIN_SERVICE_URL,
+      userServiceUrl: process.env.USER_SERVICE_URL,
     };
     const config = await configSchema.safeParseAsync(data);
     if (!config.success) {

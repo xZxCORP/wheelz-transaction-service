@@ -33,6 +33,7 @@ export const configSchema = z.object({
     password: z.string(),
   }),
   chainServiceUrl: z.string(),
+  userServiceUrl: z.string(),
 });
 export type Config = z.infer<typeof configSchema>;
 
