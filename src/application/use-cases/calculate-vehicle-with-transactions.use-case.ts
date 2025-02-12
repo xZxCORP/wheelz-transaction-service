@@ -39,6 +39,7 @@ export class CalculateVehicleWithTransactionsUseCase {
     const technicalControlsChanges = transaction.changes.technicalControls;
     const historyChanges = transaction.changes.history;
     const sinisterInfosChanges = transaction.changes.sinisterInfos;
+    const attachedClientsIdsChanges = transaction.changes.attachedClientsIds;
 
     return {
       vin: vehicle.vin,
@@ -52,6 +53,7 @@ export class CalculateVehicleWithTransactionsUseCase {
       },
       technicalControls: technicalControlsChanges ?? vehicle.technicalControls,
       history: historyChanges ?? vehicle.history,
+      attachedClientsIds: attachedClientsIdsChanges ?? vehicle.attachedClientsIds,
       sinisterInfos: {
         ...vehicle.sinisterInfos,
         ...sinisterInfosChanges,
