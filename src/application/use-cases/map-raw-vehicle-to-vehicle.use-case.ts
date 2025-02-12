@@ -55,6 +55,7 @@ export class MapRawVehicleToVehicleUseCase {
         nature: technicalControlItem.nature,
         km: technicalControlItem.km,
       })),
+      attachedClientsIds: [],
       sinisterInfos: {
         count: rawVehicle.vehicule.accidents.nbSinistres,
         lastResolutionDate: this.nullOrValue(rawVehicle.vehicule.accidents.dateDerniereResolution),
