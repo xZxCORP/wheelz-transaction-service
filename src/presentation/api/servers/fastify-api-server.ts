@@ -2,7 +2,12 @@ import cors from '@fastify/cors';
 import fastifySwagger from '@fastify/swagger';
 import fastifySwaggerUI from '@fastify/swagger-ui';
 import { initServer } from '@ts-rest/fastify';
-import { authPlugin, requireAllRoles, requireAuth } from '@zcorp/shared-fastify';
+import {
+  authPlugin,
+  requireAllRoles,
+  requireAuth,
+  requireToBePartOfCompany,
+} from '@zcorp/shared-fastify';
 import { transactionContract } from '@zcorp/wheelz-contracts';
 import type { FastifyInstance } from 'fastify';
 import Fastify from 'fastify';
@@ -77,14 +82,14 @@ export class FastifyApiServer implements ManagedResource {
           handler: (parameters) =>
             this.transactionRouter.submitTransaction(parameters, parameters.request),
           hooks: {
-            onRequest: [requireAuth(), requireAllRoles(['admin'])],
+            onRequest: [requireAuth(), requireToBePartOfCompany()],
           },
         },
         updateTransaction: {
           handler: (parameters) =>
             this.transactionRouter.updateTransaction(parameters, parameters.request),
           hooks: {
-            onRequest: [requireAuth(), requireAllRoles(['admin'])],
+            onRequest: [requireAuth(), requireToBePartOfCompany()],
           },
         },
         deleteTransaction: {

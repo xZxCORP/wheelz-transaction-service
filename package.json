@@ -20,7 +20,7 @@
     "@ts-rest/core": "^3.52.0",
     "@ts-rest/fastify": "^3.52.0",
     "@ts-rest/open-api": "^3.52.0",
-    "@zcorp/shared-fastify": "latest",
+    "@zcorp/shared-fastify": "^1.0.5",
     "@zcorp/shared-typing-wheelz": "^1.0.45",
     "@zcorp/wheelz-contracts": "^1.1.27",
     "axios": "^1.7.9",

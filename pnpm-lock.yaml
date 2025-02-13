@@ -30,8 +30,8 @@ importers:
         specifier: ^3.52.0
         version: 3.52.0(@ts-rest/core@3.52.0(@types/node@20.17.17)(zod@3.24.2))(zod@3.24.2)
       '@zcorp/shared-fastify':
-        specifier: latest
-        version: 1.0.3(@types/node@20.17.17)
+        specifier: ^1.0.5
+        version: 1.0.5(@types/node@20.17.17)
       '@zcorp/shared-typing-wheelz':
         specifier: ^1.0.45
         version: 1.0.45
@@ -832,8 +832,8 @@ packages:
   '@zcorp/prettier-config@1.0.11':
     resolution: {integrity: sha512-Av4HG9KnZ1dRqBLBxZY+EGJgRqhtErzQ9QB2afBXUTXTTHBhxbNwi7krI3piJboAod0ZRy3MV7ID/s2zUMXP8Q==}
 
-  '@zcorp/shared-fastify@1.0.3':
-    resolution: {integrity: sha512-wFTsEpGh1zNIFR9ILXT9Ipr1vg4MB4OdZfatpCpZyO6O6wpnGj0sKZHo6LuSoZjBR93JK1NIPBli2Yu1EaOgsA==}
+  '@zcorp/shared-fastify@1.0.5':
+    resolution: {integrity: sha512-qIR1AVtFpM5YK7Wbng4vdqhDIW8FkYfTUU9Rltt9ggd2CiNUNrdTgs0hcn1040zGcjAU2pnpVwiWedyhR/HWDQ==}
 
   '@zcorp/shared-typing-wheelz@1.0.45':
     resolution: {integrity: sha512-4GrpyVAmLOW0I7HdO7OJPzLVLSCyFEGrp9GS8b3VkbjAVwt3eIdf7ziKEtl978rk0WFBO/XxaH62GQy6mbqagg==}
@@ -3254,7 +3254,7 @@ snapshots:
 
   '@zcorp/prettier-config@1.0.11': {}
 
-  '@zcorp/shared-fastify@1.0.3(@types/node@20.17.17)':
+  '@zcorp/shared-fastify@1.0.5(@types/node@20.17.17)':
     dependencies:
       '@zcorp/wheelz-contracts': 1.1.27(@types/node@20.17.17)
       fastify: 4.29.0
