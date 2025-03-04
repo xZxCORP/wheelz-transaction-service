@@ -9,7 +9,7 @@
         "tvv": "FCKFVC",
         "numCnit": "MCT1102P3962",
         "typeReception": "CE",
-        "vin": "V***************7",
+        "vin": "JH4DA9390MS033554",
         "champF1": 1510,
         "champF2": 1510,
         "champF3": 2410,
@@ -207,7 +207,7 @@
         "tvv": "SC8HR0/1",
         "numCnit": "M10CTRVP000V685",
         "typeReception": "CE",
-        "vin": "V***************1",
+        "vin": "4T1SV21E1MU396756",
         "champF1": 1581,
         "champF2": 1581,
         "champF3": 2281,
@@ -384,162 +384,6 @@
         "prenom": "Clea",
         "immat": "BX-944-XD",
         "numeroFormule": "2023DL66488"
-      }
-    },
-    "dateMiseAJour": "2024-11-02"
-  },
-  {
-    "vehicule": {
-      "caracteristiques": {
-        "marque": "KAWASAKI",
-        "nomCommercial": "NINJA 300",
-        "puissanceCv": 4,
-        "couleur": "BLANC",
-        "tvv": "EX300AA1",
-        "numCnit": "L3EKWAM20004144",
-        "typeReception": "CE",
-        "vin": "J***************8",
-        "champF1": 352,
-        "champF2": 352,
-        "champF3": -99,
-        "champG": 172,
-        "champG1": 159,
-        "categorie": "L3e",
-        "genre": "MTT2",
-        "carrosserieCe": "NON_CONNU",
-        "carrosserieNationale": "SOLO",
-        "numeroReception": "e1*2002/24*0572*02",
-        "cylindree": 296.0,
-        "puissanceNette": 29.0,
-        "energie": "ES",
-        "nbPlacesAssises": 2,
-        "nbPlacesDebout": -99,
-        "niveauSonore": 88,
-        "vitesseMoteur": 5500,
-        "co2": -99,
-        "pollution": "97/24*2009/108EURO3",
-        "rapportPuissMasse": 0.17
-      },
-      "infos": {
-        "nbTitulaires": 4,
-        "datePremiereImmatriculationFrance": "2014-12-31",
-        "datePremiereImmatSiv": "2014-12-31",
-        "plaqueImmatriculation": "DM-1**-ZH",
-        "dateConvertionSiv": null
-      },
-      "infosImport": {
-        "datePremiereImmatEtranger": null,
-        "dateImportFrance": null,
-        "isImported": false,
-        "immatriculationOrigine": null,
-        "codePaysOrigine": null,
-        "nomPaysOrigine": null
-      },
-      "usage": {
-        "listeDesUsages": [],
-        "isAgricole": false,
-        "isCollection": false
-      },
-      "situationAdmin": {
-        "isApteACirculer": true,
-        "isCiAnnule": false,
-        "dateAnnulation": null,
-        "isCiVole": false,
-        "isDuplicata": false,
-        "gages": {
-          "hasGages": false,
-          "informations": []
-        },
-        "isCiPerdu": false,
-        "dvs": {
-          "hasDvs": false,
-          "informations": []
-        },
-        "suspensions": {
-          "hasSuspensions": false,
-          "informations": []
-        },
-        "oppositions": {
-          "hasOppositions": false,
-          "informations": {
-            "oves": [],
-            "oveis": [],
-            "otcisPv": [],
-            "otcis": []
-          }
-        },
-        "isVehVole": false
-      },
-      "accidents": {
-        "nbSinistres": 0,
-        "dateDerniereResolution": null,
-        "dateDernierSinistre": null
-      },
-      "historique": [
-        {
-          "opaDate": "2023-02-22",
-          "opaType": "Changement de titulaire"
-        },
-        {
-          "opaDate": "2023-02-15",
-          "opaType": "Cession (vente)"
-        },
-        {
-          "opaDate": "2022-06-03",
-          "opaType": "Achat ou reprise par un professionnel"
-        },
-        {
-          "opaDate": "2021-08-20",
-          "opaType": "Changement de titulaire"
-        },
-        {
-          "opaDate": "2021-03-09",
-          "opaType": "Cession (vente)"
-        },
-        {
-          "opaDate": "2015-05-12",
-          "opaType": "Fin d'usage démonstration pour vente du véhicule"
-        },
-        {
-          "opaDate": "2015-05-12",
-          "opaType": "Changement de titulaire"
-        },
-        {
-          "opaDate": "2014-12-31",
-          "opaType": "Première immatriculation d'un véhicule neuf"
-        }
-      ]
-    },
-    "proprietaire": {
-      "personnePhysique": {
-        "nomNaissance": "G**O",
-        "prenom": "N**O"
-      },
-      "personneMorale": {
-        "raisonSociale": "",
-        "siren": ""
-      },
-      "codePostal": "75006"
-    },
-    "certificatImmatriculation": {
-      "age": 21,
-      "dateEmission": "2023-02-22"
-    },
-    "utac": {
-      "updateDate": "",
-      "status": null,
-      "ct": []
-    },
-    "clefAcheteur": "2034b253-4589-4f6e-85ce-d9714460eaca",
-    "validiteClefAcheteur": "2024-12-12",
-    "messageUsager": "",
-    "plaqImmatHash": "34cf3227f424222b628d559f962eeefef7a2adc47ead3d3dd017074704e6a54f",
-    "incomingQuery": {
-      "SivPhysique": {
-        "nom": "GARO",
-        "prenom": "Nino\n",
-        "immat": "DM-190-ZH",
-        "numeroFormule": "2023AT14081"
       }
     },
     "dateMiseAJour": "2024-11-02"
