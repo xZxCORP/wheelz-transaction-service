@@ -36,8 +36,8 @@ importers:
         specifier: ^1.0.47
         version: 1.0.47
       '@zcorp/wheelz-contracts':
-        specifier: ^1.1.30
-        version: 1.1.30(@types/node@20.17.17)
+        specifier: ^1.1.31
+        version: 1.1.31(@types/node@20.17.17)
       axios:
         specifier: ^1.7.9
         version: 1.7.9
@@ -841,8 +841,8 @@ packages:
   '@zcorp/tsconfig@1.0.11':
     resolution: {integrity: sha512-Fpv2qGqdedztjMnA7MY1vTV9L28/pXZgZFdXb/oTJYc3VUxpL2SS6EcvALvhEO/xqhfiqn3bQ2nV1tH7n+fkeg==}
 
-  '@zcorp/wheelz-contracts@1.1.30':
-    resolution: {integrity: sha512-NQ2YkiyhwtXLP8ez1Ck8c+aRoywlofX76Vl6eifwNOblbdfap8lsivSn7KpvFRFRvJkJwYHZSl5yzV53DYtODQ==}
+  '@zcorp/wheelz-contracts@1.1.31':
+    resolution: {integrity: sha512-7P1MYr0uulYTwlUNB3MilSojXRSrkEGsOUQ5JDUWsIanHyjnSrSgmYq/Mf5TvqaXlU7kpFd7R5zB+3V7t80DGA==}
 
   abort-controller@3.0.0:
     resolution: {integrity: sha512-h8lQ8tacZYnR3vNQTgibj+tODHI5/+l06Au2Pcriv/Gmet0eaj4TwWH41sO9wnHDiQsEj19q0drzdWdeAHtweg==}
@@ -3256,7 +3256,7 @@ snapshots:
 
   '@zcorp/shared-fastify@1.0.5(@types/node@20.17.17)':
     dependencies:
-      '@zcorp/wheelz-contracts': 1.1.30(@types/node@20.17.17)
+      '@zcorp/wheelz-contracts': 1.1.31(@types/node@20.17.17)
       fastify: 4.29.0
       fastify-plugin: 4.5.1
     transitivePeerDependencies:
@@ -3268,7 +3268,7 @@ snapshots:
 
   '@zcorp/tsconfig@1.0.11': {}
 
-  '@zcorp/wheelz-contracts@1.1.30(@types/node@20.17.17)':
+  '@zcorp/wheelz-contracts@1.1.31(@types/node@20.17.17)':
     dependencies:
       '@ts-rest/core': 3.52.0(@types/node@20.17.17)(zod@3.24.2)
       zod: 3.24.2
