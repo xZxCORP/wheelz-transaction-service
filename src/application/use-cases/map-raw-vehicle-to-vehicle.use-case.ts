@@ -54,6 +54,7 @@ export class MapRawVehicleToVehicleUseCase {
         resultRaw: technicalControlItem.resultatRaw,
         nature: technicalControlItem.nature,
         km: technicalControlItem.km,
+        fileUrl: '',
       })),
       attachedClientsIds: [],
       sinisterInfos: {
