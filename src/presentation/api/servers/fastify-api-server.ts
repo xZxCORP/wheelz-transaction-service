@@ -121,9 +121,6 @@ export class FastifyApiServer implements ManagedResource {
         },
         getVinMetadatas: {
           handler: this.transactionRouter.getVinMetadatas,
-          hooks: {
-            onRequest: [requireAuth()],
-          },
         },
       },
       this.fastifyInstance,
