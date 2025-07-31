@@ -29,7 +29,7 @@ import { KerekExternalVehicleValidator } from '../../infrastructure/adapters/ext
 import { RealFileReader } from '../../infrastructure/adapters/file-reader/real.file-reader.js';
 import { UuidIdGenerator } from '../../infrastructure/adapters/id-generator/uuid.id-generator.js';
 import { WinstonLogger } from '../../infrastructure/adapters/logger/winston.logger.js';
-import { RabbitMQQueue } from '../../infrastructure/adapters/queue/rabbit-mq.queue.js';
+import { ResilientRabbitMQQueue } from '../../infrastructure/adapters/queue/resilient-rabbit-mq.queue.js';
 import { TsRestUserService } from '../../infrastructure/adapters/user-service/ts-rest.user-service.js';
 import { GoblinVehicleScraper } from '../../infrastructure/adapters/vehicle-scraper/goblin.vehicle-scraper.js';
 import { MongoTransactionRepository } from '../../infrastructure/repositories/mongo.transaction-repository.js';
@@ -39,12 +39,12 @@ export class CliApplication extends AbstractApplication {
   private transactionService!: TransactionService;
 
   async initializeResources(): Promise<void> {
-    const newQueue = new RabbitMQQueue(
+    const newQueue = new ResilientRabbitMQQueue(
       this.config.transactionQueue.url,
       this.config.transactionQueue.newQueueName,
       this.logger
     );
-    const completedQueue = new RabbitMQQueue(
+    const completedQueue = new ResilientRabbitMQQueue(
       this.config.transactionQueue.url,
       this.config.transactionQueue.completedQueueName,
       this.logger
