@@ -32,7 +32,6 @@ export class ResilientRabbitMQQueue implements QueuePort, ManagedResource {
     }
 
     try {
-      // Timeout de 2 secondes pour le test de connexion
       const timeoutPromise = new Promise<never>((_, reject) => {
         setTimeout(() => reject(new Error('Connection check timeout')), 2000);
       });
@@ -149,21 +148,17 @@ export class ResilientRabbitMQQueue implements QueuePort, ManagedResource {
     }
 
     try {
-      const result = await this.connection.queueDeclare({
-        queue: this.queueName,
-        passive: true,
-      });
+      const channel = await this.connection.acquire();
 
-      if (result.messageCount > 0) {
-        await this.connection.queueDelete({ queue: this.queueName });
-        await this.connection.queueDeclare({
-          queue: this.queueName,
-          durable: true,
-        });
+      try {
+        const result = await channel.queuePurge(this.queueName);
+        this.logger.info(
+          `Queue ${this.queueName} cleared, ${result.messageCount} messages removed`
+        );
+        return true;
+      } finally {
+        await channel.close();
       }
-
-      this.logger.info(`Queue ${this.queueName} cleared`);
-      return true;
     } catch (error) {
       this.logger.error('Failed to clear queue:', error);
       return false;
