@@ -1,0 +1,160 @@
+## Project context
+- Node.js/TypeScript (ESM) service for vehicle transactions
+- Strict Clean Architecture with layered separation and ports/adapters
+- Stack: Fastify + @ts-rest, MongoDB, RabbitMQ, Winston, Zod, Vitest
+- Configuration handled via `EnvironmentConfigLoader`
+- Resource lifecycle via `ManagedResource` pattern (initialize/dispose)
+- Tooling: pnpm, ESLint (@zcorp), Prettier, Vitest, Docker
+
+### Structure and dependencies (Clean Architecture)
+- `src/domain`: Entities, domain errors, repository interfaces
+- `src/application`: Use cases, services, ports (interfaces), orchestration of business logic
+- `src/infrastructure`: Adapters (port implementations), repositories, external integrations, resources
+- `src/presentation`: HTTP API (Fastify + @ts-rest), controllers, applications (main/cli)
+
+Dependency rules (must hold for any new code):
+- `presentation` → depends on `application` (and shared types) ONLY, NEVER on `infrastructure`
+- `application` → depends on `domain` (and shared types) ONLY, NEVER on `infrastructure`
+- `domain` → depends on nothing (shared types allowed)
+- `infrastructure` → depends on `application` (ports) and `domain`
+- Dependency composition happens in `presentation/applications/*.application.ts`
+
+## Code conventions
+- TypeScript ESM only. Local imports must use `.js` file extension (e.g., `../file.js`)
+- Prefer named exports; avoid `default export`
+- No I/O or network access within use cases (pure logic). Use ports for external interactions
+- Constructor injection for all dependencies (ports, services, logger)
+- Respect schemas/types from `@zcorp/shared-typing-wheelz` and `@zcorp/wheelz-contracts`. Do not re-define types
+- Domain-specific errors live in `src/domain/errors` and must be propagated up to presentation where they are mapped to HTTP
+- Logging via `LoggerPort` (Winston). Do not use `console.log`
+- Never leak infrastructure adapters into `application` or `domain`
+- Files and naming:
+  - Classes: PascalCase, Ports suffixed with `Port`, Adapters named by technology
+  - Use cases suffixed `.use-case.ts`, Services suffixed `.service.ts`
+
+### Ports & Adapters
+- Define every external dependency as a `Port` (interface) under `src/application/ports`
+- Implement the port under `src/infrastructure/adapters/<tech>/<name>.<adapter>.ts`
+- Adapters contain no business logic; only mapping, I/O/network calls, and error handling
+
+### Repositories
+- Interfaces under `src/domain/repositories`
+- Implementations under `src/infrastructure/repositories`
+- No direct database access from `application`/`presentation`
+
+### Configuration
+- Read configuration using `EnvironmentConfigLoader` and `configSchema`
+- Validate any new environment variable in the Zod schema
+
+### API (Fastify + @ts-rest)
+- Define routes using `@zcorp/wheelz-contracts`
+- Map domain errors → HTTP status in routers (e.g., 422 for `InvalidTransactionError`, 404 for `TransactionNotFoundError`)
+- Protect routes with `authPlugin`, `requireAuth`, `requireAllRoles`, etc., consistent with existing usage
+
+### Queue / MQ
+- Use `QueuePort` for all MQ interactions
+- Implementations handle resilience and ack/nack (see `ResilientRabbitMQQueue`)
+
+### Logging
+- Use `LoggerPort` everywhere; messages must be clear and contextualized
+
+## Language and localization
+- All user-facing messages (HTTP, CLI), logs, comments, and tests MUST be written in English.
+- When touching existing French strings, prefer migrating them to English in the same edit, unless contract compatibility forbids it.
+
+## Tests (Vitest) – Arrange, Act, Assert REQUIRED
+- Framework: Vitest; prefer mocks from `vitest-mock-extended`
+- Test files: `*.spec.ts`
+- Scope: unit tests for use cases, services, controllers, and mappings; no real I/O
+- Mock all ports/adapters/network. No external calls in unit tests
+- Strict AAA per test:
+  - Arrange: prepare data, mocks, SUT
+  - Act: execute the method under test
+  - Assert: verify state and interactions
+
+Example (AAA) – use case test:
+```ts
+import { describe, it, expect, vi } from 'vitest';
+import { mockDeep } from 'vitest-mock-extended';
+import { CreateVehicleTransactionUseCase } from '@/application/use-cases/create-vehicle-transaction.use-case.js';
+import type { DataSignerPort } from '@/application/ports/data-signer.port.js';
+import type { DateProviderPort } from '@/application/ports/date-provider.port.js';
+import type { IdGeneratorPort } from '@/application/ports/id-generator.port.js';
+import type { QueuePort } from '@/application/ports/queue.port.js';
+import type { TransactionRepository } from '@/domain/repositories/transaction.repository.js';
+
+describe('CreateVehicleTransactionUseCase', () => {
+  it('creates and enqueues a transaction', async () => {
+    // Arrange
+    const dataSigner = mockDeep<DataSignerPort>();
+    const dateProvider: DateProviderPort = { now: () => new Date('2024-01-01T00:00:00Z') };
+    const idGenerator: IdGeneratorPort = { generate: vi.fn().mockResolvedValue('tx-1') };
+    const repository = mockDeep<TransactionRepository>();
+    const queue = mockDeep<QueuePort>();
+
+    dataSigner.sign.mockResolvedValue({ signAlgorithm: 'RSA-SHA256', signature: 'sig' });
+
+    const sut = new CreateVehicleTransactionUseCase(
+      dataSigner,
+      dateProvider,
+      idGenerator,
+      repository,
+      queue
+    );
+
+    const vehicle = { vin: 'VF1AAAAA', features: {} as any, infos: {} as any, history: [], technicalControls: [], attachedClientsIds: [], sinisterInfos: {} as any };
+
+    // Act
+    const result = await sut.execute({ action: 'create', data: vehicle }, 'user-1');
+
+    // Assert
+    expect(result.id).toBe('tx-1');
+    expect(repository.save).toHaveBeenCalledWith(expect.objectContaining({ id: 'tx-1' }));
+    expect(queue.enqueue).toHaveBeenCalledOnce();
+  });
+});
+```
+
+Additional test guidance:
+- Test domain errors (e.g., `InvalidTransactionError`) and HTTP conversion in routers
+- For controllers/services: verify orchestration (ports called with correct parameters)
+- Avoid snapshot tests for business logic; prefer explicit assertions
+
+## Quality, Lint & Formatting
+- Use `pnpm run lint` (ESLint with `@zcorp` config + local rules)
+- Fix all errors and warnings; avoid unjustified overrides
+- `pnpm run build` must stay green; do not break APIs or types
+
+## Common scripts
+- Dev API: `pnpm run dev` (see Dockerfile target `development`)
+- Lint: `pnpm run lint`
+- Build: `pnpm run build`
+- Test: `pnpm run test`
+
+## CI/CD
+- PRs must pass lint, build, test (see `.github/workflows/lint-test.yml`)
+- On `main`, build & push Docker image then trigger infra deployment
+
+## Implementation playbooks
+### Add a new Use Case
+1) Create the class under `src/application/use-cases/xxx.use-case.ts` (pure logic)
+2) Dependencies via ports (interfaces) – injected via constructor
+3) Test with AAA using port mocks
+4) Expose via `TransactionService` if relevant
+5) Router/Controller only if public HTTP exposure is needed
+
+### Add a new Port + Adapter
+1) Define the interface under `src/application/ports`
+2) Implement the adapter under `src/infrastructure/adapters/<tech>/<name>....ts`
+3) Register the adapter in the corresponding `Application` (main/cli)
+4) Test the adapter with isolated integration tests (optional) or underlying client mocks
+
+### Add an HTTP route
+1) Extend `transactionContract` on the contracts side (external repo if centralized)
+2) Implement handler in `TransactionRouter`, mapping errors → statuses
+3) Add auth/roles hooks as needed
+4) Cover controller + router (success/errors) with Vitest
+
+## Security & Secrets
+- Never hardcode secrets; use `.env` and `configSchema`
+- Do not log sensitive data
