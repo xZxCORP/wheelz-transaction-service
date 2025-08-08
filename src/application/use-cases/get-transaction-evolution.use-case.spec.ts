@@ -76,7 +76,15 @@ describe('GetTransactionEvolutionUseCase', () => {
     const mkTx = (date: Date): VehicleTransaction => ({
       id: Math.random().toString(),
       action: 'create',
-      data: { vin: 'V', features: {} as any, infos: {} as any, history: [], technicalControls: [], attachedClientsIds: [], sinisterInfos: {} as any },
+      data: {
+        vin: 'V',
+        features: {} as any,
+        infos: {} as any,
+        history: [],
+        technicalControls: [],
+        attachedClientsIds: [],
+        sinisterInfos: {} as any,
+      },
       timestamp: date,
       status: 'finished',
       dataSignature: { signAlgorithm: 'RSA-SHA256', signature: 's' },

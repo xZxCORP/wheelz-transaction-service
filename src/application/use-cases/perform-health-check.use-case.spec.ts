@@ -26,8 +26,14 @@ describe('PerformHealthCheckUseCase', () => {
 
   it('returns healthy when all services are healthy (AAA)', async () => {
     // Arrange
-    const a: HealthCheckPort = { name: 'a', isHealthy: async () => ({ name: 'a', status: 'healthy' }) };
-    const b: HealthCheckPort = { name: 'b', isHealthy: async () => ({ name: 'b', status: 'healthy' }) };
+    const a: HealthCheckPort = {
+      name: 'a',
+      isHealthy: async () => ({ name: 'a', status: 'healthy' }),
+    };
+    const b: HealthCheckPort = {
+      name: 'b',
+      isHealthy: async () => ({ name: 'b', status: 'healthy' }),
+    };
     const sut = new PerformHealthCheckUseCase([a, b]);
 
     // Act

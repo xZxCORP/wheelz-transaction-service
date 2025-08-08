@@ -6,9 +6,10 @@ vi.mock('@zcorp/shared-typing-wheelz', () => ({
   },
 }));
 
+import { vehicleSchema } from '@zcorp/shared-typing-wheelz';
+
 import type { RawVehicleInfos } from '../../domain/entities/cli-vehicle.entity.js';
 import { MapRawVehicleToVehicleUseCase } from './map-raw-vehicle-to-vehicle.use-case.js';
-import { vehicleSchema } from '@zcorp/shared-typing-wheelz';
 
 describe('MapRawVehicleToVehicleUseCase', () => {
   it('maps raw vehicle to domain vehicle and normalizes -99 to null (AAA)', async () => {

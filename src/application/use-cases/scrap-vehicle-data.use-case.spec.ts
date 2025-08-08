@@ -21,7 +21,7 @@ describe('ScrapVehicleDataUseCase', () => {
   it('returns data when scraper returns vehicle payload (AAA)', async () => {
     // Arrange (fake implementation)
     const fakeScraper: VehicleScraperPort = {
-      scrap: async () => ({ data: { vehicule: { caracteristiques: { vin: 'V' } } } } as any),
+      scrap: async () => ({ data: { vehicule: { caracteristiques: { vin: 'V' } } } }) as any,
     };
     const sut = new ScrapVehicleDataUseCase(fakeScraper);
 
